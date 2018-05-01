@@ -1,0 +1,83 @@
+{
+// Package postgres parses SQL dump files produced pgdump command
+package postgres
+
+func toIfaceSlice(v interface{}) []interface{} {
+    if v == nil {
+        return nil
+    }
+    return v.([]interface{})
+}
+
+func toByteSlice(v interface{}) []byte {
+    valsSl := toIfaceSlice(v)
+    var result []byte
+    for _, val := range valsSl {
+        result = append(result, val.([]byte)[0])
+    }
+    return result
+}
+}
+
+SQL <- stmts:Stmt+ {
+    return stmts, nil
+}
+
+Stmt <- Comment* _ stmt:SetStmt {
+    return stmt, nil
+}
+
+SetStmt <- "SET"i _ key:Key _ ( `=` / "TO" ) _ value:Value _ `;` EOL {
+    return updateSettings(key.(string), value), nil
+}
+
+Key <- [a-z_]i+ {
+    return string(c.text), nil
+}
+
+Value <- ( Number / Boolean / StringConst / Ident / CommaSeparatedList )
+
+StringConst <- `'` value:[^'\n]* `'` {
+    return String(toByteSlice(value)), nil
+}
+
+Ident <- [a-z]+ {
+    return Identifier(c.text), nil
+}
+
+Number <- ( `0` / [1-9][0-9]* ) {
+    number, _ := strconv.ParseInt(string(c.text), 10, 64)
+    return number, nil
+}
+
+CommaSeparatedList <- Value ( _ ',' _ Value )*
+
+Boolean <- value:( BooleanTrue / BooleanFalse ) {
+    return value, nil
+}
+
+BooleanTrue <- ( "TRUE" / "'" BooleanTrueString "'" / BooleanTrueString ) {
+    return true, nil
+}
+
+BooleanTrueString <- ( "true" / "yes" / "on" / "t" / "y" )
+
+BooleanFalse <- ( "FALSE" / "'" BooleanFalseString "'" / BooleanFalseString ) {
+    return false, nil
+}
+
+BooleanFalseString <- ( "false" / "no" / "off" / "f" / "n" )
+
+Comment <- ( SingleLineComment / MultilineComment ) {
+    return nil, nil
+}
+
+MultilineComment <- "/*" ( .* MultilineComment? .* )* "*/" EOL
+
+SingleLineComment <- "--" [^\r\n]* EOL
+
+EOL <-  [ \t]* ("\r\n" / "\n\r" / "\r" / "\n" / EOF)
+
+_ "whitespace" <- [ \t\r\n]*
+
+EOF <- !.
