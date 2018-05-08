@@ -2,20 +2,16 @@ package postgres
 
 import (
 	"fmt"
+	"github.com/pckhoi/tent/internal/app/storage"
 	"reflect"
 	"strconv"
 )
-
-type Update struct {
-	TableName string
-	Row       map[string]interface{}
-}
 
 type String string
 
 type Identifier string
 
-func updateSettings(key string, val interface{}) Update {
+func updateSettings(key string, val interface{}) storage.DataRow {
 	var setting interface{}
 	switch v := val.(type) {
 	case int64:
@@ -25,9 +21,10 @@ func updateSettings(key string, val interface{}) Update {
 	default:
 		setting = v
 	}
-	return Update{
+	return storage.DataRow{
 		TableName: "postgres_settings",
-		Row: map[string]interface{}{
+		ID:        key,
+		Content: map[string]string{
 			"name":    key,
 			"setting": fmt.Sprintf("%s", reflect.ValueOf(setting)),
 			"type":    fmt.Sprintf("%s", reflect.TypeOf(val)),

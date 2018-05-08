@@ -1,4 +1,4 @@
-package postgres
+package test
 
 import (
 	"github.com/pckhoi/tent/internal/app/parsers/postgres"
