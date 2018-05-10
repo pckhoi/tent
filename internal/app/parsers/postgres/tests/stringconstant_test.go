@@ -21,36 +21,36 @@ func tryParse(c *C, s string) interface{} {
 	return res
 }
 
-func (s *MySuite) TestSetEqualNumber(c *C) {
-	c.Assert(
-		tryParse(c, "SET my_key = 0;"),
-		DeepEquals,
-		[]interface{}{
-			postgres.Update{
-				TableName: "postgres_settings",
-				Row: map[string]interface{}{
-					"name":    "my_key",
-					"setting": "0",
-					"type":    "int64",
-				},
-			},
-		},
-	)
-}
+// func (s *MySuite) TestSetEqualNumber(c *C) {
+// 	c.Assert(
+// 		tryParse(c, "SET my_key = 0;"),
+// 		DeepEquals,
+// 		[]interface{}{
+// 			postgres.Update{
+// 				TableName: "postgres_settings",
+// 				Row: map[string]interface{}{
+// 					"name":    "my_key",
+// 					"setting": "0",
+// 					"type":    "int64",
+// 				},
+// 			},
+// 		},
+// 	)
+// }
 
-func (s *MySuite) TestSetEqualStringConstant(c *C) {
-	c.Assert(
-		tryParse(c, "SET client_encoding = 'UTF8';"),
-		DeepEquals,
-		[]interface{}{
-			postgres.Update{
-				TableName: "postgres_settings",
-				Row: map[string]interface{}{
-					"name":    "client_encoding",
-					"setting": "UTF8",
-					"type":    "postgres.String",
-				},
-			},
-		},
-	)
-}
+// func (s *MySuite) TestSetEqualStringConstant(c *C) {
+// 	c.Assert(
+// 		tryParse(c, "SET client_encoding = 'UTF8';"),
+// 		DeepEquals,
+// 		[]interface{}{
+// 			postgres.Update{
+// 				TableName: "postgres_settings",
+// 				Row: map[string]interface{}{
+// 					"name":    "client_encoding",
+// 					"setting": "UTF8",
+// 					"type":    "postgres.String",
+// 				},
+// 			},
+// 		},
+// 	)
+// }

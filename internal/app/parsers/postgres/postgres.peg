@@ -1,22 +1,22 @@
 {
-// Package postgres parses SQL dump files produced pgdump command
-package postgres
+    // Package postgres parses SQL dump files produced pgdump command
+    package postgres
 
-func toIfaceSlice(v interface{}) []interface{} {
-    if v == nil {
-        return nil
+    func toIfaceSlice(v interface{}) []interface{} {
+        if v == nil {
+            return nil
+        }
+        return v.([]interface{})
     }
-    return v.([]interface{})
-}
 
-func toByteSlice(v interface{}) []byte {
-    valsSl := toIfaceSlice(v)
-    var result []byte
-    for _, val := range valsSl {
-        result = append(result, val.([]byte)[0])
+    func toByteSlice(v interface{}) []byte {
+        valsSl := toIfaceSlice(v)
+        var result []byte
+        for _, val := range valsSl {
+            result = append(result, val.([]byte)[0])
+        }
+        return result
     }
-    return result
-}
 }
 
 SQL <- stmts:Stmt+ {
@@ -27,21 +27,34 @@ Stmt <- Comment* _ stmt:SetStmt {
     return stmt, nil
 }
 
-SetStmt <- "SET"i _ key:Key _ ( `=` / "TO" ) _ value:Value _ `;` EOL {
-    return updateSettings(key.(string), value), nil
+SetStmt <- "SET"i _ key:Key _ ( `=` / "TO"i ) _ values:CommaSeparatedValues _ `;` EOL {
+    updateSettings(key.(string), toIfaceSlice(values))
+    return nil, nil
 }
 
 Key <- [a-z_]i+ {
     return string(c.text), nil
 }
 
-Value <- ( Number / Boolean / StringConst / Ident / CommaSeparatedList )
+CommaSeparatedValues <- vals:( Value ( _ ',' _ Value )* ) {
+    res := []interface{}{}
+    valsSlice := toIfaceSlice(vals)
+    res = append(res, valsSlice[0])
+    restSlice := toIfaceSlice(valsSlice[1])
+    for _, v := range restSlice {
+        vSlice := toIfaceSlice(v)
+        res = append(res, vSlice[3])
+    }
+    return res, nil
+}
+
+Value <- ( Number / Boolean / StringConst / Ident )
 
 StringConst <- `'` value:[^'\n]* `'` {
     return String(toByteSlice(value)), nil
 }
 
-Ident <- [a-z]+ {
+Ident <- [a-z_]+ {
     return Identifier(c.text), nil
 }
 
@@ -49,8 +62,6 @@ Number <- ( `0` / [1-9][0-9]* ) {
     number, _ := strconv.ParseInt(string(c.text), 10, 64)
     return number, nil
 }
-
-CommaSeparatedList <- Value ( _ ',' _ Value )*
 
 Boolean <- value:( BooleanTrue / BooleanFalse ) {
     return value, nil
