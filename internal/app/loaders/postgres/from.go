@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func Load(filename string) {
+func From(filename string) {
 	updates, err := parseFile(filename)
 	if err != nil {
 		log.Fatal(err)

@@ -23,8 +23,16 @@ SQL <- stmts:Stmt+ {
     return stmts, nil
 }
 
-Stmt <- Comment* _ stmt:SetStmt {
+Stmt <- Comment* _ stmt:( SetStmt / CreateExtensionStmt / CommentExtensionStmt ) {
     return stmt, nil
+}
+
+CommentExtensionStmt <- "COMMENT"i _ "ON"i _ "EXTENSION"i _ extension:Key _ "IS"i _ comment:StringConst _ `;` EOL {
+    return parseCommentExtensionStmt(extension.(string), comment.(String)), nil
+}
+
+CreateExtensionStmt <- "CREATE"i _ "EXTENSION"i _ ( "IF"i _ "NOT"i _ "EXISTS"i _ )? extension:Key _ "WITH"i _ "SCHEMA"i _ schema:Key _ `;` EOL {
+    return parseCreateExtensionStmt(extension.(string), schema.(string)), nil
 }
 
 SetStmt <- "SET"i _ key:Key _ ( `=` / "TO"i ) _ values:CommaSeparatedValues _ `;` EOL {
@@ -35,6 +43,10 @@ SetStmt <- "SET"i _ key:Key _ ( `=` / "TO"i ) _ values:CommaSeparatedValues _ `;
 Key <- [a-z_]i+ {
     return string(c.text), nil
 }
+
+
+
+
 
 CommaSeparatedValues <- vals:( Value ( _ ',' _ Value )* ) {
     res := []interface{}{}
@@ -79,6 +91,11 @@ BooleanFalse <- ( "FALSE" / "'" BooleanFalseString "'" / BooleanFalseString ) {
 
 BooleanFalseString <- ( "false" / "no" / "off" / "f" / "n" )
 
+
+
+
+
+
 Comment <- ( SingleLineComment / MultilineComment ) {
     return nil, nil
 }
@@ -86,6 +103,11 @@ Comment <- ( SingleLineComment / MultilineComment ) {
 MultilineComment <- "/*" ( .* MultilineComment? .* )* "*/" EOL
 
 SingleLineComment <- "--" [^\r\n]* EOL
+
+
+
+
+
 
 EOL <-  [ \t]* ("\r\n" / "\n\r" / "\r" / "\n" / EOF)
 
