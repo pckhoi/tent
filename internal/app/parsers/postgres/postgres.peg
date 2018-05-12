@@ -23,16 +23,108 @@ SQL <- stmts:Stmt+ {
     return stmts, nil
 }
 
-Stmt <- Comment* _ stmt:( SetStmt / CreateExtensionStmt / CommentExtensionStmt ) {
+Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateExtensionStmt / CommentExtensionStmt ) {
     return stmt, nil
 }
 
-CommentExtensionStmt <- "COMMENT"i _ "ON"i _ "EXTENSION"i _ extension:Key _ "IS"i _ comment:StringConst _ `;` EOL {
-    return parseCommentExtensionStmt(extension.(string), comment.(String)), nil
+
+/*
+ ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗    ████████╗ █████╗ ██████╗ ██╗     ███████╗
+██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝    ╚══██╔══╝██╔══██╗██╔══██╗██║     ██╔════╝
+██║     ██████╔╝█████╗  ███████║   ██║   █████╗         ██║   ███████║██████╔╝██║     █████╗  
+██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝         ██║   ██╔══██║██╔══██╗██║     ██╔══╝  
+╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗       ██║   ██║  ██║██████╔╝███████╗███████╗
+ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝       ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
+*/                                                                                            
+
+CreateTableStmt <- "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ fields:( FieldDef ( _ "," _ FieldDef )* ) _ ")" _ ";" EOL {
+    fieldsSlice := []map[string]string{}
+    valsSlice := toIfaceSlice(fields)
+    fieldsSlice = append(fieldsSlice, valsSlice[0].(map[string]string))
+    restSlice := toIfaceSlice(valsSlice[1])
+    for _, v := range restSlice {
+        vSlice := toIfaceSlice(v)
+        fieldsSlice = append(fieldsSlice, vSlice[3].(map[string]string))
+    }
+    return parseCreateTableStmt(tablename, fieldsSlice), nil
 }
 
-CreateExtensionStmt <- "CREATE"i _ "EXTENSION"i _ ( "IF"i _ "NOT"i _ "EXISTS"i _ )? extension:Key _ "WITH"i _ "SCHEMA"i _ schema:Key _ `;` EOL {
-    return parseCreateExtensionStmt(extension.(string), schema.(string)), nil
+FieldDef <- name:Ident _1 dataType:DataType notnull:( _1 "NOT"i _1 "NULL"i )? {
+    result := dataType.(map[string]string)
+    result["name"] = interfaceToString(name)
+    if notnull != nil {
+        result["not_null"] = "true"
+    }
+    return result, nil
+}
+
+DataType <- t:( TimestampT / TimeT / OtherT ) {
+    return t, nil
+}
+
+TimestampT <- "timestamp" prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )? {
+    var result = make(map[string]string)
+    if withTimeZone.(bool) {
+        result["type"] = "datetimetz"
+    } else {
+        result["type"] = "datetime"
+    }
+    if prec != nil {
+        result["sec_precision"] = prec.(string)
+    }
+    return result, nil
+}
+
+TimeT <- "time" prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )? {
+    var result = make(map[string]string)
+    if withTimeZone.(bool) {
+        result["type"] = "timetz"
+    } else {
+        result["type"] = "time"
+    }
+    if prec != nil {
+        result["sec_precision"] = prec.(string)
+    }
+    return result, nil
+}
+
+SecPrecision <- ( _1 [0-6])? {
+    if len(c.text) > 0 {
+        return strings.TrimLeft(string(c.text), " \r\t\n"), nil
+    }
+    return nil, nil
+}
+
+WithTZ <- _1 "with" _1 "time" _1 "zone" {
+    return true, nil
+}
+
+WithoutTZ <- ( _1 "without" _1 "time" _1 "zone" )? {
+    return false, nil
+}
+
+OtherT <- ( "date" / "integer" / "smallint" / "bigint" / "decimal" / "numeric" / "real" / "smallserial" / "serial" / "bigserial" / "boolean" ) {
+    return map[string]string{
+        "type": string(c.text),
+    }, nil
+}
+
+
+/*
+ ██████╗ ████████╗██╗  ██╗███████╗██████╗     ███████╗████████╗███╗   ███╗████████╗
+██╔═══██╗╚══██╔══╝██║  ██║██╔════╝██╔══██╗    ██╔════╝╚══██╔══╝████╗ ████║╚══██╔══╝
+██║   ██║   ██║   ███████║█████╗  ██████╔╝    ███████╗   ██║   ██╔████╔██║   ██║   
+██║   ██║   ██║   ██╔══██║██╔══╝  ██╔══██╗    ╚════██║   ██║   ██║╚██╔╝██║   ██║   
+╚██████╔╝   ██║   ██║  ██║███████╗██║  ██║    ███████║   ██║   ██║ ╚═╝ ██║   ██║   
+ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    ╚══════╝   ╚═╝   ╚═╝     ╚═╝   ╚═╝   
+*/
+
+CommentExtensionStmt <- "COMMENT"i _1 "ON"i _1 "EXTENSION"i _ extension:Ident _ "IS"i _ comment:StringConst _ `;` EOL {
+    return parseCommentExtensionStmt(extension.(Identifier), comment.(String)), nil
+}
+
+CreateExtensionStmt <- "CREATE"i _1 "EXTENSION"i _1 ( "IF"i _1 "NOT"i _1 "EXISTS"i _1 )? extension:Ident _1 "WITH"i _1 "SCHEMA"i _1 schema:Ident _ `;` EOL {
+    return parseCreateExtensionStmt(extension.(Identifier), schema.(Identifier)), nil
 }
 
 SetStmt <- "SET"i _ key:Key _ ( `=` / "TO"i ) _ values:CommaSeparatedValues _ `;` EOL {
@@ -45,7 +137,14 @@ Key <- [a-z_]i+ {
 }
 
 
-
+/*
+██╗   ██╗ █████╗ ██╗     ██╗   ██╗███████╗███████╗
+██║   ██║██╔══██╗██║     ██║   ██║██╔════╝██╔════╝
+██║   ██║███████║██║     ██║   ██║█████╗  ███████╗
+╚██╗ ██╔╝██╔══██║██║     ██║   ██║██╔══╝  ╚════██║
+ ╚████╔╝ ██║  ██║███████╗╚██████╔╝███████╗███████║
+  ╚═══╝  ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚══════╝╚══════╝
+*/
 
 
 CommaSeparatedValues <- vals:( Value ( _ ',' _ Value )* ) {
@@ -66,7 +165,7 @@ StringConst <- `'` value:[^'\n]* `'` {
     return String(toByteSlice(value)), nil
 }
 
-Ident <- [a-z_]+ {
+Ident <- [a-z_]i [a-z_0-9$]i* {
     return Identifier(c.text), nil
 }
 
@@ -92,9 +191,14 @@ BooleanFalse <- ( "FALSE" / "'" BooleanFalseString "'" / BooleanFalseString ) {
 BooleanFalseString <- ( "false" / "no" / "off" / "f" / "n" )
 
 
-
-
-
+/*
+███╗   ███╗██╗███████╗ ██████╗
+████╗ ████║██║██╔════╝██╔════╝
+██╔████╔██║██║███████╗██║     
+██║╚██╔╝██║██║╚════██║██║     
+██║ ╚═╝ ██║██║███████║╚██████╗
+╚═╝     ╚═╝╚═╝╚══════╝ ╚═════╝
+*/
 
 Comment <- ( SingleLineComment / MultilineComment ) {
     return nil, nil
@@ -104,13 +208,10 @@ MultilineComment <- "/*" ( .* MultilineComment? .* )* "*/" EOL
 
 SingleLineComment <- "--" [^\r\n]* EOL
 
-
-
-
-
-
 EOL <-  [ \t]* ("\r\n" / "\n\r" / "\r" / "\n" / EOF)
 
 _ "whitespace" <- [ \t\r\n]*
+
+_1 "at least 1 whitespace" <- [ \t\r\n]+
 
 EOF <- !.

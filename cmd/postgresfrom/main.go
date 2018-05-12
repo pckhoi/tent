@@ -12,5 +12,5 @@ func main() {
 	settings.Set(settings.Settings{
 		RootDir: *rootDir,
 	})
-	postgres.Load(flag.Arg(0))
+	postgres.From(flag.Arg(0))
 }
