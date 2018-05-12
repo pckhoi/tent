@@ -11,6 +11,13 @@ func (s *LocalTestSuite) TestCreateTableStmt(c *C) {
             CREATE TABLE my_table (
                 id integer NOT NULL,
                 smallnum smallint,
+                bignum bigint,
+                decimalnum decimal,
+                number numeric,
+                realty real,
+                small_serial smallserial,
+                the_serial serial,
+                big_serial bigserial,
                 important boolean NOT NULL,
                 last_activity timestamp with time zone
             );
@@ -31,6 +38,55 @@ func (s *LocalTestSuite) TestCreateTableStmt(c *C) {
 					ID:        "smallnum",
 					Content: map[string]string{
 						"type": "smallint",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "bignum",
+					Content: map[string]string{
+						"type": "bigint",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "decimalnum",
+					Content: map[string]string{
+						"type": "decimal",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "number",
+					Content: map[string]string{
+						"type": "numeric",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "realty",
+					Content: map[string]string{
+						"type": "real",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "small_serial",
+					Content: map[string]string{
+						"type": "smallserial",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "the_serial",
+					Content: map[string]string{
+						"type": "serial",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "big_serial",
+					Content: map[string]string{
+						"type": "bigserial",
 					},
 				},
 				storage.DataRow{
