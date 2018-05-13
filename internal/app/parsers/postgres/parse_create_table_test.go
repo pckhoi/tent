@@ -1,8 +1,10 @@
 package postgres
 
 import (
+	"fmt"
 	"github.com/pckhoi/tent/internal/app/storage"
 	. "gopkg.in/check.v1"
+	"strings"
 )
 
 func (s *LocalTestSuite) TestCreateTableCustomType(c *C) {
@@ -50,20 +52,10 @@ func (s *LocalTestSuite) TestCreateTableUnknownType(c *C) {
 	c.Assert(err, ErrorMatches, `.+Type office is not defined`)
 }
 
-func (s *LocalTestSuite) TestCreateTableStmt(c *C) {
+func (s *LocalTestSuite) TestCreateTableNotNull(c *C) {
 	val, err := tryParse(`
         CREATE TABLE my_table (
-            id integer NOT NULL,
-            an_int int,
-            smallnum smallint,
-            bignum bigint,
-            decimalnum decimal,
-            number numeric,
-            realty real,
-            small_serial smallserial,
-            the_serial serial,
-            big_serial bigserial,
-            important boolean NOT NULL
+            id integer NOT NULL
         );
     `)
 	if err != nil {
@@ -82,78 +74,61 @@ func (s *LocalTestSuite) TestCreateTableStmt(c *C) {
 						"not_null": "true",
 					},
 				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "an_int",
-					Content: map[string]string{
-						"type": "integer",
-					},
-				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "smallnum",
-					Content: map[string]string{
-						"type": "smallint",
-					},
-				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "bignum",
-					Content: map[string]string{
-						"type": "bigint",
-					},
-				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "decimalnum",
-					Content: map[string]string{
-						"type": "decimal",
-					},
-				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "number",
-					Content: map[string]string{
-						"type": "numeric",
-					},
-				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "realty",
-					Content: map[string]string{
-						"type": "real",
-					},
-				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "small_serial",
-					Content: map[string]string{
-						"type": "smallserial",
-					},
-				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "the_serial",
-					Content: map[string]string{
-						"type": "serial",
-					},
-				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "big_serial",
-					Content: map[string]string{
-						"type": "bigserial",
-					},
-				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "important",
-					Content: map[string]string{
-						"type":     "boolean",
-						"not_null": "true",
-					},
-				},
 			},
+		},
+	)
+}
+
+func (s *LocalTestSuite) TestCreateTableStmt(c *C) {
+	types := map[string]string{
+		"integer":     "integer",
+		"int":         "integer",
+		"smallint":    "smallint",
+		"bigint":      "bigint",
+		"decimal":     "decimal",
+		"numeric":     "numeric",
+		"real":        "real",
+		"smallserial": "smallserial",
+		"serial":      "serial",
+		"bigserial":   "bigserial",
+		"boolean":     "boolean",
+		"money":       "money",
+		"bytea":       "bytea",
+		"point":       "point",
+		"line":        "line",
+		"lseg":        "lseg",
+		"box":         "box",
+		"path":        "path",
+		"polygon":     "polygon",
+		"circle":      "circle",
+		"cidr":        "cidr",
+		"inet":        "inet",
+		"macaddr":     "macaddr",
+	}
+
+	fields := []string{}
+	rows := []storage.DataRow{}
+	for k, v := range types {
+		fields = append(fields, fmt.Sprintf("my_%s %s", k, k))
+		rows = append(rows, storage.DataRow{
+			TableName: "schema/my_table",
+			ID:        fmt.Sprintf("my_%s", k),
+			Content: map[string]string{
+				"type": v,
+			},
+		})
+	}
+	statement := fmt.Sprintf("CREATE TABLE my_table (%s);", strings.Join(fields, ", "))
+
+	val, err := tryParse(statement)
+	if err != nil {
+		c.Error(err)
+	}
+	c.Assert(
+		val,
+		DeepEquals,
+		[]interface{}{
+			rows,
 		},
 	)
 }
@@ -340,6 +315,59 @@ func (s *LocalTestSuite) TestCharacterTypes(c *C) {
 					ID:        "summary",
 					Content: map[string]string{
 						"type": "text",
+					},
+				},
+			},
+		},
+	)
+}
+
+func (s *LocalTestSuite) TestBitTypes(c *C) {
+	val, err := tryParse(`
+        CREATE TABLE my_table (
+            my_bit_var bit varying(10),
+            my_bit bit(12),
+            my_unlimited_bit bit varying,
+            single_bit bit
+        );
+    `)
+	if err != nil {
+		c.Error(err)
+	}
+	c.Assert(
+		val,
+		DeepEquals,
+		[]interface{}{
+			[]storage.DataRow{
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_bit_var",
+					Content: map[string]string{
+						"type":   "bitvar",
+						"length": "10",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_bit",
+					Content: map[string]string{
+						"type":   "bit",
+						"length": "12",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_unlimited_bit",
+					Content: map[string]string{
+						"type": "bitvar",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "single_bit",
+					Content: map[string]string{
+						"type":   "bit",
+						"length": "1",
 					},
 				},
 			},

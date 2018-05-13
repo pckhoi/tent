@@ -53,7 +53,7 @@ FieldDef <- name:Ident _1 dataType:DataType notnull:( _1 "NOT"i _1 "NULL"i )? {
     return result, nil
 }
 
-DataType <- t:( TimestampT / TimeT / VarcharT / CharT / IntT / OtherT / CustomT ) {
+DataType <- t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / OtherT / CustomT ) {
     return t, nil
 }
 
@@ -121,13 +121,36 @@ VarcharT <- ( ( "CHARACTER"i _1 "VARYING"i ) / "VARCHAR"i ) length:( "(" NonZNum
     return result, nil
 }
 
+BitT <- "BIT"i length:( "(" NonZNumber ")" )? {
+    result := map[string]string{
+        "type": "bit",
+        "length": "1",
+    }
+    if length != nil {
+        slice := toIfaceSlice(length)
+        result["length"] = strconv.FormatInt(slice[1].(int64), 10)
+    }
+    return result, nil
+}
+
+BitVarT <- "BIT"i _1 "VARYING"i length:( "(" NonZNumber ")" )? {
+    result := map[string]string{
+        "type": "bitvar",
+    }
+    if length != nil {
+        slice := toIfaceSlice(length)
+        result["length"] = strconv.FormatInt(slice[1].(int64), 10)
+    }
+    return result, nil
+}
+
 IntT <- ( "INTEGER"i / "INT"i ) {
     return map[string]string{
         "type": "integer",
     }, nil
 }
 
-OtherT <- ( "DATE"i / "SMALLINT"i / "BIGINT"i / "DECIMAL"i / "NUMERIC"i / "REAL"i / "SMALLSERIAL"i / "SERIAL"i / "BIGSERIAL"i / "BOOLEAN"i / "TEXT"i / "MONEY"i / "BYTEA"i ) {
+OtherT <- ( "DATE"i / "SMALLINT"i / "BIGINT"i / "DECIMAL"i / "NUMERIC"i / "REAL"i / "SMALLSERIAL"i / "SERIAL"i / "BIGSERIAL"i / "BOOLEAN"i / "TEXT"i / "MONEY"i / "BYTEA"i / "POINT"i / "LINE"i / "LSEG"i / "BOX"i / "PATH"i / "POLYGON"i / "CIRCLE"i / "CIDR"i / "INET"i / "MACADDR"i ) {
     return map[string]string{
         "type": strings.ToLower(string(c.text)),
     }, nil
