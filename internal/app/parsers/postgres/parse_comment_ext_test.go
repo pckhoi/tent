@@ -6,11 +6,15 @@ import (
 )
 
 func (s *LocalTestSuite) TestCommentExtensionStmt(c *C) {
+	val, err := tryParse(`
+        COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+        comment on extension postgis is 'PostGIS geometry, geography';
+    `)
+	if err != nil {
+		c.Error(err)
+	}
 	c.Assert(
-		testParse(c, `
-            COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-            comment on extension postgis is 'PostGIS geometry, geography';
-        `),
+		val,
 		DeepEquals,
 		[]interface{}{
 			storage.DataRow{

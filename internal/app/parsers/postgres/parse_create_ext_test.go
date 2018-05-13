@@ -6,12 +6,16 @@ import (
 )
 
 func (s *LocalTestSuite) TestCreateExtensionStmt(c *C) {
+	val, err := tryParse(`
+        CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+        CREATE EXTENSION postgis WITH SCHEMA public;
+        create extension if not exists postgis with schema athur;
+    `)
+	if err != nil {
+		c.Error(err)
+	}
 	c.Assert(
-		testParse(c, `
-            CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-            CREATE EXTENSION postgis WITH SCHEMA public;
-            create extension if not exists postgis with schema athur;
-        `),
+		val,
 		DeepEquals,
 		[]interface{}{
 			storage.DataRow{

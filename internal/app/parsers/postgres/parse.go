@@ -5,7 +5,7 @@ import (
 	"github.com/pckhoi/tent/internal/app/storage"
 )
 
-func parseCreateExtensionStmt(extension Identifier, schema Identifier) storage.DataRow {
+func parseCreateExtensionStmt(extension Identifier, schema Identifier) (storage.DataRow, error) {
 	return storage.DataRow{
 		TableName: "postgres_extensions",
 		ID:        interfaceToString(extension),
@@ -13,10 +13,10 @@ func parseCreateExtensionStmt(extension Identifier, schema Identifier) storage.D
 			"name":   interfaceToString(extension),
 			"schema": interfaceToString(schema),
 		},
-	}
+	}, nil
 }
 
-func parseCommentExtensionStmt(extension Identifier, comment String) storage.DataRow {
+func parseCommentExtensionStmt(extension Identifier, comment String) (storage.DataRow, error) {
 	return storage.DataRow{
 		TableName: "postgres_extensions",
 		ID:        interfaceToString(extension),
@@ -24,13 +24,16 @@ func parseCommentExtensionStmt(extension Identifier, comment String) storage.Dat
 			"name":    interfaceToString(extension),
 			"comment": interfaceToString(comment),
 		},
-	}
+	}, nil
 }
 
-func parseCreateTableStmt(tableName interface{}, fields []map[string]string) []storage.DataRow {
+func parseCreateTableStmt(tableName interface{}, fields []map[string]string) ([]storage.DataRow, error) {
 	table := interfaceToString(tableName)
 	results := []storage.DataRow{}
 	for _, field := range fields {
+		if field == nil {
+			continue
+		}
 		fieldName := field["name"]
 		delete(field, "name")
 		results = append(results, storage.DataRow{
@@ -39,5 +42,20 @@ func parseCreateTableStmt(tableName interface{}, fields []map[string]string) []s
 			Content:   field,
 		})
 	}
-	return results
+	if len(results) == 0 {
+		return nil, nil
+	}
+	return results, nil
+}
+
+func parseCreateTypeEnumStmt(enum Enum) (storage.DataRow, error) {
+	updateSettings("custom_types", []interface{}{interfaceToString(enum.Name)})
+	return storage.DataRow{
+		TableName: "custom/type",
+		ID:        interfaceToString(enum.Name),
+		Content: map[string]string{
+			"type":   "enum",
+			"labels": serializeStringSlice(enum.Labels),
+		},
+	}, nil
 }

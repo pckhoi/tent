@@ -5,23 +5,72 @@ import (
 	. "gopkg.in/check.v1"
 )
 
-func (s *LocalTestSuite) TestCreateTableStmt(c *C) {
+func (s *LocalTestSuite) TestCreateTableCustomType(c *C) {
+	val, err := tryParse(`
+        CREATE TYPE pet AS ENUM ('dog', 'cat', 'camel');
+        create table my_table (
+            my_pet pet
+        );
+    `)
+	if err != nil {
+		c.Error(err)
+	}
 	c.Assert(
-		testParse(c, `
-            CREATE TABLE my_table (
-                id integer NOT NULL,
-                smallnum smallint,
-                bignum bigint,
-                decimalnum decimal,
-                number numeric,
-                realty real,
-                small_serial smallserial,
-                the_serial serial,
-                big_serial bigserial,
-                important boolean NOT NULL,
-                last_activity timestamp with time zone
-            );
-        `),
+		val,
+		DeepEquals,
+		[]interface{}{
+			storage.DataRow{
+				TableName: "custom/type",
+				ID:        "pet",
+				Content: map[string]string{
+					"type":   "enum",
+					"labels": "'dog','cat','camel'",
+				},
+			},
+			[]storage.DataRow{
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_pet",
+					Content: map[string]string{
+						"type": "pet",
+					},
+				},
+			},
+		},
+	)
+}
+
+func (s *LocalTestSuite) TestCreateTableUnknownType(c *C) {
+	val, err := tryParse(`
+        create table my_table (
+            my_office office
+        );
+    `)
+	c.Assert(val, DeepEquals, []interface{}{[]storage.DataRow(nil)})
+	c.Assert(err, ErrorMatches, `.+Type office is not defined`)
+}
+
+func (s *LocalTestSuite) TestCreateTableStmt(c *C) {
+	val, err := tryParse(`
+        CREATE TABLE my_table (
+            id integer NOT NULL,
+            an_int int,
+            smallnum smallint,
+            bignum bigint,
+            decimalnum decimal,
+            number numeric,
+            realty real,
+            small_serial smallserial,
+            the_serial serial,
+            big_serial bigserial,
+            important boolean NOT NULL
+        );
+    `)
+	if err != nil {
+		c.Error(err)
+	}
+	c.Assert(
+		val,
 		DeepEquals,
 		[]interface{}{
 			[]storage.DataRow{
@@ -31,6 +80,13 @@ func (s *LocalTestSuite) TestCreateTableStmt(c *C) {
 					Content: map[string]string{
 						"type":     "integer",
 						"not_null": "true",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "an_int",
+					Content: map[string]string{
+						"type": "integer",
 					},
 				},
 				storage.DataRow{
@@ -97,35 +153,32 @@ func (s *LocalTestSuite) TestCreateTableStmt(c *C) {
 						"not_null": "true",
 					},
 				},
-				storage.DataRow{
-					TableName: "schema/my_table",
-					ID:        "last_activity",
-					Content: map[string]string{
-						"type": "datetimetz",
-					},
-				},
 			},
 		},
 	)
 }
 
 func (s *LocalTestSuite) TestDateTimeTypes(c *C) {
+	val, err := tryParse(`
+        CREATE TABLE my_table (
+            datetime_with_tz timestamp with time zone,
+            datetime_with_prec timestamp 6,
+            datetime_with_prec_and_tz timestamp 5 with time zone,
+            datetime_plain timestamp,
+            datetime_without_tz timestamp without time zone,
+            time_with_tz time with time zone,
+            time_with_prec time 6,
+            time_with_prec_and_tz time 5 with time zone,
+            time_plain time,
+            time_without_tz time without time zone,
+            date_plain date
+        );
+    `)
+	if err != nil {
+		c.Error(err)
+	}
 	c.Assert(
-		testParse(c, `
-            CREATE TABLE my_table (
-                datetime_with_tz timestamp with time zone,
-                datetime_with_prec timestamp 6,
-                datetime_with_prec_and_tz timestamp 5 with time zone,
-                datetime_plain timestamp,
-                datetime_without_tz timestamp without time zone,
-                time_with_tz time with time zone,
-                time_with_prec time 6,
-                time_with_prec_and_tz time 5 with time zone,
-                time_plain time,
-                time_without_tz time without time zone,
-                date_plain date
-            );
-        `),
+		val,
 		DeepEquals,
 		[]interface{}{
 			[]storage.DataRow{
@@ -208,6 +261,85 @@ func (s *LocalTestSuite) TestDateTimeTypes(c *C) {
 					ID:        "date_plain",
 					Content: map[string]string{
 						"type": "date",
+					},
+				},
+			},
+		},
+	)
+}
+
+func (s *LocalTestSuite) TestCharacterTypes(c *C) {
+	val, err := tryParse(`
+        CREATE TABLE my_table (
+            firstname character varying(10),
+            lastname character(12),
+            middlename varchar(5),
+            title char(6),
+            streetname character varying,
+            letter character,
+            summary text
+        );
+    `)
+	if err != nil {
+		c.Error(err)
+	}
+	c.Assert(
+		val,
+		DeepEquals,
+		[]interface{}{
+			[]storage.DataRow{
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "firstname",
+					Content: map[string]string{
+						"type":   "varchar",
+						"length": "10",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "lastname",
+					Content: map[string]string{
+						"type":   "char",
+						"length": "12",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "middlename",
+					Content: map[string]string{
+						"type":   "varchar",
+						"length": "5",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "title",
+					Content: map[string]string{
+						"type":   "char",
+						"length": "6",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "streetname",
+					Content: map[string]string{
+						"type": "varchar",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "letter",
+					Content: map[string]string{
+						"type":   "char",
+						"length": "1",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "summary",
+					Content: map[string]string{
+						"type": "text",
 					},
 				},
 			},

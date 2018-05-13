@@ -1,29 +1,13 @@
 {
     // Package postgres parses SQL dump files produced pgdump command
     package postgres
-
-    func toIfaceSlice(v interface{}) []interface{} {
-        if v == nil {
-            return nil
-        }
-        return v.([]interface{})
-    }
-
-    func toByteSlice(v interface{}) []byte {
-        valsSl := toIfaceSlice(v)
-        var result []byte
-        for _, val := range valsSl {
-            result = append(result, val.([]byte)[0])
-        }
-        return result
-    }
 }
 
 SQL <- stmts:Stmt+ {
     return stmts, nil
 }
 
-Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateExtensionStmt / CommentExtensionStmt ) {
+Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateExtensionStmt / CreateTypeStmt / CommentExtensionStmt ) {
     return stmt, nil
 }
 
@@ -40,16 +24,27 @@ Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateExtensionStmt / Comm
 CreateTableStmt <- "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ fields:( FieldDef ( _ "," _ FieldDef )* ) _ ")" _ ";" EOL {
     fieldsSlice := []map[string]string{}
     valsSlice := toIfaceSlice(fields)
-    fieldsSlice = append(fieldsSlice, valsSlice[0].(map[string]string))
+    if valsSlice[0] == nil {
+        fieldsSlice = append(fieldsSlice, nil)
+    } else {
+        fieldsSlice = append(fieldsSlice, valsSlice[0].(map[string]string))
+    }
     restSlice := toIfaceSlice(valsSlice[1])
     for _, v := range restSlice {
         vSlice := toIfaceSlice(v)
-        fieldsSlice = append(fieldsSlice, vSlice[3].(map[string]string))
+        if vSlice[3] == nil {
+            fieldsSlice = append(fieldsSlice, nil)
+        } else {
+            fieldsSlice = append(fieldsSlice, vSlice[3].(map[string]string))
+        }
     }
-    return parseCreateTableStmt(tablename, fieldsSlice), nil
+    return parseCreateTableStmt(tablename, fieldsSlice)
 }
 
 FieldDef <- name:Ident _1 dataType:DataType notnull:( _1 "NOT"i _1 "NULL"i )? {
+    if dataType == nil {
+        return nil, nil
+    }
     result := dataType.(map[string]string)
     result["name"] = interfaceToString(name)
     if notnull != nil {
@@ -58,11 +53,11 @@ FieldDef <- name:Ident _1 dataType:DataType notnull:( _1 "NOT"i _1 "NULL"i )? {
     return result, nil
 }
 
-DataType <- t:( TimestampT / TimeT / OtherT ) {
+DataType <- t:( TimestampT / TimeT / VarcharT / CharT / IntT / OtherT / CustomT ) {
     return t, nil
 }
 
-TimestampT <- "timestamp" prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )? {
+TimestampT <- "TIMESTAMP"i prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )? {
     var result = make(map[string]string)
     if withTimeZone.(bool) {
         result["type"] = "datetimetz"
@@ -75,7 +70,7 @@ TimestampT <- "timestamp" prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )?
     return result, nil
 }
 
-TimeT <- "time" prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )? {
+TimeT <- "TIME"i prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )? {
     var result = make(map[string]string)
     if withTimeZone.(bool) {
         result["type"] = "timetz"
@@ -95,19 +90,90 @@ SecPrecision <- ( _1 [0-6])? {
     return nil, nil
 }
 
-WithTZ <- _1 "with" _1 "time" _1 "zone" {
+WithTZ <- _1 "WITH"i _1 "TIME"i _1 "ZONE"i {
     return true, nil
 }
 
-WithoutTZ <- ( _1 "without" _1 "time" _1 "zone" )? {
+WithoutTZ <- ( _1 "WITHOUT"i _1 "TIME"i _1 "ZONE"i )? {
     return false, nil
 }
 
-OtherT <- ( "date" / "integer" / "smallint" / "bigint" / "decimal" / "numeric" / "real" / "smallserial" / "serial" / "bigserial" / "boolean" ) {
+CharT <- ( "CHARACTER"i / "CHAR"i ) length:( "(" NonZNumber ")" )? {
+    result := map[string]string{
+        "type": "char",
+        "length": "1",
+    }
+    if length != nil {
+        slice := toIfaceSlice(length)
+        result["length"] = strconv.FormatInt(slice[1].(int64), 10)
+    }
+    return result, nil
+}
+
+VarcharT <- ( ( "CHARACTER"i _1 "VARYING"i ) / "VARCHAR"i ) length:( "(" NonZNumber ")" )? {
+    result := map[string]string{
+        "type": "varchar",
+    }
+    if length != nil {
+        slice := toIfaceSlice(length)
+        result["length"] = strconv.FormatInt(slice[1].(int64), 10)
+    }
+    return result, nil
+}
+
+IntT <- ( "INTEGER"i / "INT"i ) {
     return map[string]string{
-        "type": string(c.text),
+        "type": "integer",
     }, nil
 }
+
+OtherT <- ( "DATE"i / "SMALLINT"i / "BIGINT"i / "DECIMAL"i / "NUMERIC"i / "REAL"i / "SMALLSERIAL"i / "SERIAL"i / "BIGSERIAL"i / "BOOLEAN"i / "TEXT"i / "MONEY"i / "BYTEA"i ) {
+    return map[string]string{
+        "type": strings.ToLower(string(c.text)),
+    }, nil
+}
+
+CustomT <-  Ident {
+    typeName := strings.ToLower(string(c.text))
+    err := typeExists(typeName)
+    if err != nil{
+        return nil, err
+    }
+    return map[string]string{
+        "type": strings.ToLower(string(c.text)),
+    }, nil
+}
+
+
+/*
+ ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗    ████████╗██╗   ██╗██████╗ ███████╗
+██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝    ╚══██╔══╝╚██╗ ██╔╝██╔══██╗██╔════╝
+██║     ██████╔╝█████╗  ███████║   ██║   █████╗         ██║    ╚████╔╝ ██████╔╝█████╗  
+██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝         ██║     ╚██╔╝  ██╔═══╝ ██╔══╝  
+╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗       ██║      ██║   ██║     ███████╗
+ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝       ╚═╝      ╚═╝   ╚═╝     ╚══════╝
+ */
+
+ CreateTypeStmt <- "CREATE"i _1 "TYPE"i _1 typename:Ident _1 "AS"i _1 typedef:EnumDef _ `;` EOL {
+    enum := typedef.(Enum)
+    enum.Name = typename.(Identifier)
+    return parseCreateTypeEnumStmt(enum)
+ }
+
+ EnumDef <- "ENUM" _ "(" _ vals:( StringConst ( _ ',' _ StringConst )*  ) _ ")" {
+    labels := []String{}
+    valsSlice := toIfaceSlice(vals)
+    labels = append(labels, valsSlice[0].(String))
+    restSlice := toIfaceSlice(valsSlice[1])
+    for _, v := range restSlice {
+        vSlice := toIfaceSlice(v)
+        labels = append(labels, vSlice[3].(String))
+    }
+    return Enum{
+        Name:   "",
+        Labels: labels,
+    }, nil
+ }
 
 
 /*
@@ -120,15 +186,15 @@ OtherT <- ( "date" / "integer" / "smallint" / "bigint" / "decimal" / "numeric" /
 */
 
 CommentExtensionStmt <- "COMMENT"i _1 "ON"i _1 "EXTENSION"i _ extension:Ident _ "IS"i _ comment:StringConst _ `;` EOL {
-    return parseCommentExtensionStmt(extension.(Identifier), comment.(String)), nil
+    return parseCommentExtensionStmt(extension.(Identifier), comment.(String))
 }
 
 CreateExtensionStmt <- "CREATE"i _1 "EXTENSION"i _1 ( "IF"i _1 "NOT"i _1 "EXISTS"i _1 )? extension:Ident _1 "WITH"i _1 "SCHEMA"i _1 schema:Ident _ `;` EOL {
-    return parseCreateExtensionStmt(extension.(Identifier), schema.(Identifier)), nil
+    return parseCreateExtensionStmt(extension.(Identifier), schema.(Identifier))
 }
 
 SetStmt <- "SET"i _ key:Key _ ( `=` / "TO"i ) _ values:CommaSeparatedValues _ `;` EOL {
-    updateSettings(key.(string), toIfaceSlice(values))
+    setSettings(key.(string), toIfaceSlice(values))
     return nil, nil
 }
 
@@ -161,7 +227,7 @@ CommaSeparatedValues <- vals:( Value ( _ ',' _ Value )* ) {
 
 Value <- ( Number / Boolean / StringConst / Ident )
 
-StringConst <- `'` value:[^'\n]* `'` {
+StringConst <- `'` value:([^'\n] / "''")* `'` {
     return String(toByteSlice(value)), nil
 }
 
@@ -170,6 +236,11 @@ Ident <- [a-z_]i [a-z_0-9$]i* {
 }
 
 Number <- ( `0` / [1-9][0-9]* ) {
+    number, _ := strconv.ParseInt(string(c.text), 10, 64)
+    return number, nil
+}
+
+NonZNumber <- [1-9][0-9]* {
     number, _ := strconv.ParseInt(string(c.text), 10, 64)
     return number, nil
 }

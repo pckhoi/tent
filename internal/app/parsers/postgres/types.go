@@ -4,6 +4,11 @@ type String string
 
 type Identifier string
 
+type Enum struct {
+	Name   Identifier
+	Labels []String
+}
+
 // func updateSettings(key string, val interface{}) storage.DataRow {
 // 	var setting interface{}
 // 	switch v := val.(type) {
