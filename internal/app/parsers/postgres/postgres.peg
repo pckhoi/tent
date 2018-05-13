@@ -53,7 +53,7 @@ FieldDef <- name:Ident _1 dataType:DataType notnull:( _1 "NOT"i _1 "NULL"i )? {
     return result, nil
 }
 
-DataType <- t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / OtherT / CustomT ) {
+DataType <- t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / OtherT / CustomT ) {
     return t, nil
 }
 
@@ -150,7 +150,13 @@ IntT <- ( "INTEGER"i / "INT"i ) {
     }, nil
 }
 
-OtherT <- ( "DATE"i / "SMALLINT"i / "BIGINT"i / "DECIMAL"i / "NUMERIC"i / "REAL"i / "SMALLSERIAL"i / "SERIAL"i / "BIGSERIAL"i / "BOOLEAN"i / "TEXT"i / "MONEY"i / "BYTEA"i / "POINT"i / "LINE"i / "LSEG"i / "BOX"i / "PATH"i / "POLYGON"i / "CIRCLE"i / "CIDR"i / "INET"i / "MACADDR"i ) {
+PgOidT <- ( "OID"i / "REGPROCEDURE"i / "REGPROC"i / "REGOPERATOR"i / "REGOPER"i / "REGCLASS"i / "REGTYPE"i / "REGROLE"i / "REGNAMESPACE"i / "REGCONFIG"i / "REGDICTIONARY"i ) {
+    return map[string]string{
+        "type": strings.ToLower(string(c.text)),
+    }, nil
+}
+
+OtherT <- ( "DATE"i / "SMALLINT"i / "BIGINT"i / "DECIMAL"i / "NUMERIC"i / "REAL"i / "SMALLSERIAL"i / "SERIAL"i / "BIGSERIAL"i / "BOOLEAN"i / "TEXT"i / "MONEY"i / "BYTEA"i / "POINT"i / "LINE"i / "LSEG"i / "BOX"i / "PATH"i / "POLYGON"i / "CIRCLE"i / "CIDR"i / "INET"i / "MACADDR"i / "UUID"i / "XML"i / "JSONB"i / "JSON"i ) {
     return map[string]string{
         "type": strings.ToLower(string(c.text)),
     }, nil
