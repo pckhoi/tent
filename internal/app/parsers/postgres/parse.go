@@ -67,3 +67,13 @@ func parseCreateSeq(name Identifier, properties map[string]string) (storage.Data
 		Content:   properties,
 	}, nil
 }
+
+func parseAlterTableStmt(name, owner Identifier) (storage.DataRow, error) {
+	return storage.DataRow{
+		TableName: "custom/table",
+		ID:        interfaceToString(name),
+		Content: map[string]string{
+			"owner": interfaceToString(owner),
+		},
+	}, nil
+}

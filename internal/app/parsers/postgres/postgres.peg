@@ -11,7 +11,7 @@ SQL <- stmts:Stmt+ {
     return stmts, nil
 }
 
-Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateSeqStmt / CreateExtensionStmt / CreateTypeStmt / CommentExtensionStmt ) {
+Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateSeqStmt / CreateExtensionStmt / CreateTypeStmt / AlterTableStmt / CommentExtensionStmt ) {
     return stmt, nil
 }
 
@@ -194,7 +194,7 @@ CreateSeqStmt <- "CREATE"i _1 "SEQUENCE"i _1 name:Ident verses:CreateSeqVerse* _
         if verse == nil {
             continue
         }
-        if err := mergo.Merge(&properties, verse.(map[string]string)); err != nil {
+        if err := mergo.Merge(&properties, verse.(map[string]string), mergo.WithOverride); err != nil {
             return nil, err
         }
     }
@@ -295,6 +295,20 @@ OwnedBy <- _1 "OWNED"i _1 "BY"i _1 name:( "NONE"i / ( Ident "." Ident ) ) {
         Labels: labels,
     }, nil
  }
+
+
+ /*
+ █████╗ ██╗  ████████╗███████╗██████╗     ████████╗ █████╗ ██████╗ ██╗     ███████╗
+██╔══██╗██║  ╚══██╔══╝██╔════╝██╔══██╗    ╚══██╔══╝██╔══██╗██╔══██╗██║     ██╔════╝
+███████║██║     ██║   █████╗  ██████╔╝       ██║   ███████║██████╔╝██║     █████╗  
+██╔══██║██║     ██║   ██╔══╝  ██╔══██╗       ██║   ██╔══██║██╔══██╗██║     ██╔══╝  
+██║  ██║███████╗██║   ███████╗██║  ██║       ██║   ██║  ██║██████╔╝███████╗███████╗
+╚═╝  ╚═╝╚══════╝╚═╝   ╚══════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
+*/
+
+AlterTableStmt <- "ALTER"i _1 "TABLE"i _1 name:Ident _1 "OWNER"i _1 "TO"i _1 owner:Ident _ ";" EOL {
+    return parseAlterTableStmt(name.(Identifier), owner.(Identifier))
+}
 
 
 /*
