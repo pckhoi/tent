@@ -11,7 +11,7 @@ SQL <- stmts:Stmt+ {
     return stmts, nil
 }
 
-Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateSeqStmt / CreateExtensionStmt / CreateTypeStmt / AlterTableStmt / CommentExtensionStmt ) {
+Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateSeqStmt / CreateExtensionStmt / CreateTypeStmt / AlterTableStmt / AlterSeqStmt / CommentExtensionStmt ) {
     return stmt, nil
 }
 
@@ -254,15 +254,12 @@ Cycle <- no:(_1 "NO"i)? _1 "CYCLE"i {
     }, nil
 }
 
-OwnedBy <- _1 "OWNED"i _1 "BY"i _1 name:( "NONE"i / ( Ident "." Ident ) ) {
+OwnedBy <- _1 "OWNED"i _1 "BY"i _1 name:( "NONE"i / TableDotCol ) {
     if _, ok := name.([]byte); ok {
         return nil, nil
     }
-    nameSlice := toIfaceSlice(name)
-    table := strings.ToLower(interfaceToString(nameSlice[0]))
-    column := strings.ToLower(interfaceToString(nameSlice[2]))
     return map[string]string{
-        "owned_by": strings.Join([]string{table, column}, "/"),
+        "owned_by": name.(string),
     }, nil
 }
 
@@ -308,6 +305,24 @@ OwnedBy <- _1 "OWNED"i _1 "BY"i _1 name:( "NONE"i / ( Ident "." Ident ) ) {
 
 AlterTableStmt <- "ALTER"i _1 "TABLE"i _1 name:Ident _1 "OWNER"i _1 "TO"i _1 owner:Ident _ ";" EOL {
     return parseAlterTableStmt(name.(Identifier), owner.(Identifier))
+}
+
+
+/*
+ █████╗ ██╗  ████████╗███████╗██████╗     ███████╗███████╗ ██████╗ 
+██╔══██╗██║  ╚══██╔══╝██╔════╝██╔══██╗    ██╔════╝██╔════╝██╔═══██╗
+███████║██║     ██║   █████╗  ██████╔╝    ███████╗█████╗  ██║   ██║
+██╔══██║██║     ██║   ██╔══╝  ██╔══██╗    ╚════██║██╔══╝  ██║▄▄ ██║
+██║  ██║███████╗██║   ███████╗██║  ██║    ███████║███████╗╚██████╔╝
+╚═╝  ╚═╝╚══════╝╚═╝   ╚══════╝╚═╝  ╚═╝    ╚══════╝╚══════╝ ╚══▀▀═╝ 
+*/
+
+AlterSeqStmt <- "ALTER"i _1 "SEQUENCE"i _1 name:Ident _1 "OWNED"i _1 "BY"i _1 owner:TableDotCol _ ";" EOL {
+    return parseAlterSequenceStmt(name.(Identifier), owner.(string))
+}
+
+TableDotCol <- table:Ident "." column:Ident {
+    return parseTableDotColumn(table.(Identifier), column.(Identifier)), nil
 }
 
 

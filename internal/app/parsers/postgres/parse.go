@@ -3,6 +3,7 @@ package postgres
 import (
 	"fmt"
 	"github.com/pckhoi/tent/internal/app/storage"
+	"strings"
 )
 
 func parseCreateExtensionStmt(extension Identifier, schema Identifier) (storage.DataRow, error) {
@@ -76,4 +77,20 @@ func parseAlterTableStmt(name, owner Identifier) (storage.DataRow, error) {
 			"owner": interfaceToString(owner),
 		},
 	}, nil
+}
+
+func parseAlterSequenceStmt(name Identifier, owner string) (storage.DataRow, error) {
+	return storage.DataRow{
+		TableName: "custom/sequence",
+		ID:        interfaceToString(name),
+		Content: map[string]string{
+			"owned_by": owner,
+		},
+	}, nil
+}
+
+func parseTableDotColumn(table, col Identifier) string {
+	tableStr := strings.ToLower(interfaceToString(table))
+	columnStr := strings.ToLower(interfaceToString(col))
+	return strings.Join([]string{tableStr, columnStr}, "/")
 }
