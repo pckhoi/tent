@@ -59,3 +59,11 @@ func parseCreateTypeEnumStmt(enum Enum) (storage.DataRow, error) {
 		},
 	}, nil
 }
+
+func parseCreateSeq(name Identifier, properties map[string]string) (storage.DataRow, error) {
+	return storage.DataRow{
+		TableName: "custom/sequence",
+		ID:        interfaceToString(name),
+		Content:   properties,
+	}, nil
+}

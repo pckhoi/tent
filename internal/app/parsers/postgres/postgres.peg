@@ -1,13 +1,17 @@
 {
     // Package postgres parses SQL dump files produced pgdump command
     package postgres
+
+    import (
+        "github.com/imdario/mergo"
+    )
 }
 
 SQL <- stmts:Stmt+ {
     return stmts, nil
 }
 
-Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateExtensionStmt / CreateTypeStmt / CommentExtensionStmt ) {
+Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateSeqStmt / CreateExtensionStmt / CreateTypeStmt / CommentExtensionStmt ) {
     return stmt, nil
 }
 
@@ -173,6 +177,94 @@ CustomT <-  Ident {
     }, nil
 }
 
+
+/*
+ ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗    ███████╗███████╗ ██████╗ 
+██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝    ██╔════╝██╔════╝██╔═══██╗
+██║     ██████╔╝█████╗  ███████║   ██║   █████╗      ███████╗█████╗  ██║   ██║
+██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝      ╚════██║██╔══╝  ██║▄▄ ██║
+╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗    ███████║███████╗╚██████╔╝
+ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝    ╚══════╝╚══════╝ ╚══▀▀═╝
+*/
+
+CreateSeqStmt <- "CREATE"i _1 "SEQUENCE"i _1 name:Ident verses:CreateSeqVerse* _ `;` EOL {
+    versesSlice := toIfaceSlice(verses)
+    properties := make(map[string]string)
+    for _, verse := range versesSlice {
+        if verse == nil {
+            continue
+        }
+        if err := mergo.Merge(&properties, verse.(map[string]string)); err != nil {
+            return nil, err
+        }
+    }
+    return parseCreateSeq(name.(Identifier), properties)
+}
+
+CreateSeqVerse <- verse:( IncrementBy / MinValue / NoMinValue / MaxValue / NoMaxValue / Start / Cache / Cycle / OwnedBy ) {
+    return verse, nil
+}
+
+IncrementBy <- _1 "INCREMENT"i (_1 "BY"i)? _1 num:NonZNumber {
+    return map[string]string{
+        "increment": strconv.FormatInt(num.(int64), 10),
+    }, nil
+}
+
+MinValue <- _1 "MINVALUE"i _1 val:NonZNumber {
+    return map[string]string{
+        "minvalue": strconv.FormatInt(val.(int64), 10),
+    }, nil
+}
+
+NoMinValue <- _1 "NO"i _1 "MINVALUE"i {
+    return nil, nil
+}
+
+MaxValue <- _1 "MAXVALUE"i _1 val:NonZNumber {
+    return map[string]string{
+        "maxvalue": strconv.FormatInt(val.(int64), 10),
+    }, nil
+}
+
+NoMaxValue <- _1 "NO"i _1 "MAXVALUE"i {
+    return nil, nil
+}
+
+Start <- _1 "START"i (_1 "WITH"i)? _1 start:NonZNumber {
+    return map[string]string{
+        "start": strconv.FormatInt(start.(int64), 10),
+    }, nil
+}
+
+Cache <- _1 "CACHE"i _1 cache:NonZNumber {
+    return map[string]string{
+        "cache": strconv.FormatInt(cache.(int64), 10),
+    }, nil
+}
+
+Cycle <- no:(_1 "NO"i)? _1 "CYCLE"i {
+    if no != nil {
+        return map[string]string{
+            "cycle": "false",
+        }, nil
+    }
+    return map[string]string{
+        "cycle": "true",
+    }, nil
+}
+
+OwnedBy <- _1 "OWNED"i _1 "BY"i _1 name:( "NONE"i / ( Ident "." Ident ) ) {
+    if _, ok := name.([]byte); ok {
+        return nil, nil
+    }
+    nameSlice := toIfaceSlice(name)
+    table := strings.ToLower(interfaceToString(nameSlice[0]))
+    column := strings.ToLower(interfaceToString(nameSlice[2]))
+    return map[string]string{
+        "owned_by": strings.Join([]string{table, column}, "/"),
+    }, nil
+}
 
 /*
  ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗    ████████╗██╗   ██╗██████╗ ███████╗
