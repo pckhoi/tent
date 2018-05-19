@@ -52,12 +52,15 @@ func (s *LocalTestSuite) TestCreateTableUnknownType(c *C) {
 	c.Assert(err, ErrorMatches, `.+Type office is not defined`)
 }
 
-func (s *LocalTestSuite) TestCreateTableNotNull(c *C) {
+func (s *LocalTestSuite) TestCreateTableWithColumnConstraints(c *C) {
 	val, err := tryParse(`
         CREATE TABLE my_table (
-            id integer NOT NULL
+            id integer not null,
+            book varchar null,
+            cats smallint constraint cats_amount check ((cats > 5)),
+            dogs smallint check ((dogs < 10)) no inherit
         );
-    `)
+    `, Debug(true))
 	if err != nil {
 		c.Error(err)
 	}
@@ -72,6 +75,32 @@ func (s *LocalTestSuite) TestCreateTableNotNull(c *C) {
 					Content: map[string]string{
 						"type":     "integer",
 						"not_null": "true",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "book",
+					Content: map[string]string{
+						"type":     "varchar",
+						"not_null": "false",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "cats",
+					Content: map[string]string{
+						"type":            "smallint",
+						"constraint_name": "cats_amount",
+						"check_def":       "((cats > 5))",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "dogs",
+					Content: map[string]string{
+						"type":             "smallint",
+						"check_def":        "((dogs < 10))",
+						"check_no_inherit": "true",
 					},
 				},
 			},

@@ -11,6 +11,6 @@ type LocalTestSuite struct{}
 
 var _ = Suite(&LocalTestSuite{})
 
-func tryParse(s string) (interface{}, error) {
-	return Parse("test", []byte(s))
+func tryParse(s string, opts ...Option) (interface{}, error) {
+	return Parse("test", []byte(s), opts...)
 }

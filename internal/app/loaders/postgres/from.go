@@ -7,34 +7,37 @@ import (
 )
 
 func From(filename string) {
-	updates, err := parseFile(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	writeChannel := storage.CreateWriteChannel()
 
 	for _, row := range defaultRows {
 		writeChannel <- storage.Write{Row: row, Overwrite: false}
 	}
 
-	for _, row := range updates {
-		writeChannel <- storage.Write{Row: row, Overwrite: true}
+	parseFile(filename, writeChannel)
+}
+
+func parseFile(filename string, writeChannel chan storage.Write) {
+	got, err := parser.ParseFile(
+		filename,
+		parser.Memoize(true),
+		parser.Debug(true),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, obj := range got.([]interface{}) {
+		if obj == nil {
+			continue
+		} else if slice, ok := obj.([]storage.DataRow); ok {
+			for _, row := range slice {
+				log.Printf("emit %s\n", row)
+				writeChannel <- storage.Write{Row: row, Overwrite: true}
+			}
+		} else {
+			writeChannel <- storage.Write{Row: obj.(storage.DataRow), Overwrite: true}
+		}
 	}
 
 	close(writeChannel)
-}
-
-func parseFile(filename string) ([]storage.DataRow, error) {
-	options := parser.Memoize(true)
-
-	got, err := parser.ParseFile(filename, options)
-	if err != nil {
-		return nil, err
-	}
-	results := []storage.DataRow{}
-	for _, obj := range got.([]interface{}) {
-		results = append(results, obj.(storage.DataRow))
-	}
-	return results, nil
 }

@@ -25,7 +25,7 @@ Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateSeqStmt / CreateExte
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝       ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
 */                                                                                            
 
-CreateTableStmt <- "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ fields:( FieldDef ( _ "," _ FieldDef )* ) _ ")" _ ";" EOL {
+CreateTableStmt <- "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ fields:( FieldDef ( _ "," _ FieldDef )* ) _ ")" _ ";" EOL* {
     fieldsSlice := []map[string]string{}
     valsSlice := toIfaceSlice(fields)
     if valsSlice[0] == nil {
@@ -45,17 +45,77 @@ CreateTableStmt <- "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ fields:( Fie
     return parseCreateTableStmt(tablename, fieldsSlice)
 }
 
-FieldDef <- name:Ident _1 dataType:DataType notnull:( _1 "NOT"i _1 "NULL"i )? {
+FieldDef <- name:Ident _1 dataType:DataType constraint:ColumnConstraint? {
     if dataType == nil {
         return nil, nil
     }
     result := dataType.(map[string]string)
+    if constraint != nil {
+        if err := mergo.Merge(&result, constraint.(map[string]string), mergo.WithOverride); err != nil {
+            return nil, err
+        }
+    }
     result["name"] = interfaceToString(name)
-    if notnull != nil {
-        result["not_null"] = "true"
+    return result, nil
+}
+
+ColumnConstraint <- nameOpt:( _1 "CONSTRAINT"i _1 (StringConst / Ident) )? constraintClauses:( NotNullCls / NullCls / CheckCls )+ {
+    clausesSlice := toIfaceSlice(constraintClauses)
+    properties := make(map[string]string)
+    for _, clause := range clausesSlice {
+        if clause == nil {
+            continue
+        }
+        if err := mergo.Merge(&properties, clause.(map[string]string), mergo.WithOverride); err != nil {
+            return nil, err
+        }
+    }
+
+    nameSlice := toIfaceSlice(nameOpt)
+    if nameSlice != nil {
+        properties["constraint_name"] = interfaceToString(nameSlice[3])
+    }
+
+    return properties, nil
+}
+
+NotNullCls <- _1 "NOT"i _1 "NULL"i {
+    return map[string]string{
+        "not_null": "true",
+    }, nil
+}
+
+NullCls <- _1 "NULL"i {
+    return map[string]string{
+        "not_null": "false",
+    }, nil
+}
+
+CheckCls <- _1 "CHECK"i _1 expr:WrappedExpr noInherit:( _1 "NO"i _1 "INHERIT"i )? {
+    result := map[string]string{
+        "check_def": expr.(string),
+    }
+    if noInherit != nil {
+        result["check_no_inherit"] = "true"
     }
     return result, nil
 }
+
+WrappedExpr <- `(` Expr+ `)` {
+    return string(c.text), nil
+}
+
+Expr <- WrappedExpr / [^()]+
+
+
+/*
+██████╗  █████╗ ████████╗ █████╗ ████████╗██╗   ██╗██████╗ ███████╗
+██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗╚══██╔══╝╚██╗ ██╔╝██╔══██╗██╔════╝
+██║  ██║███████║   ██║   ███████║   ██║    ╚████╔╝ ██████╔╝█████╗  
+██║  ██║██╔══██║   ██║   ██╔══██║   ██║     ╚██╔╝  ██╔═══╝ ██╔══╝  
+██████╔╝██║  ██║   ██║   ██║  ██║   ██║      ██║   ██║     ███████╗
+╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝     ╚══════╝
+*/
 
 DataType <- t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / OtherT / CustomT ) {
     return t, nil
@@ -187,7 +247,7 @@ CustomT <-  Ident {
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝    ╚══════╝╚══════╝ ╚══▀▀═╝
 */
 
-CreateSeqStmt <- "CREATE"i _1 "SEQUENCE"i _1 name:Ident verses:CreateSeqVerse* _ `;` EOL {
+CreateSeqStmt <- "CREATE"i _1 "SEQUENCE"i _1 name:Ident verses:CreateSeqVerse* _ `;` EOL* {
     versesSlice := toIfaceSlice(verses)
     properties := make(map[string]string)
     for _, verse := range versesSlice {
@@ -272,13 +332,13 @@ OwnedBy <- _1 "OWNED"i _1 "BY"i _1 name:( "NONE"i / TableDotCol ) {
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝       ╚═╝      ╚═╝   ╚═╝     ╚══════╝
  */
 
- CreateTypeStmt <- "CREATE"i _1 "TYPE"i _1 typename:Ident _1 "AS"i _1 typedef:EnumDef _ `;` EOL {
+CreateTypeStmt <- "CREATE"i _1 "TYPE"i _1 typename:Ident _1 "AS"i _1 typedef:EnumDef _ `;` EOL* {
     enum := typedef.(Enum)
     enum.Name = typename.(Identifier)
     return parseCreateTypeEnumStmt(enum)
- }
+}
 
- EnumDef <- "ENUM" _ "(" _ vals:( StringConst ( _ ',' _ StringConst )*  ) _ ")" {
+EnumDef <- "ENUM" _ "(" _ vals:( StringConst ( _ ',' _ StringConst )*  ) _ ")" {
     labels := []String{}
     valsSlice := toIfaceSlice(vals)
     labels = append(labels, valsSlice[0].(String))
@@ -291,7 +351,7 @@ OwnedBy <- _1 "OWNED"i _1 "BY"i _1 name:( "NONE"i / TableDotCol ) {
         Name:   "",
         Labels: labels,
     }, nil
- }
+}
 
 
  /*
@@ -303,7 +363,7 @@ OwnedBy <- _1 "OWNED"i _1 "BY"i _1 name:( "NONE"i / TableDotCol ) {
 ╚═╝  ╚═╝╚══════╝╚═╝   ╚══════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
 */
 
-AlterTableStmt <- "ALTER"i _1 "TABLE"i _1 name:Ident _1 "OWNER"i _1 "TO"i _1 owner:Ident _ ";" EOL {
+AlterTableStmt <- "ALTER"i _1 "TABLE"i _1 name:Ident _1 "OWNER"i _1 "TO"i _1 owner:Ident _ ";" EOL* {
     return parseAlterTableStmt(name.(Identifier), owner.(Identifier))
 }
 
@@ -317,7 +377,7 @@ AlterTableStmt <- "ALTER"i _1 "TABLE"i _1 name:Ident _1 "OWNER"i _1 "TO"i _1 own
 ╚═╝  ╚═╝╚══════╝╚═╝   ╚══════╝╚═╝  ╚═╝    ╚══════╝╚══════╝ ╚══▀▀═╝ 
 */
 
-AlterSeqStmt <- "ALTER"i _1 "SEQUENCE"i _1 name:Ident _1 "OWNED"i _1 "BY"i _1 owner:TableDotCol _ ";" EOL {
+AlterSeqStmt <- "ALTER"i _1 "SEQUENCE"i _1 name:Ident _1 "OWNED"i _1 "BY"i _1 owner:TableDotCol _ ";" EOL* {
     return parseAlterSequenceStmt(name.(Identifier), owner.(string))
 }
 
@@ -335,15 +395,15 @@ TableDotCol <- table:Ident "." column:Ident {
  ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    ╚══════╝   ╚═╝   ╚═╝     ╚═╝   ╚═╝   
 */
 
-CommentExtensionStmt <- "COMMENT"i _1 "ON"i _1 "EXTENSION"i _ extension:Ident _ "IS"i _ comment:StringConst _ `;` EOL {
+CommentExtensionStmt <- "COMMENT"i _1 "ON"i _1 "EXTENSION"i _ extension:Ident _ "IS"i _ comment:StringConst _ `;` EOL* {
     return parseCommentExtensionStmt(extension.(Identifier), comment.(String))
 }
 
-CreateExtensionStmt <- "CREATE"i _1 "EXTENSION"i _1 ( "IF"i _1 "NOT"i _1 "EXISTS"i _1 )? extension:Ident _1 "WITH"i _1 "SCHEMA"i _1 schema:Ident _ `;` EOL {
+CreateExtensionStmt <- "CREATE"i _1 "EXTENSION"i _1 ( "IF"i _1 "NOT"i _1 "EXISTS"i _1 )? extension:Ident _1 "WITH"i _1 "SCHEMA"i _1 schema:Ident _ `;` EOL* {
     return parseCreateExtensionStmt(extension.(Identifier), schema.(Identifier))
 }
 
-SetStmt <- "SET"i _ key:Key _ ( `=` / "TO"i ) _ values:CommaSeparatedValues _ `;` EOL {
+SetStmt <- "SET"i _ key:Key _ ( `=` / "TO"i ) _ values:CommaSeparatedValues _ `;` EOL* {
     setSettings(key.(string), toIfaceSlice(values))
     return nil, nil
 }
@@ -425,11 +485,11 @@ Comment <- ( SingleLineComment / MultilineComment ) {
     return nil, nil
 }
 
-MultilineComment <- "/*" ( .* MultilineComment? .* )* "*/" EOL
+MultilineComment <- "/*" .* "*/" EOL
 
 SingleLineComment <- "--" [^\r\n]* EOL
 
-EOL <-  [ \t]* ("\r\n" / "\n\r" / "\r" / "\n" / EOF)
+EOL <-  [ \t]* ("\r\n" / "\n\r" / "\r" / "\n")
 
 _ "whitespace" <- [ \t\r\n]*
 
