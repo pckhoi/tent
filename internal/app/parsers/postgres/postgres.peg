@@ -25,31 +25,36 @@ Stmt <- Comment* _ stmt:( SetStmt / CreateTableStmt / CreateSeqStmt / CreateExte
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝       ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
 */                                                                                            
 
-CreateTableStmt <- "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ fields:( FieldDef ( _ "," _ FieldDef )* ) _ ")" _ ";" EOL* {
-    fieldsSlice := []map[string]string{}
-    valsSlice := toIfaceSlice(fields)
+CreateTableStmt <- "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ defs:( TableDef ( _ "," _ TableDef )* ) _ ")" _ ";" EOL* {
+    defsSlice := []map[string]string{}
+    valsSlice := toIfaceSlice(defs)
     if valsSlice[0] == nil {
-        fieldsSlice = append(fieldsSlice, nil)
+        defsSlice = append(defsSlice, nil)
     } else {
-        fieldsSlice = append(fieldsSlice, valsSlice[0].(map[string]string))
+        defsSlice = append(defsSlice, valsSlice[0].(map[string]string))
     }
     restSlice := toIfaceSlice(valsSlice[1])
     for _, v := range restSlice {
         vSlice := toIfaceSlice(v)
         if vSlice[3] == nil {
-            fieldsSlice = append(fieldsSlice, nil)
+            defsSlice = append(defsSlice, nil)
         } else {
-            fieldsSlice = append(fieldsSlice, vSlice[3].(map[string]string))
+            defsSlice = append(defsSlice, vSlice[3].(map[string]string))
         }
     }
-    return parseCreateTableStmt(tablename, fieldsSlice)
+    return parseCreateTableStmt(tablename, defsSlice)
 }
 
-FieldDef <- name:Ident _1 dataType:DataType constraint:ColumnConstraint? {
+TableDef <- TableConstr / ColumnDef
+
+ColumnDef <- name:Ident _1 dataType:DataType constraint:ColumnConstraint? {
     if dataType == nil {
         return nil, nil
     }
-    result := dataType.(map[string]string)
+    result := make(map[string]string)
+    if err := mergo.Merge(&result, dataType.(map[string]string), mergo.WithOverride); err != nil {
+        return nil, err
+    }
     if constraint != nil {
         if err := mergo.Merge(&result, constraint.(map[string]string), mergo.WithOverride); err != nil {
             return nil, err
@@ -59,16 +64,11 @@ FieldDef <- name:Ident _1 dataType:DataType constraint:ColumnConstraint? {
     return result, nil
 }
 
-ColumnConstraint <- nameOpt:( _1 "CONSTRAINT"i _1 (StringConst / Ident) )? constraintClauses:( NotNullCls / NullCls / CheckCls )+ {
-    clausesSlice := toIfaceSlice(constraintClauses)
+ColumnConstraint <- nameOpt:( _1 "CONSTRAINT"i _1 (StringConst / Ident) )? _ constraint:( NotNullCls / NullCls / CheckCls ) {
     properties := make(map[string]string)
-    for _, clause := range clausesSlice {
-        if clause == nil {
-            continue
-        }
-        if err := mergo.Merge(&properties, clause.(map[string]string), mergo.WithOverride); err != nil {
-            return nil, err
-        }
+
+    if err := mergo.Merge(&properties, constraint.(map[string]string), mergo.WithOverride); err != nil {
+        return nil, err
     }
 
     nameSlice := toIfaceSlice(nameOpt)
@@ -79,19 +79,36 @@ ColumnConstraint <- nameOpt:( _1 "CONSTRAINT"i _1 (StringConst / Ident) )? const
     return properties, nil
 }
 
-NotNullCls <- _1 "NOT"i _1 "NULL"i {
+TableConstr <- nameOpt:( "CONSTRAINT"i _1 (StringConst / Ident) )? _ constraint:CheckCls {
+    properties := map[string]string{
+        "table_constraint": "true",
+    }
+
+    if err := mergo.Merge(&properties, constraint.(map[string]string), mergo.WithOverride); err != nil {
+        return nil, err
+    }
+
+    nameSlice := toIfaceSlice(nameOpt)
+    if nameSlice != nil {
+        properties["constraint_name"] = interfaceToString(nameSlice[2])
+    }
+
+    return properties, nil
+}
+
+NotNullCls <- "NOT"i _1 "NULL"i {
     return map[string]string{
         "not_null": "true",
     }, nil
 }
 
-NullCls <- _1 "NULL"i {
+NullCls <- "NULL"i {
     return map[string]string{
         "not_null": "false",
     }, nil
 }
 
-CheckCls <- _1 "CHECK"i _1 expr:WrappedExpr noInherit:( _1 "NO"i _1 "INHERIT"i )? {
+CheckCls <- "CHECK"i _1 expr:WrappedExpr noInherit:( _1 "NO"i _1 "INHERIT"i )? {
     result := map[string]string{
         "check_def": expr.(string),
     }

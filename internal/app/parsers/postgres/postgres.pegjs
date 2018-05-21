@@ -17,22 +17,28 @@ Stmt =
 */                                                                                            
 
 CreateTableStmt =
-  "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ fields:( FieldDef ( _ "," _ FieldDef )* ) _ ")" _ ";" EOL*
+  "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ defs:( TableDef ( _ "," _ TableDef )* ) _ ")" _ ";" EOL*
 
-FieldDef =
+TableDef =
+  TableConstr / ColumnDef
+
+ColumnDef =
   name:Ident _1 dataType:DataType constraint:ColumnConstraint?
 
 ColumnConstraint =
-  nameOpt:( _1 "CONSTRAINT"i _1 (StringConst / Ident) )? constraintClauses:( NotNullCls / NullCls / CheckCls )+
+  nameOpt:( _1 "CONSTRAINT"i _1 (StringConst / Ident) )? _ constraint:( NotNullCls / NullCls / CheckCls )
+
+TableConstr =
+  nameOpt:( "CONSTRAINT"i _1 (StringConst / Ident) )? _ constraint:CheckCls
 
 NotNullCls =
-  _1 "NOT"i _1 "NULL"i
+  "NOT"i _1 "NULL"i
 
 NullCls =
-  _1 "NULL"i
+  "NULL"i
 
 CheckCls =
-  _1 "CHECK"i _1 expr:WrappedExpr noInherit:( _1 "NO"i _1 "INHERIT"i )?
+  "CHECK"i _1 expr:WrappedExpr noInherit:( _1 "NO"i _1 "INHERIT"i )?
 
 WrappedExpr =
   "(" Expr+ ")"

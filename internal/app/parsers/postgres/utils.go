@@ -11,6 +11,15 @@ func interfaceToString(val interface{}) string {
 	return fmt.Sprintf("%s", reflect.ValueOf(val))
 }
 
+func interfaceToMap(val interface{}) map[string]string {
+	ref := reflect.ValueOf(val)
+	result := map[string]string{}
+	for _, key := range ref.MapKeys() {
+		result[key.String()] = ref.MapIndex(key).String()
+	}
+	return result
+}
+
 func getValueAndTypeAsStrings(val interface{}) (string, string) {
 	var value interface{}
 	switch v := val.(type) {

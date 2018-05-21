@@ -58,9 +58,11 @@ func (s *LocalTestSuite) TestCreateTableWithColumnConstraints(c *C) {
             id integer not null,
             book varchar null,
             cats smallint constraint cats_amount check ((cats > 5)),
-            dogs smallint check ((dogs < 10)) no inherit
+            dogs smallint check ((dogs < 10)) no inherit,
+            constraint my_table_pets_check check ((cats + dogs > 2)),
+            check ((cats + dogs < 15)) no inherit
         );
-    `, Debug(true))
+    `)
 	if err != nil {
 		c.Error(err)
 	}
@@ -100,6 +102,22 @@ func (s *LocalTestSuite) TestCreateTableWithColumnConstraints(c *C) {
 					Content: map[string]string{
 						"type":             "smallint",
 						"check_def":        "((dogs < 10))",
+						"check_no_inherit": "true",
+					},
+				},
+				storage.DataRow{
+					TableName: "constraint/my_table",
+					ID:        "my_table_pets_check",
+					Content: map[string]string{
+						"check_def":       "((cats + dogs > 2))",
+						"constraint_name": "my_table_pets_check",
+					},
+				},
+				storage.DataRow{
+					TableName: "constraint/my_table",
+					ID:        "0",
+					Content: map[string]string{
+						"check_def":        "((cats + dogs < 15))",
 						"check_no_inherit": "true",
 					},
 				},

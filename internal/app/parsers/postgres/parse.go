@@ -3,6 +3,7 @@ package postgres
 import (
 	"fmt"
 	"github.com/pckhoi/tent/internal/app/storage"
+	"strconv"
 	"strings"
 )
 
@@ -28,19 +29,35 @@ func parseCommentExtensionStmt(extension Identifier, comment String) (storage.Da
 	}, nil
 }
 
-func parseCreateTableStmt(tableName interface{}, fields []map[string]string) ([]storage.DataRow, error) {
+func parseCreateTableStmt(tableName interface{}, defs []map[string]string) ([]storage.DataRow, error) {
 	table := interfaceToString(tableName)
 	results := []storage.DataRow{}
-	for _, field := range fields {
-		if field == nil {
+	constraintIndex := 0
+	for _, def := range defs {
+		if def == nil {
 			continue
 		}
-		fieldName := field["name"]
-		delete(field, "name")
+
+		var tableName, id string
+		if _, ok := def["type"]; ok {
+			tableName = fmt.Sprintf("schema/%s", table)
+			id = def["name"]
+			delete(def, "name")
+		} else if _, ok := def["table_constraint"]; ok {
+			delete(def, "table_constraint")
+			tableName = fmt.Sprintf("constraint/%s", table)
+			if val, keyExist := def["constraint_name"]; keyExist {
+				id = val
+			} else {
+				id = strconv.Itoa(constraintIndex)
+				constraintIndex++
+			}
+		}
+
 		results = append(results, storage.DataRow{
-			TableName: fmt.Sprintf("schema/%s", table),
-			ID:        fieldName,
-			Content:   field,
+			TableName: tableName,
+			ID:        id,
+			Content:   def,
 		})
 	}
 	if len(results) == 0 {
