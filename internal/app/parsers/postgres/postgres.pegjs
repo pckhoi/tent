@@ -57,7 +57,7 @@ Expr =
 */
 
 DataType =
-  t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / OtherT / CustomT )
+  t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / OtherT / CustomT ) brackets:( "[]" )*
 
 TimestampT =
   "TIMESTAMP"i prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )?

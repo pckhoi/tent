@@ -4,6 +4,7 @@
 
     import (
         "github.com/imdario/mergo"
+        "strconv"
     )
 }
 
@@ -134,8 +135,17 @@ Expr <- WrappedExpr / [^()]+
 ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝     ╚══════╝
 */
 
-DataType <- t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / OtherT / CustomT ) {
-    return t, nil
+DataType <- t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / OtherT / CustomT ) brackets:( "[]" )* {
+    bracketsSlice := toIfaceSlice(brackets)
+    var result map[string]string
+    if t != nil {
+        result = t.(map[string]string)
+        if l := len(bracketsSlice); l > 0 {
+            result["array_dimensions"] = strconv.Itoa(l)
+        }
+        return result, nil
+    }
+    return nil, nil
 }
 
 TimestampT <- "TIMESTAMP"i prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )? {

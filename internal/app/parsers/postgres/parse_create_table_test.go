@@ -436,3 +436,40 @@ func (s *LocalTestSuite) TestBitTypes(c *C) {
 		},
 	)
 }
+
+func (s *LocalTestSuite) TestArrayTypes(c *C) {
+	val, err := tryParse(`
+        CREATE TABLE my_table (
+            my_integer_list integer[],
+            my_char_list character varying(20)[][]
+        );
+    `)
+	if err != nil {
+		c.Error(err)
+	}
+	c.Assert(
+		val,
+		DeepEquals,
+		[]interface{}{
+			[]storage.DataRow{
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_integer_list",
+					Content: map[string]string{
+						"type":             "integer",
+						"array_dimensions": "1",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_char_list",
+					Content: map[string]string{
+						"type":             "varchar",
+						"length":           "20",
+						"array_dimensions": "2",
+					},
+				},
+			},
+		},
+	)
+}
