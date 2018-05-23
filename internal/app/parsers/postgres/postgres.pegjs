@@ -59,7 +59,7 @@ Expr =
 */
 
 DataType =
-  t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / GeographyT / OtherT / CustomT ) brackets:( "[]" )*
+  t:( TimestampT / TimeT / NumericT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / PostgisT / OtherT / CustomT ) brackets:( "[]" )*
 
 TimestampT =
   "TIMESTAMP"i prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )?
@@ -91,14 +91,17 @@ BitVarT =
 IntT =
   ( "INTEGER"i / "INT"i )
 
-GeographyT =
-  "GEOGRAPHY"i "(" subtype:( "POINT"i / "LINESTRING"i / "POLYGON"i / "MULTIPOINT"i / "MULTILINESTRING"i / "MULTIPOLYGON"i / "GEOMETRYCOLLECTION"i ) srid:("," NonZNumber)? ")"
+NumericT =
+  "NUMERIC"i args:( "(" NonZNumber ( "," _ NonZNumber )? ")" )?
+
+PostgisT =
+  t:( "GEOGRAPHY"i / "GEOMETRY"i ) "(" subtype:( "POINT"i / "LINESTRING"i / "POLYGON"i / "MULTIPOINT"i / "MULTILINESTRING"i / "MULTIPOLYGON"i / "GEOMETRYCOLLECTION"i ) srid:("," NonZNumber)? ")"
 
 PgOidT =
   ( "OID"i / "REGPROCEDURE"i / "REGPROC"i / "REGOPERATOR"i / "REGOPER"i / "REGCLASS"i / "REGTYPE"i / "REGROLE"i / "REGNAMESPACE"i / "REGCONFIG"i / "REGDICTIONARY"i )
 
 OtherT =
-  ( "DATE"i / "SMALLINT"i / "BIGINT"i / "DECIMAL"i / "NUMERIC"i / "REAL"i / "SMALLSERIAL"i / "SERIAL"i / "BIGSERIAL"i / "BOOLEAN"i / "TEXT"i / "MONEY"i / "BYTEA"i / "POINT"i / "LINE"i / "LSEG"i / "BOX"i / "PATH"i / "POLYGON"i / "CIRCLE"i / "CIDR"i / "INET"i / "MACADDR"i / "UUID"i / "XML"i / "JSONB"i / "JSON"i )
+  ( "DATE"i / "SMALLINT"i / "BIGINT"i / "DECIMAL"i / "REAL"i / "SMALLSERIAL"i / "SERIAL"i / "BIGSERIAL"i / "BOOLEAN"i / "TEXT"i / "MONEY"i / "BYTEA"i / "POINT"i / "LINE"i / "LSEG"i / "BOX"i / "PATH"i / "POLYGON"i / "CIRCLE"i / "CIDR"i / "INET"i / "MACADDR"i / "UUID"i / "XML"i / "JSONB"i / "JSON"i )
 
 CustomT =
   Ident

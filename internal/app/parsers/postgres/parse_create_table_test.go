@@ -142,7 +142,6 @@ func (s *LocalTestSuite) TestCreateTableStmt(c *C) {
 		"smallint":      "smallint",
 		"bigint":        "bigint",
 		"decimal":       "decimal",
-		"numeric":       "numeric",
 		"real":          "real",
 		"smallserial":   "smallserial",
 		"serial":        "serial",
@@ -483,6 +482,51 @@ func (s *LocalTestSuite) TestArrayTypes(c *C) {
 	)
 }
 
+func (s *LocalTestSuite) TestNumericTypes(c *C) {
+	val, err := tryParse(`
+        CREATE TABLE my_table (
+            var1 numeric,
+            var2 numeric(6),
+            var3 numeric(6, 3)
+        );
+    `)
+	if err != nil {
+		c.Error(err)
+	}
+	c.Assert(
+		val,
+		DeepEquals,
+		[]interface{}{
+			[]storage.DataRow{
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "var1",
+					Content: map[string]string{
+						"type": "numeric",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "var2",
+					Content: map[string]string{
+						"type":      "numeric",
+						"precision": "6",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "var3",
+					Content: map[string]string{
+						"type":      "numeric",
+						"precision": "6",
+						"scale":     "3",
+					},
+				},
+			},
+		},
+	)
+}
+
 func (s *LocalTestSuite) TestGeographyTypes(c *C) {
 	val, err := tryParse(`
         CREATE TABLE my_table (
@@ -509,75 +553,177 @@ func (s *LocalTestSuite) TestGeographyTypes(c *C) {
 					TableName: "schema/my_table",
 					ID:        "geog",
 					Content: map[string]string{
-						"type":           "geography",
-						"geography_type": "point",
+						"type":    "geography",
+						"subtype": "point",
 					},
 				},
 				storage.DataRow{
 					TableName: "schema/my_table",
 					ID:        "my_point",
 					Content: map[string]string{
-						"type":           "geography",
-						"geography_type": "point",
-						"srid":           "4269",
+						"type":    "geography",
+						"subtype": "point",
+						"srid":    "4269",
 					},
 				},
 				storage.DataRow{
 					TableName: "schema/my_table",
 					ID:        "other_point",
 					Content: map[string]string{
-						"type":           "geography",
-						"geography_type": "point",
-						"srid":           "4326",
+						"type":    "geography",
+						"subtype": "point",
+						"srid":    "4326",
 					},
 				},
 				storage.DataRow{
 					TableName: "schema/my_table",
 					ID:        "my_line",
 					Content: map[string]string{
-						"type":           "geography",
-						"geography_type": "linestring",
+						"type":    "geography",
+						"subtype": "linestring",
 					},
 				},
 				storage.DataRow{
 					TableName: "schema/my_table",
 					ID:        "my_poly",
 					Content: map[string]string{
-						"type":           "geography",
-						"geography_type": "polygon",
-						"srid":           "4267",
+						"type":    "geography",
+						"subtype": "polygon",
+						"srid":    "4267",
 					},
 				},
 				storage.DataRow{
 					TableName: "schema/my_table",
 					ID:        "many_point",
 					Content: map[string]string{
-						"type":           "geography",
-						"geography_type": "multipoint",
+						"type":    "geography",
+						"subtype": "multipoint",
 					},
 				},
 				storage.DataRow{
 					TableName: "schema/my_table",
 					ID:        "many_line",
 					Content: map[string]string{
-						"type":           "geography",
-						"geography_type": "multilinestring",
+						"type":    "geography",
+						"subtype": "multilinestring",
 					},
 				},
 				storage.DataRow{
 					TableName: "schema/my_table",
 					ID:        "many_poly",
 					Content: map[string]string{
-						"type":           "geography",
-						"geography_type": "multipolygon",
+						"type":    "geography",
+						"subtype": "multipolygon",
 					},
 				},
 				storage.DataRow{
 					TableName: "schema/my_table",
 					ID:        "many_geo",
 					Content: map[string]string{
-						"type":           "geography",
-						"geography_type": "geometrycollection",
+						"type":    "geography",
+						"subtype": "geometrycollection",
+					},
+				},
+			},
+		},
+	)
+}
+
+func (s *LocalTestSuite) TestGeometryTypes(c *C) {
+	val, err := tryParse(`
+        CREATE TABLE my_table (
+            geom geometry(POINT),
+            my_point geometry(POINT,4269),
+            other_point geometry(POINT,4326),
+            my_line geometry(LINESTRING),
+            my_poly geometry(POLYGON,4267),
+            many_point geometry(MULTIPOINT),
+            many_line geometry(MULTILINESTRING),
+            many_poly geometry(MULTIPOLYGON),
+            many_geo geometry(GEOMETRYCOLLECTION)
+        );
+    `)
+	if err != nil {
+		c.Error(err)
+	}
+	c.Assert(
+		val,
+		DeepEquals,
+		[]interface{}{
+			[]storage.DataRow{
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "geom",
+					Content: map[string]string{
+						"type":    "geometry",
+						"subtype": "point",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_point",
+					Content: map[string]string{
+						"type":    "geometry",
+						"subtype": "point",
+						"srid":    "4269",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "other_point",
+					Content: map[string]string{
+						"type":    "geometry",
+						"subtype": "point",
+						"srid":    "4326",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_line",
+					Content: map[string]string{
+						"type":    "geometry",
+						"subtype": "linestring",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_poly",
+					Content: map[string]string{
+						"type":    "geometry",
+						"subtype": "polygon",
+						"srid":    "4267",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "many_point",
+					Content: map[string]string{
+						"type":    "geometry",
+						"subtype": "multipoint",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "many_line",
+					Content: map[string]string{
+						"type":    "geometry",
+						"subtype": "multilinestring",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "many_poly",
+					Content: map[string]string{
+						"type":    "geometry",
+						"subtype": "multipolygon",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "many_geo",
+					Content: map[string]string{
+						"type":    "geometry",
+						"subtype": "geometrycollection",
 					},
 				},
 			},

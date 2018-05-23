@@ -137,7 +137,7 @@ Expr <- WrappedExpr / [^()]+
 ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝     ╚══════╝
 */
 
-DataType <- t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / GeographyT / OtherT / CustomT ) brackets:( "[]" )* {
+DataType <- t:( TimestampT / TimeT / NumericT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / PostgisT / OtherT / CustomT ) brackets:( "[]" )* {
     bracketsSlice := toIfaceSlice(brackets)
     var result map[string]string
     if t != nil {
@@ -243,12 +243,26 @@ IntT <- ( "INTEGER"i / "INT"i ) {
     }, nil
 }
 
-GeographyT <- "GEOGRAPHY"i `(` subtype:( "POINT"i / "LINESTRING"i / "POLYGON"i / "MULTIPOINT"i / "MULTILINESTRING"i / "MULTIPOLYGON"i / "GEOMETRYCOLLECTION"i ) srid:(`,` NonZNumber)? `)` {
+NumericT <- "NUMERIC"i args:( `(` NonZNumber ( `,` _ NonZNumber )? `)` )? {
     result := map[string]string{
-        "type": "geography",
+        "type": "numeric",
     }
-    subtypeString := string(subtype.([]byte))
-    result["geography_type"] = strings.ToLower(subtypeString)
+    if args != nil {
+        argsSlice := toIfaceSlice(args)
+        result["precision"] = strconv.FormatInt(argsSlice[1].(int64), 10)
+        if argsSlice[2] != nil {
+            slice := toIfaceSlice(argsSlice[2])
+            result["scale"] = strconv.FormatInt(slice[2].(int64), 10)
+        }
+    }
+    return result, nil
+}
+
+PostgisT <- t:( "GEOGRAPHY"i / "GEOMETRY"i ) `(` subtype:( "POINT"i / "LINESTRING"i / "POLYGON"i / "MULTIPOINT"i / "MULTILINESTRING"i / "MULTIPOLYGON"i / "GEOMETRYCOLLECTION"i ) srid:(`,` NonZNumber)? `)` {
+    result := map[string]string{
+        "type": strings.ToLower(string(t.([]byte))),
+        "subtype": strings.ToLower(string(subtype.([]byte))),
+    }
     if srid != nil {
         sridSlice := toIfaceSlice(srid)
         result["srid"] = strconv.FormatInt(sridSlice[1].(int64), 10)
@@ -262,7 +276,7 @@ PgOidT <- ( "OID"i / "REGPROCEDURE"i / "REGPROC"i / "REGOPERATOR"i / "REGOPER"i 
     }, nil
 }
 
-OtherT <- ( "DATE"i / "SMALLINT"i / "BIGINT"i / "DECIMAL"i / "NUMERIC"i / "REAL"i / "SMALLSERIAL"i / "SERIAL"i / "BIGSERIAL"i / "BOOLEAN"i / "TEXT"i / "MONEY"i / "BYTEA"i / "POINT"i / "LINE"i / "LSEG"i / "BOX"i / "PATH"i / "POLYGON"i / "CIRCLE"i / "CIDR"i / "INET"i / "MACADDR"i / "UUID"i / "XML"i / "JSONB"i / "JSON"i ) {
+OtherT <- ( "DATE"i / "SMALLINT"i / "BIGINT"i / "DECIMAL"i / "REAL"i / "SMALLSERIAL"i / "SERIAL"i / "BIGSERIAL"i / "BOOLEAN"i / "TEXT"i / "MONEY"i / "BYTEA"i / "POINT"i / "LINE"i / "LSEG"i / "BOX"i / "PATH"i / "POLYGON"i / "CIRCLE"i / "CIDR"i / "INET"i / "MACADDR"i / "UUID"i / "XML"i / "JSONB"i / "JSON"i ) {
     return map[string]string{
         "type": strings.ToLower(string(c.text)),
     }, nil
