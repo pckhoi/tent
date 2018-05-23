@@ -57,6 +57,7 @@ func (s *LocalTestSuite) TestCreateTableWithColumnConstraints(c *C) {
         CREATE TABLE my_table (
             id integer not null,
             book varchar null,
+            "order" int not null,
             cats smallint constraint cats_amount check ((cats > 5)),
             dogs smallint check ((dogs < 10)) no inherit,
             constraint my_table_pets_check check ((cats + dogs > 2)),
@@ -85,6 +86,14 @@ func (s *LocalTestSuite) TestCreateTableWithColumnConstraints(c *C) {
 					Content: map[string]string{
 						"type":     "varchar",
 						"not_null": "false",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "order",
+					Content: map[string]string{
+						"type":     "integer",
+						"not_null": "true",
 					},
 				},
 				storage.DataRow{
@@ -467,6 +476,108 @@ func (s *LocalTestSuite) TestArrayTypes(c *C) {
 						"type":             "varchar",
 						"length":           "20",
 						"array_dimensions": "2",
+					},
+				},
+			},
+		},
+	)
+}
+
+func (s *LocalTestSuite) TestGeographyTypes(c *C) {
+	val, err := tryParse(`
+        CREATE TABLE my_table (
+            geog geography(POINT),
+            my_point geography(POINT,4269),
+            other_point geography(POINT,4326),
+            my_line geography(LINESTRING),
+            my_poly geography(POLYGON,4267),
+            many_point geography(MULTIPOINT),
+            many_line geography(MULTILINESTRING),
+            many_poly geography(MULTIPOLYGON),
+            many_geo geography(GEOMETRYCOLLECTION)
+        );
+    `)
+	if err != nil {
+		c.Error(err)
+	}
+	c.Assert(
+		val,
+		DeepEquals,
+		[]interface{}{
+			[]storage.DataRow{
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "geog",
+					Content: map[string]string{
+						"type":           "geography",
+						"geography_type": "point",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_point",
+					Content: map[string]string{
+						"type":           "geography",
+						"geography_type": "point",
+						"srid":           "4269",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "other_point",
+					Content: map[string]string{
+						"type":           "geography",
+						"geography_type": "point",
+						"srid":           "4326",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_line",
+					Content: map[string]string{
+						"type":           "geography",
+						"geography_type": "linestring",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "my_poly",
+					Content: map[string]string{
+						"type":           "geography",
+						"geography_type": "polygon",
+						"srid":           "4267",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "many_point",
+					Content: map[string]string{
+						"type":           "geography",
+						"geography_type": "multipoint",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "many_line",
+					Content: map[string]string{
+						"type":           "geography",
+						"geography_type": "multilinestring",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "many_poly",
+					Content: map[string]string{
+						"type":           "geography",
+						"geography_type": "multipolygon",
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "many_geo",
+					Content: map[string]string{
+						"type":           "geography",
+						"geography_type": "geometrycollection",
 					},
 				},
 			},

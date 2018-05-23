@@ -23,7 +23,7 @@ TableDef =
   TableConstr / ColumnDef
 
 ColumnDef =
-  name:Ident _1 dataType:DataType constraint:ColumnConstraint?
+  name:(DblQuotedString / StringConst / Ident) _1 dataType:DataType constraint:ColumnConstraint?
 
 ColumnConstraint =
   nameOpt:( _1 "CONSTRAINT"i _1 (StringConst / Ident) )? _ constraint:( NotNullCls / NullCls / CheckCls )
@@ -47,6 +47,8 @@ Expr =
   WrappedExpr / [^()]+
 
 
+
+
 /*
 ██████╗  █████╗ ████████╗ █████╗ ████████╗██╗   ██╗██████╗ ███████╗
 ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗╚══██╔══╝╚██╗ ██╔╝██╔══██╗██╔════╝
@@ -57,7 +59,7 @@ Expr =
 */
 
 DataType =
-  t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / OtherT / CustomT ) brackets:( "[]" )*
+  t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / GeographyT / OtherT / CustomT ) brackets:( "[]" )*
 
 TimestampT =
   "TIMESTAMP"i prec:SecPrecision withTimeZone:( WithTZ / WithoutTZ )?
@@ -88,6 +90,9 @@ BitVarT =
 
 IntT =
   ( "INTEGER"i / "INT"i )
+
+GeographyT =
+  "GEOGRAPHY"i "(" subtype:( "POINT"i / "LINESTRING"i / "POLYGON"i / "MULTIPOINT"i / "MULTILINESTRING"i / "MULTIPOLYGON"i / "GEOMETRYCOLLECTION"i ) srid:("," NonZNumber)? ")"
 
 PgOidT =
   ( "OID"i / "REGPROCEDURE"i / "REGPROC"i / "REGOPERATOR"i / "REGOPER"i / "REGCLASS"i / "REGTYPE"i / "REGROLE"i / "REGNAMESPACE"i / "REGCONFIG"i / "REGDICTIONARY"i )
@@ -226,6 +231,9 @@ Value =
 
 StringConst =
   "'" value:([^'\n] / "''")* "'"
+
+DblQuotedString =
+  """ value:([^"\n] / "\"\"")* """
 
 Ident =
   [a-z_]i [a-z_0-9$]i*

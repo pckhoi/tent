@@ -48,7 +48,7 @@ CreateTableStmt <- "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ defs:( Table
 
 TableDef <- TableConstr / ColumnDef
 
-ColumnDef <- name:Ident _1 dataType:DataType constraint:ColumnConstraint? {
+ColumnDef <- name:(DblQuotedString / StringConst / Ident) _1 dataType:DataType constraint:ColumnConstraint? {
     if dataType == nil {
         return nil, nil
     }
@@ -126,6 +126,8 @@ WrappedExpr <- `(` Expr+ `)` {
 Expr <- WrappedExpr / [^()]+
 
 
+
+
 /*
 ██████╗  █████╗ ████████╗ █████╗ ████████╗██╗   ██╗██████╗ ███████╗
 ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗╚══██╔══╝╚██╗ ██╔╝██╔══██╗██╔════╝
@@ -135,7 +137,7 @@ Expr <- WrappedExpr / [^()]+
 ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝     ╚══════╝
 */
 
-DataType <- t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / OtherT / CustomT ) brackets:( "[]" )* {
+DataType <- t:( TimestampT / TimeT / VarcharT / CharT / BitVarT / BitT / IntT / PgOidT / GeographyT / OtherT / CustomT ) brackets:( "[]" )* {
     bracketsSlice := toIfaceSlice(brackets)
     var result map[string]string
     if t != nil {
@@ -239,6 +241,19 @@ IntT <- ( "INTEGER"i / "INT"i ) {
     return map[string]string{
         "type": "integer",
     }, nil
+}
+
+GeographyT <- "GEOGRAPHY"i `(` subtype:( "POINT"i / "LINESTRING"i / "POLYGON"i / "MULTIPOINT"i / "MULTILINESTRING"i / "MULTIPOLYGON"i / "GEOMETRYCOLLECTION"i ) srid:(`,` NonZNumber)? `)` {
+    result := map[string]string{
+        "type": "geography",
+    }
+    subtypeString := string(subtype.([]byte))
+    result["geography_type"] = strings.ToLower(subtypeString)
+    if srid != nil {
+        sridSlice := toIfaceSlice(srid)
+        result["srid"] = strconv.FormatInt(sridSlice[1].(int64), 10)
+    }
+    return result, nil
 }
 
 PgOidT <- ( "OID"i / "REGPROCEDURE"i / "REGPROC"i / "REGOPERATOR"i / "REGOPER"i / "REGCLASS"i / "REGTYPE"i / "REGROLE"i / "REGNAMESPACE"i / "REGCONFIG"i / "REGDICTIONARY"i ) {
@@ -466,6 +481,10 @@ Value <- ( Number / Boolean / StringConst / Ident )
 
 StringConst <- `'` value:([^'\n] / "''")* `'` {
     return String(toByteSlice(value)), nil
+}
+
+DblQuotedString <- `"` value:([^"\n] / "\"\"")* `"` {
+    return DoubleQuotedString(toByteSlice(value)), nil
 }
 
 Ident <- [a-z_]i [a-z_0-9$]i* {
