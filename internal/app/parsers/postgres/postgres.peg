@@ -48,13 +48,16 @@ CreateTableStmt <- "CREATE"i _1 "TABLE"i _1 tablename:Ident _ "(" _ defs:( Table
 
 TableDef <- TableConstr / ColumnDef
 
-ColumnDef <- name:(DblQuotedString / StringConst / Ident) _1 dataType:DataType constraint:ColumnConstraint? {
+ColumnDef <- name:(DblQuotedString / StringConst / Ident) _1 dataType:DataType collation:Collate? constraint:ColumnConstraint? {
     if dataType == nil {
         return nil, nil
     }
     result := make(map[string]string)
     if err := mergo.Merge(&result, dataType.(map[string]string), mergo.WithOverride); err != nil {
         return nil, err
+    }
+    if collation != nil {
+        result["collation"] = collation.(string)
     }
     if constraint != nil {
         if err := mergo.Merge(&result, constraint.(map[string]string), mergo.WithOverride); err != nil {
@@ -63,6 +66,14 @@ ColumnDef <- name:(DblQuotedString / StringConst / Ident) _1 dataType:DataType c
     }
     result["name"] = interfaceToString(name)
     return result, nil
+}
+
+Collate <- _1 "COLLATE"i _1 collation:Collation {
+    return collation, nil
+}
+
+Collation <- ( ( DblQuotedString / Ident ) `.` )? DblQuotedString {
+    return string(c.text), nil
 }
 
 ColumnConstraint <- nameOpt:( _1 "CONSTRAINT"i _1 (StringConst / Ident) )? _ constraint:( NotNullCls / NullCls / CheckCls ) {

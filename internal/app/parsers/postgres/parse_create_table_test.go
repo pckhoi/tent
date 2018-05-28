@@ -730,3 +730,39 @@ func (s *LocalTestSuite) TestGeometryTypes(c *C) {
 		},
 	)
 }
+
+func (s *LocalTestSuite) TestCollation(c *C) {
+	val, err := tryParse(`
+        CREATE TABLE my_table (
+            var1 varchar collate "en_US",
+            var2 varchar collate pg_catalog."C"
+        );
+    `)
+	if err != nil {
+		c.Error(err)
+	}
+	c.Assert(
+		val,
+		DeepEquals,
+		[]interface{}{
+			[]storage.DataRow{
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "var1",
+					Content: map[string]string{
+						"type":      "varchar",
+						"collation": `"en_US"`,
+					},
+				},
+				storage.DataRow{
+					TableName: "schema/my_table",
+					ID:        "var2",
+					Content: map[string]string{
+						"type":      "varchar",
+						"collation": `pg_catalog."C"`,
+					},
+				},
+			},
+		},
+	)
+}

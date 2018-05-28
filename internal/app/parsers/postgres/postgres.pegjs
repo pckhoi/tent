@@ -23,7 +23,13 @@ TableDef =
   TableConstr / ColumnDef
 
 ColumnDef =
-  name:(DblQuotedString / StringConst / Ident) _1 dataType:DataType constraint:ColumnConstraint?
+  name:(DblQuotedString / StringConst / Ident) _1 dataType:DataType collation:Collate? constraint:ColumnConstraint?
+
+Collate =
+  _1 "COLLATE"i _1 collation:Collation
+
+Collation =
+  ( ( DblQuotedString / Ident ) "." )? DblQuotedString
 
 ColumnConstraint =
   nameOpt:( _1 "CONSTRAINT"i _1 (StringConst / Ident) )? _ constraint:( NotNullCls / NullCls / CheckCls )
