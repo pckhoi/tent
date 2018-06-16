@@ -1,0 +1,14 @@
+Ident
+    <- Identifier / DblQuoIdentifier / QuoUniIdentifier
+
+Identifier
+    <- [A-Za-z\pL_][A-Za-z\pL_0-9\$]*
+
+DblQuoIdentifier "delimited identifiers (double-quoted identifiers)"
+    <- '"' ( `""` / [^'"'] )+ '"'
+
+QuoUniIdentifier "quoted identifier with Unicode escapes"
+    <- 'U'i `&"` ( `""` / [^'"'] )+ '"' ( _ "UESCAPE"i _ `'` [^'] `'` )?
+
+AnyName
+    <- Ident ( '.' Ident )*

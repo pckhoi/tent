@@ -28,8 +28,10 @@ func main() {
 		log.Fatal(readErr)
 	}
 
+	log.Println("Reading from Bison...")
 	grammar := MakeFromBison(bytesSlice)
 	var buffer bytes.Buffer
+	log.Println("Writing Peg...")
 	grammar.WritePegTo(&buffer)
 	fmt.Print(buffer.String())
 }

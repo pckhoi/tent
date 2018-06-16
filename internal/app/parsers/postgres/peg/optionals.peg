@@ -1,0 +1,97 @@
+OptTemp
+    <- ( OptTemp1 / OptTemp2 / OptTemp3 )?
+
+OptTemp1
+    <- TEMPORARY / TEMP / ( LOCAL TEMPORARY ) / ( LOCAL TEMP )
+
+OptTemp2
+    <- ( GLOBAL TEMPORARY ) / ( GLOBAL TEMP )
+
+OptTemp3
+    <- UNLOGGED
+
+
+OptTableElementList
+    <- TableElementList?
+
+TableElementList
+    <- TableElement _ ( ',' _ TableElement )*
+
+TableElement
+    <- ColumnDef / TableLikeClause / TableConstraint
+
+columnDef
+    <- Ident _ Typename _ create_generic_options _ ColQualList
+
+ColQualList
+    <- ( _ ColConstraint )*
+
+
+ColConstraint
+    <- ColConstraint1 / ColConstraint2 / ColConstraint3 / ColConstraint4
+
+ColConstraint1
+    <- CONSTRAINT _ Ident _ ColConstraintElem
+
+ColConstraint2
+    <- ColConstraintElem
+
+ColConstraint3
+    <- ConstraintAttr
+
+ColConstraint4
+    <- COLLATE AnyName
+
+
+ColConstraintElem
+    <- ColConstraintElem1 / ColConstraintElem2 / ColConstraintElem3 / ColConstraintElem4 /
+    ColConstraintElem5 / ColConstraintElem6 / ColConstraintElem7 / ColConstraintElem8
+
+ColConstraintElem1
+    <- NOT _ NULL
+
+ColConstraintElem2
+    <- NULL
+
+ColConstraintElem3
+    <- UNIQUE _ OptDefinition _ (USING _ INDEX _ TABLESPACE _ Ident)?
+
+ColConstraintElem4
+    <- PRIMARY _ KEY _ OptDefinition _ (USING _ INDEX _ TABLESPACE _ Ident)?
+
+ColConstraintElem5
+    <- CHECK _ '(' _ a_expr _ ')' _ opt_no_inherit
+
+ColConstraintElem6
+    <- DEFAULT _ b_expr
+
+ColConstraintElem7
+    <- GENERATED _ generated_when _ AS _ IDENTITY _ OptParenthesizedSeqOptList
+
+ColConstraintElem8
+    <- REFERENCES _ qualified_name _ opt_column_list _ key_match _ key_actions
+
+
+OptDefinition
+    <- (WITH _ Definition)?
+
+Definition
+    <- '(' DefElem _ (',' _ DefElem)* ')'
+
+DefElem
+    <- Ident _ ('=' _ DefArg)?
+
+DefArg
+    <- FuncType / Ident / QualAllOp / NumericOnly / StringConstant / NONE
+
+FuncType
+    <- Typename / (Ident _ Attrs _ '%' _ TYPE) / (SETOF _ Ident _ Attrs _ '%' _ TYPE)
+
+Typename
+    <- (SETOF _)? SimpleTypename _ (OptArrayBounds / (ARRAY (_ '[' Integer ']')?))
+
+OptArrayBounds
+    <- ('[' Integer? ']')*
+
+Attrs
+    <- ('.' _ Ident)+

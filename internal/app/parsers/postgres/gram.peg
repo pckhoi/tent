@@ -1,0 +1,3793 @@
+Stmtblock
+    = Stmtmulti
+
+Stmtmulti
+    = Stmt (_ ';' _ Stmt)*
+
+Stmt
+    = (AlterEventTrigStmt
+    / AlterCollationStmt
+    / AlterDatabaseStmt
+    / AlterDatabaseSetStmt
+    / AlterDefaultPrivilegesStmt
+    / AlterDomainStmt
+    / AlterEnumStmt
+    / AlterExtensionStmt
+    / AlterExtensionContentsStmt
+    / AlterFdwStmt
+    / AlterForeignServerStmt
+    / AlterForeignTableStmt
+    / AlterFunctionStmt
+    / AlterGroupStmt
+    / AlterObjectDependsStmt
+    / AlterObjectSchemaStmt
+    / AlterOwnerStmt
+    / AlterOperatorStmt
+    / AlterPolicyStmt
+    / AlterSeqStmt
+    / AlterSystemStmt
+    / AlterTableStmt
+    / AlterTblSpcStmt
+    / AlterCompositeTypeStmt
+    / AlterPublicationStmt
+    / AlterRoleSetStmt
+    / AlterRoleStmt
+    / AlterSubscriptionStmt
+    / AlterTSConfigurationStmt
+    / AlterTSDictionaryStmt
+    / AlterUserMappingStmt
+    / AnalyzeStmt
+    / CallStmt
+    / CheckPointStmt
+    / ClosePortalStmt
+    / ClusterStmt
+    / CommentStmt
+    / ConstraintsSetStmt
+    / CopyStmt
+    / CreateAmStmt
+    / CreateAsStmt
+    / CreateAssertStmt
+    / CreateCastStmt
+    / CreateConversionStmt
+    / CreateDomainStmt
+    / CreateExtensionStmt
+    / CreateFdwStmt
+    / CreateForeignServerStmt
+    / CreateForeignTableStmt
+    / CreateFunctionStmt
+    / CreateGroupStmt
+    / CreateMatViewStmt
+    / CreateOpClassStmt
+    / CreateOpFamilyStmt
+    / CreatePublicationStmt
+    / AlterOpFamilyStmt
+    / CreatePolicyStmt
+    / CreatePLangStmt
+    / CreateSchemaStmt
+    / CreateSeqStmt
+    / CreateStmt
+    / CreateSubscriptionStmt
+    / CreateStatsStmt
+    / CreateTableSpaceStmt
+    / CreateTransformStmt
+    / CreateTrigStmt
+    / CreateEventTrigStmt
+    / CreateRoleStmt
+    / CreateUserStmt
+    / CreateUserMappingStmt
+    / CreatedbStmt
+    / DeallocateStmt
+    / DeclareCursorStmt
+    / DefineStmt
+    / DeleteStmt
+    / DiscardStmt
+    / DoStmt
+    / DropAssertStmt
+    / DropCastStmt
+    / DropOpClassStmt
+    / DropOpFamilyStmt
+    / DropOwnedStmt
+    / DropPLangStmt
+    / DropStmt
+    / DropSubscriptionStmt
+    / DropTableSpaceStmt
+    / DropTransformStmt
+    / DropRoleStmt
+    / DropUserMappingStmt
+    / DropdbStmt
+    / ExecuteStmt
+    / ExplainStmt
+    / FetchStmt
+    / GrantStmt
+    / GrantRoleStmt
+    / ImportForeignSchemaStmt
+    / IndexStmt
+    / InsertStmt
+    / ListenStmt
+    / RefreshMatViewStmt
+    / LoadStmt
+    / LockStmt
+    / NotifyStmt
+    / PrepareStmt
+    / ReassignOwnedStmt
+    / ReindexStmt
+    / RemoveAggrStmt
+    / RemoveFuncStmt
+    / RemoveOperStmt
+    / RenameStmt
+    / RevokeStmt
+    / RevokeRoleStmt
+    / RuleStmt
+    / SecLabelStmt
+    / SelectStmt
+    / TransactionStmt
+    / TruncateStmt
+    / UnlistenStmt
+    / UpdateStmt
+    / VacuumStmt
+    / VariableResetStmt
+    / VariableSetStmt
+    / VariableShowStmt
+    / ViewStmt)?
+
+CallStmt
+    = (CALL _ FuncApplication)
+
+CreateRoleStmt
+    = (CREATE _ ROLE _ RoleId _ OptWith _ OptRoleList)
+
+OptWith
+    = WITH?
+
+OptRoleList
+    = (OptRoleList _ CreateOptRoleElem)?
+
+AlterOptRoleList
+    = (AlterOptRoleList _ AlterOptRoleElem)?
+
+AlterOptRoleElem
+    = (VALID _ UNTIL _ Sconst)
+    / (ENCRYPTED _ PASSWORD _ Sconst)
+    / (UNENCRYPTED _ PASSWORD _ Sconst)
+    / (CONNECTION _ LIMIT _ SignedIconst)
+    / (PASSWORD _ NULL)
+    / (PASSWORD _ Sconst)
+    / (USER _ RoleList)
+    / INHERIT
+    / IDENT
+
+CreateOptRoleElem
+    = (IN _ ROLE _ RoleList)
+    / (IN _ GROUP _ RoleList)
+    / (SYSID _ Iconst)
+    / (ADMIN _ RoleList)
+    / (ROLE _ RoleList)
+    / AlterOptRoleElem
+
+CreateUserStmt
+    = (CREATE _ USER _ RoleId _ OptWith _ OptRoleList)
+
+AlterRoleStmt
+    = (ALTER _ ROLE _ RoleSpec _ OptWith _ AlterOptRoleList)
+    / (ALTER _ USER _ RoleSpec _ OptWith _ AlterOptRoleList)
+
+OptInDatabase
+    = (IN _ DATABASE _ DatabaseName)?
+
+AlterRoleSetStmt
+    = (ALTER _ ROLE _ RoleSpec _ OptInDatabase _ SetResetClause)
+    / (ALTER _ ROLE _ ALL _ OptInDatabase _ SetResetClause)
+    / (ALTER _ USER _ RoleSpec _ OptInDatabase _ SetResetClause)
+    / (ALTER _ USER _ ALL _ OptInDatabase _ SetResetClause)
+
+DropRoleStmt
+    = (DROP _ ROLE _ IF _ EXISTS _ RoleList)
+    / (DROP _ USER _ IF _ EXISTS _ RoleList)
+    / (DROP _ GROUP _ IF _ EXISTS _ RoleList)
+    / (DROP _ ROLE _ RoleList)
+    / (DROP _ USER _ RoleList)
+    / (DROP _ GROUP _ RoleList)
+
+CreateGroupStmt
+    = (CREATE _ GROUP _ RoleId _ OptWith _ OptRoleList)
+
+AlterGroupStmt
+    = (ALTER _ GROUP _ RoleSpec _ AddDrop _ USER _ RoleList)
+
+AddDrop
+    = ADD
+    / DROP
+
+CreateSchemaStmt
+    = (CREATE _ SCHEMA _ IF _ NOT _ EXISTS _ OptSchemaName _ AUTHORIZATION _ RoleSpec _ OptSchemaEltList)
+    / (CREATE _ SCHEMA _ IF _ NOT _ EXISTS _ ColId _ OptSchemaEltList)
+    / (CREATE _ SCHEMA _ OptSchemaName _ AUTHORIZATION _ RoleSpec _ OptSchemaEltList)
+    / (CREATE _ SCHEMA _ ColId _ OptSchemaEltList)
+
+OptSchemaName
+    = ColId?
+
+OptSchemaEltList
+    = (OptSchemaEltList _ SchemaStmt)?
+
+SchemaStmt
+    = CreateStmt
+    / IndexStmt
+    / CreateSeqStmt
+    / CreateTrigStmt
+    / GrantStmt
+    / ViewStmt
+
+VariableSetStmt
+    = (SET _ LOCAL _ SetRest)
+    / (SET _ SESSION _ SetRest)
+    / (SET _ SetRest)
+
+SetRest
+    = (SESSION _ CHARACTERISTICS _ AS _ TRANSACTION _ TransactionModeList)
+    / (TRANSACTION _ TransactionModeList)
+    / SetRestMore
+
+GenericSet
+    = (VarName _ TO _ VarList)
+    / (VarName _ '=' _ VarList)
+    / (VarName _ TO _ DEFAULT)
+    / (VarName _ '=' _ DEFAULT)
+
+SetRestMore
+    = (VarName _ FROM _ CURRENT)
+    / (TIME _ ZONE _ ZoneValue)
+    / (XML _ OPTION _ DocumentOrContent)
+    / (TRANSACTION _ SNAPSHOT _ Sconst)
+    / (SESSION _ AUTHORIZATION _ NonReservedWordOrSconst)
+    / (SESSION _ AUTHORIZATION _ DEFAULT)
+    / (ROLE _ NonReservedWordOrSconst)
+    / (NAMES _ OptEncoding)
+    / (CATALOG _ Sconst)
+    / (SCHEMA _ Sconst)
+    / GenericSet
+
+VarName
+    = ColId (_ '.' _ ColId)*
+
+VarList
+    = VarValue (_ ',' _ VarValue)*
+
+VarValue
+    = OptBooleanOrString
+    / NumericOnly
+
+IsoLevel
+    = (READ _ UNCOMMITTED)
+    / (READ _ COMMITTED)
+    / (REPEATABLE _ READ)
+    / SERIALIZABLE
+
+OptBooleanOrString
+    = TRUE
+    / FALSE
+    / ON
+    / NonReservedWordOrSconst
+
+ZoneValue
+    = (ConstInterval _ '(' _ Iconst _ ')' _ Sconst)
+    / (ConstInterval _ Sconst _ OptInterval)
+    / Sconst
+    / IDENT
+    / NumericOnly
+    / DEFAULT
+    / LOCAL
+
+OptEncoding
+    = (Sconst
+    / DEFAULT)?
+
+NonReservedWordOrSconst
+    = NonReservedWord
+    / Sconst
+
+VariableResetStmt
+    = (RESET _ ResetRest)
+
+ResetRest
+    = (TRANSACTION _ ISOLATION _ LEVEL)
+    / (TIME _ ZONE)
+    / (SESSION _ AUTHORIZATION)
+    / GenericReset
+
+GenericReset
+    = VarName
+    / ALL
+
+SetResetClause
+    = (SET _ SetRest)
+    / VariableResetStmt
+
+FunctionSetResetClause
+    = (SET _ SetRestMore)
+    / VariableResetStmt
+
+VariableShowStmt
+    = (SHOW _ TRANSACTION _ ISOLATION _ LEVEL)
+    / (SHOW _ TIME _ ZONE)
+    / (SHOW _ SESSION _ AUTHORIZATION)
+    / (SHOW _ VarName)
+    / (SHOW _ ALL)
+
+ConstraintsSetStmt
+    = (SET _ CONSTRAINTS _ ConstraintsSetList _ ConstraintsSetMode)
+
+ConstraintsSetList
+    = ALL
+    / QualifiedNameList
+
+ConstraintsSetMode
+    = DEFERRED
+    / IMMEDIATE
+
+CheckPointStmt
+    = CHECKPOINT
+
+DiscardStmt
+    = (DISCARD _ ALL)
+    / (DISCARD _ TEMP)
+    / (DISCARD _ TEMPORARY)
+    / (DISCARD _ PLANS)
+    / (DISCARD _ SEQUENCES)
+
+AlterTableStmt
+    = (ALTER _ MATERIALIZED _ VIEW _ ALL _ IN _ TABLESPACE _ Name _ OWNED _ BY _ RoleList _ SET _ TABLESPACE _ Name _ OptNowait)
+    / (ALTER _ TABLE _ ALL _ IN _ TABLESPACE _ Name _ OWNED _ BY _ RoleList _ SET _ TABLESPACE _ Name _ OptNowait)
+    / (ALTER _ INDEX _ ALL _ IN _ TABLESPACE _ Name _ OWNED _ BY _ RoleList _ SET _ TABLESPACE _ Name _ OptNowait)
+    / (ALTER _ MATERIALIZED _ VIEW _ ALL _ IN _ TABLESPACE _ Name _ SET _ TABLESPACE _ Name _ OptNowait)
+    / (ALTER _ TABLE _ ALL _ IN _ TABLESPACE _ Name _ SET _ TABLESPACE _ Name _ OptNowait)
+    / (ALTER _ INDEX _ ALL _ IN _ TABLESPACE _ Name _ SET _ TABLESPACE _ Name _ OptNowait)
+    / (ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ AlterTableCmds)
+    / (ALTER _ VIEW _ IF _ EXISTS _ QualifiedName _ AlterTableCmds)
+    / (ALTER _ INDEX _ IF _ EXISTS _ QualifiedName _ AlterTableCmds)
+    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ AlterTableCmds)
+    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ PartitionCmd)
+    / (ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ AlterTableCmds)
+    / (ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ AlterTableCmds)
+    / (ALTER _ INDEX _ QualifiedName _ AlterTableCmds)
+    / (ALTER _ VIEW _ QualifiedName _ AlterTableCmds)
+    / (ALTER _ SEQUENCE _ QualifiedName _ AlterTableCmds)
+    / (ALTER _ TABLE _ RelationExpr _ PartitionCmd)
+    / (ALTER _ INDEX _ QualifiedName _ IndexPartitionCmd)
+    / (ALTER _ TABLE _ RelationExpr _ AlterTableCmds)
+
+AlterTableCmds
+    = AlterTableCmd (_ ',' _ AlterTableCmd)*
+
+PartitionCmd
+    = (ATTACH _ PARTITION _ QualifiedName _ PartitionBoundSpec)
+    / (DETACH _ PARTITION _ QualifiedName)
+
+IndexPartitionCmd
+    = (ATTACH _ PARTITION _ QualifiedName)
+
+AlterTableCmd
+    = (ALTER _ OptColumn _ ColId _ ADD _ GENERATED _ GeneratedWhen _ AS _ IDENTITY _ OptParenthesizedSeqOptList)
+    / (ALTER _ OptColumn _ ColId _ OptSetData _ TYPE _ Typename _ OptCollateClause _ AlterUsing)
+    / (ALTER _ OptColumn _ ColId _ DROP _ IDENTITY _ IF _ EXISTS)
+    / (ALTER _ OptColumn _ ColId _ SET _ STATISTICS _ SignedIconst)
+    / (ADD _ COLUMN _ IF _ NOT _ EXISTS _ ColumnDef)
+    / (ALTER _ OptColumn _ ColId _ DROP _ NOT _ NULL)
+    / (ALTER _ OptColumn _ ColId _ SET _ NOT _ NULL)
+    / (DROP _ CONSTRAINT _ IF _ EXISTS _ Name _ OptDropBehavior)
+    / (ALTER _ OptColumn _ Iconst _ SET _ STATISTICS _ SignedIconst)
+    / (ALTER _ OptColumn _ ColId _ SET _ STORAGE _ ColId)
+    / (DROP _ OptColumn _ IF _ EXISTS _ ColId _ OptDropBehavior)
+    / (ALTER _ OptColumn _ ColId _ SET _ Reloptions)
+    / (ALTER _ OptColumn _ ColId _ RESET _ Reloptions)
+    / (ADD _ IF _ NOT _ EXISTS _ ColumnDef)
+    / (NO _ FORCE _ ROW _ LEVEL _ SECURITY)
+    / (ALTER _ OptColumn _ ColId _ DROP _ IDENTITY)
+    / (ALTER _ OptColumn _ ColId _ AlterIdentityColumnOptionList)
+    / (DROP _ OptColumn _ ColId _ OptDropBehavior)
+    / (ENABLE _ ALWAYS _ RULE _ Name)
+    / (ALTER _ OptColumn _ ColId _ AlterGenericOptions)
+    / (FORCE _ ROW _ LEVEL _ SECURITY)
+    / (ALTER _ CONSTRAINT _ Name _ ConstraintAttributeSpec)
+    / (ALTER _ OptColumn _ ColId _ AlterColumnDefault)
+    / (ENABLE _ REPLICA _ RULE _ Name)
+    / (DROP _ CONSTRAINT _ Name _ OptDropBehavior)
+    / (ENABLE _ REPLICA _ TRIGGER _ Name)
+    / (ENABLE _ ALWAYS _ TRIGGER _ Name)
+    / (ENABLE _ ROW _ LEVEL _ SECURITY)
+    / (DISABLE _ ROW _ LEVEL _ SECURITY)
+    / (VALIDATE _ CONSTRAINT _ Name)
+    / (CLUSTER _ ON _ Name)
+    / (ENABLE _ TRIGGER _ Name)
+    / (SET _ WITHOUT _ OIDS)
+    / (SET _ WITH _ OIDS)
+    / (ENABLE _ TRIGGER _ ALL)
+    / (ENABLE _ TRIGGER _ USER)
+    / (DISABLE _ TRIGGER _ Name)
+    / (DISABLE _ TRIGGER _ ALL)
+    / (DISABLE _ TRIGGER _ USER)
+    / (ENABLE _ RULE _ Name)
+    / (SET _ TABLESPACE _ Name)
+    / (ADD _ COLUMN _ ColumnDef)
+    / (REPLICA _ IDENTITY _ ReplicaIdentity)
+    / (DISABLE _ RULE _ Name)
+    / (NO _ INHERIT _ QualifiedName)
+    / (SET _ WITHOUT _ CLUSTER)
+    / (OWNER _ TO _ RoleSpec)
+    / (NOT _ OF)
+    / (OF _ AnyName)
+    / (INHERIT _ QualifiedName)
+    / (RESET _ Reloptions)
+    / (SET _ UNLOGGED)
+    / (SET _ LOGGED)
+    / (ADD _ TableConstraint)
+    / (ADD _ ColumnDef)
+    / (SET _ Reloptions)
+    / AlterGenericOptions
+
+AlterColumnDefault
+    = (SET _ DEFAULT _ AExpr)
+    / (DROP _ DEFAULT)
+
+OptDropBehavior
+    = (CASCADE
+    / RESTRICT)?
+
+OptCollateClause
+    = (COLLATE _ AnyName)?
+
+AlterUsing
+    = (USING _ AExpr)?
+
+ReplicaIdentity
+    = (USING _ INDEX _ Name)
+    / NOTHING
+    / FULL
+    / DEFAULT
+
+Reloptions
+    = ('(' _ ReloptionList _ ')')
+
+OptReloptions
+    = (WITH _ Reloptions)?
+
+ReloptionList
+    = ReloptionElem (_ ',' _ ReloptionElem)*
+
+ReloptionElem
+    = (ColLabel _ '.' _ ColLabel _ '=' _ DefArg)
+    / (ColLabel _ '=' _ DefArg)
+    / (ColLabel _ '.' _ ColLabel)
+    / ColLabel
+
+AlterIdentityColumnOptionList
+    = AlterIdentityColumnOption (_ AlterIdentityColumnOption)*
+
+AlterIdentityColumnOption
+    = (RESTART _ OptWith _ NumericOnly)
+    / (SET _ GENERATED _ GeneratedWhen)
+    / (SET _ SeqOptElem)
+    / RESTART
+
+PartitionBoundSpec
+    = (FOR _ VALUES _ FROM _ '(' _ RangeDatumList _ ')' _ TO _ '(' _ RangeDatumList _ ')')
+    / (FOR _ VALUES _ WITH _ '(' _ HashPartbound _ ')')
+    / (FOR _ VALUES _ IN _ '(' _ PartboundDatumList _ ')')
+    / DEFAULT
+
+HashPartboundElem
+    = (NonReservedWord _ Iconst)
+
+HashPartbound
+    = HashPartboundElem (_ ',' _ HashPartboundElem)*
+
+PartboundDatum
+    = Sconst
+    / NumericOnly
+    / TRUE
+    / FALSE
+    / NULL
+
+PartboundDatumList
+    = PartboundDatum (_ ',' _ PartboundDatum)*
+
+RangeDatumList
+    = PartitionRangeDatum (_ ',' _ PartitionRangeDatum)*
+
+PartitionRangeDatum
+    = MINVALUE
+    / MAXVALUE
+    / PartboundDatum
+
+AlterCompositeTypeStmt
+    = (ALTER _ TYPE _ AnyName _ AlterTypeCmds)
+
+AlterTypeCmds
+    = AlterTypeCmd (_ ',' _ AlterTypeCmd)*
+
+AlterTypeCmd
+    = (ALTER _ ATTRIBUTE _ ColId _ OptSetData _ TYPE _ Typename _ OptCollateClause _ OptDropBehavior)
+    / (DROP _ ATTRIBUTE _ IF _ EXISTS _ ColId _ OptDropBehavior)
+    / (ADD _ ATTRIBUTE _ TableFuncElement _ OptDropBehavior)
+    / (DROP _ ATTRIBUTE _ ColId _ OptDropBehavior)
+
+ClosePortalStmt
+    = (CLOSE _ CursorName)
+    / (CLOSE _ ALL)
+
+CopyStmt
+    = (COPY _ OptBinary _ QualifiedName _ OptColumnList _ OptOids _ CopyFrom _ OptProgram _ CopyFileName _ CopyDelimiter _ OptWith _ CopyOptions)
+    / (COPY _ '(' _ PreparableStmt _ ')' _ TO _ OptProgram _ CopyFileName _ OptWith _ CopyOptions)
+
+CopyFrom
+    = FROM
+    / TO
+
+OptProgram
+    = PROGRAM?
+
+CopyFileName
+    = Sconst
+    / STDIN
+    / STDOUT
+
+CopyOptions
+    = ('(' _ CopyGenericOptList _ ')')
+    / CopyOptList
+
+CopyOptList
+    = (CopyOptList _ CopyOptItem)?
+
+CopyOptItem
+    = (FORCE _ NOT _ NULL _ ColumnList)
+    / (ESCAPE _ OptAs _ Sconst)
+    / (FORCE _ NULL _ ColumnList)
+    / (DELIMITER _ OptAs _ Sconst)
+    / (NULL _ OptAs _ Sconst)
+    / (FORCE _ QUOTE _ '*')
+    / (FORCE _ QUOTE _ ColumnList)
+    / (QUOTE _ OptAs _ Sconst)
+    / (ENCODING _ Sconst)
+    / HEADER
+    / CSV
+    / FREEZE
+    / OIDS
+    / BINARY
+
+OptBinary
+    = BINARY?
+
+OptOids
+    = (WITH _ OIDS)?
+
+CopyDelimiter
+    = (OptUsing _ DELIMITERS _ Sconst)?
+
+OptUsing
+    = USING?
+
+CopyGenericOptList
+    = CopyGenericOptElem (_ ',' _ CopyGenericOptElem)*
+
+CopyGenericOptElem
+    = (ColLabel _ CopyGenericOptArg)
+
+CopyGenericOptArg
+    = (('(' _ CopyGenericOptArgList _ ')')
+    / OptBooleanOrString
+    / NumericOnly
+    / '*')?
+
+CopyGenericOptArgList
+    = CopyGenericOptArgListItem (_ ',' _ CopyGenericOptArgListItem)*
+
+CopyGenericOptArgListItem
+    = OptBooleanOrString
+
+CreateStmt
+    = (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
+    / (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ '(' _ OptTableElementList _ ')' _ OptInherit _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
+    / (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ OF _ AnyName _ OptTypedTableElementList _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
+    / (CREATE _ OptTemp _ TABLE _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
+    / (CREATE _ OptTemp _ TABLE _ QualifiedName _ '(' _ OptTableElementList _ ')' _ OptInherit _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
+    / (CREATE _ OptTemp _ TABLE _ QualifiedName _ OF _ AnyName _ OptTypedTableElementList _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
+
+OptTemp
+    = ((LOCAL _ TEMPORARY)
+    / (LOCAL _ TEMP)
+    / (GLOBAL _ TEMPORARY)
+    / (GLOBAL _ TEMP)
+    / TEMPORARY
+    / TEMP
+    / UNLOGGED)?
+
+OptTableElementList
+    = TableElementList?
+
+OptTypedTableElementList
+    = ('(' _ TypedTableElementList _ ')')?
+
+TableElementList
+    = TableElement (_ ',' _ TableElement)*
+
+TypedTableElementList
+    = TypedTableElement (_ ',' _ TypedTableElement)*
+
+TableElement
+    = ColumnDef
+    / TableLikeClause
+    / TableConstraint
+
+TypedTableElement
+    = ColumnOptions
+    / TableConstraint
+
+ColumnDef
+    = (ColId _ Typename _ CreateGenericOptions _ ColQualList)
+
+ColumnOptions
+    = (ColId _ WITH _ OPTIONS _ ColQualList)
+    / (ColId _ ColQualList)
+
+ColQualList
+    = (ColQualList _ ColConstraint)?
+
+ColConstraint
+    = (CONSTRAINT _ Name _ ColConstraintElem)
+    / (COLLATE _ AnyName)
+    / ColConstraintElem
+    / ConstraintAttr
+
+ColConstraintElem
+    = (GENERATED _ GeneratedWhen _ AS _ IDENTITY _ OptParenthesizedSeqOptList)
+    / (REFERENCES _ QualifiedName _ OptColumnList _ KeyMatch _ KeyActions)
+    / (CHECK _ '(' _ AExpr _ ')' _ OptNoInherit)
+    / (PRIMARY _ KEY _ OptDefinition _ OptConsTableSpace)
+    / (UNIQUE _ OptDefinition _ OptConsTableSpace)
+    / (DEFAULT _ BExpr)
+    / (NOT _ NULL)
+    / NULL
+
+GeneratedWhen
+    = (BY _ DEFAULT)
+    / ALWAYS
+
+ConstraintAttr
+    = (NOT _ DEFERRABLE)
+    / (INITIALLY _ DEFERRED)
+    / (INITIALLY _ IMMEDIATE)
+    / DEFERRABLE
+
+TableLikeClause
+    = (LIKE _ QualifiedName _ TableLikeOptionList)
+
+TableLikeOptionList
+    = ((_ INCLUDING _ TableLikeOption)
+    / (_ EXCLUDING _ TableLikeOption))*
+
+TableLikeOption
+    = COMMENTS
+    / CONSTRAINTS
+    / DEFAULTS
+    / IDENTITY
+    / INDEXES
+    / STATISTICS
+    / STORAGE
+    / ALL
+
+TableConstraint
+    = (CONSTRAINT _ Name _ ConstraintElem)
+    / ConstraintElem
+
+ConstraintElem
+    = (FOREIGN _ KEY _ '(' _ ColumnList _ ')' _ REFERENCES _ QualifiedName _ OptColumnList _ KeyMatch _ KeyActions _ ConstraintAttributeSpec)
+    / (EXCLUDE _ AccessMethodClause _ '(' _ ExclusionConstraintList _ ')' _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ExclusionWhereClause _ ConstraintAttributeSpec)
+    / (PRIMARY _ KEY _ '(' _ ColumnList _ ')' _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ConstraintAttributeSpec)
+    / (UNIQUE _ '(' _ ColumnList _ ')' _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ConstraintAttributeSpec)
+    / (CHECK _ '(' _ AExpr _ ')' _ ConstraintAttributeSpec)
+    / (PRIMARY _ KEY _ ExistingIndex _ ConstraintAttributeSpec)
+    / (UNIQUE _ ExistingIndex _ ConstraintAttributeSpec)
+
+OptNoInherit
+    = (NO _ INHERIT)?
+
+OptColumnList
+    = ('(' _ ColumnList _ ')')?
+
+ColumnList
+    = ColumnElem (_ ',' _ ColumnElem)*
+
+ColumnElem
+    = ColId
+
+OptCInclude
+    = (INCLUDE _ '(' _ ColumnList _ ')')?
+
+KeyMatch
+    = ((MATCH _ FULL)
+    / (MATCH _ PARTIAL)
+    / (MATCH _ SIMPLE))?
+
+ExclusionConstraintList
+    = ExclusionConstraintElem (_ ',' _ ExclusionConstraintElem)*
+
+ExclusionConstraintElem
+    = (IndexElem _ WITH _ OPERATOR _ '(' _ AnyOperator _ ')')
+    / (IndexElem _ WITH _ AnyOperator)
+
+ExclusionWhereClause
+    = (WHERE _ '(' _ AExpr _ ')')?
+
+KeyActions
+    = ((KeyUpdate _ KeyDelete)
+    / (KeyDelete _ KeyUpdate)
+    / KeyUpdate
+    / KeyDelete)?
+
+KeyUpdate
+    = (ON _ UPDATE _ KeyAction)
+
+KeyDelete
+    = (ON _ DELETE _ KeyAction)
+
+KeyAction
+    = (NO _ ACTION)
+    / (SET _ NULL)
+    / (SET _ DEFAULT)
+    / RESTRICT
+    / CASCADE
+
+OptInherit
+    = (INHERITS _ '(' _ QualifiedNameList _ ')')?
+
+OptPartitionSpec
+    = PartitionSpec?
+
+PartitionSpec
+    = (PARTITION _ BY _ PartStrategy _ '(' _ PartParams _ ')')
+
+PartStrategy
+    = IDENT
+    / UnreservedKeyword
+
+PartParams
+    = PartElem (_ ',' _ PartElem)*
+
+PartElem
+    = ('(' _ AExpr _ ')' _ OptCollate _ OptClass)
+    / (ColId _ OptCollate _ OptClass)
+    / (FuncExprWindowless _ OptCollate _ OptClass)
+
+OptWith1
+    = ((WITH _ Reloptions)
+    / (WITH _ OIDS)
+    / (WITHOUT _ OIDS))?
+
+OnCommitOption
+    = ((ON _ COMMIT _ DELETE _ ROWS)
+    / (ON _ COMMIT _ PRESERVE _ ROWS)
+    / (ON _ COMMIT _ DROP))?
+
+OptTableSpace
+    = (TABLESPACE _ Name)?
+
+OptConsTableSpace
+    = (USING _ INDEX _ TABLESPACE _ Name)?
+
+ExistingIndex
+    = (USING _ INDEX _ IndexName)
+
+CreateStatsStmt
+    = (CREATE _ STATISTICS _ IF _ NOT _ EXISTS _ AnyName _ OptNameList _ ON _ ExprList _ FROM _ FromList)
+    / (CREATE _ STATISTICS _ AnyName _ OptNameList _ ON _ ExprList _ FROM _ FromList)
+
+CreateAsStmt
+    = (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ CreateAsTarget _ AS _ SelectStmt _ OptWithData)
+    / (CREATE _ OptTemp _ TABLE _ CreateAsTarget _ AS _ SelectStmt _ OptWithData)
+
+CreateAsTarget
+    = (QualifiedName _ OptColumnList _ OptWith1 _ OnCommitOption _ OptTableSpace)
+
+OptWithData
+    = ((WITH _ NO _ DATA)
+    / (WITH _ DATA))?
+
+CreateMatViewStmt
+    = (CREATE _ OptNoLog _ MATERIALIZED _ VIEW _ IF _ NOT _ EXISTS _ CreateMvTarget _ AS _ SelectStmt _ OptWithData)
+    / (CREATE _ OptNoLog _ MATERIALIZED _ VIEW _ CreateMvTarget _ AS _ SelectStmt _ OptWithData)
+
+CreateMvTarget
+    = (QualifiedName _ OptColumnList _ OptReloptions _ OptTableSpace)
+
+OptNoLog
+    = UNLOGGED?
+
+RefreshMatViewStmt
+    = (REFRESH _ MATERIALIZED _ VIEW _ OptConcurrently _ QualifiedName _ OptWithData)
+
+CreateSeqStmt
+    = (CREATE _ OptTemp _ SEQUENCE _ IF _ NOT _ EXISTS _ QualifiedName _ OptSeqOptList)
+    / (CREATE _ OptTemp _ SEQUENCE _ QualifiedName _ OptSeqOptList)
+
+AlterSeqStmt
+    = (ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ SeqOptList)
+    / (ALTER _ SEQUENCE _ QualifiedName _ SeqOptList)
+
+OptSeqOptList
+    = SeqOptList?
+
+OptParenthesizedSeqOptList
+    = ('(' _ SeqOptList _ ')')?
+
+SeqOptList
+    = SeqOptElem (_ SeqOptElem)*
+
+SeqOptElem
+    = (RESTART _ OptWith _ NumericOnly)
+    / (SEQUENCE _ NAME _ AnyName)
+    / (START _ OptWith _ NumericOnly)
+    / (OWNED _ BY _ AnyName)
+    / (INCREMENT _ OptBy _ NumericOnly)
+    / (NO _ MAXVALUE)
+    / (MINVALUE _ NumericOnly)
+    / (MAXVALUE _ NumericOnly)
+    / (NO _ MINVALUE)
+    / (NO _ CYCLE)
+    / (CACHE _ NumericOnly)
+    / (AS _ SimpleTypename)
+    / CYCLE
+    / RESTART
+
+OptBy
+    = BY?
+
+NumericOnly
+    = ('+' _ FCONST)
+    / ('-' _ FCONST)
+    / FCONST
+    / SignedIconst
+
+NumericOnlyList
+    = NumericOnly (_ ',' _ NumericOnly)*
+
+CreatePLangStmt
+    = (CREATE _ OptOrReplace _ OptTrusted _ OptProcedural _ LANGUAGE _ NonReservedWordOrSconst _ HANDLER _ HandlerName _ OptInlineHandler _ OptValidator)
+    / (CREATE _ OptOrReplace _ OptTrusted _ OptProcedural _ LANGUAGE _ NonReservedWordOrSconst)
+
+OptTrusted
+    = TRUSTED?
+
+HandlerName
+    = (Name _ Attrs)
+    / Name
+
+OptInlineHandler
+    = (INLINE _ HandlerName)?
+
+ValidatorClause
+    = (VALIDATOR _ HandlerName)
+    / (NO _ VALIDATOR)
+
+OptValidator
+    = ValidatorClause?
+
+DropPLangStmt
+    = (DROP _ OptProcedural _ LANGUAGE _ IF _ EXISTS _ NonReservedWordOrSconst _ OptDropBehavior)
+    / (DROP _ OptProcedural _ LANGUAGE _ NonReservedWordOrSconst _ OptDropBehavior)
+
+OptProcedural
+    = PROCEDURAL?
+
+CreateTableSpaceStmt
+    = (CREATE _ TABLESPACE _ Name _ OptTableSpaceOwner _ LOCATION _ Sconst _ OptReloptions)
+
+OptTableSpaceOwner
+    = (OWNER _ RoleSpec)?
+
+DropTableSpaceStmt
+    = (DROP _ TABLESPACE _ IF _ EXISTS _ Name)
+    / (DROP _ TABLESPACE _ Name)
+
+CreateExtensionStmt
+    = (CREATE _ EXTENSION _ IF _ NOT _ EXISTS _ Name _ OptWith _ CreateExtensionOptList)
+    / (CREATE _ EXTENSION _ Name _ OptWith _ CreateExtensionOptList)
+
+CreateExtensionOptList
+    = (CreateExtensionOptList _ CreateExtensionOptItem)?
+
+CreateExtensionOptItem
+    = (SCHEMA _ Name)
+    / (VERSION _ NonReservedWordOrSconst)
+    / (FROM _ NonReservedWordOrSconst)
+    / CASCADE
+
+AlterExtensionStmt
+    = (ALTER _ EXTENSION _ Name _ UPDATE _ AlterExtensionOptList)
+
+AlterExtensionOptList
+    = (AlterExtensionOptList _ AlterExtensionOptItem)?
+
+AlterExtensionOptItem
+    = (TO _ NonReservedWordOrSconst)
+
+AlterExtensionContentsStmt
+    = (ALTER _ EXTENSION _ Name _ AddDrop _ CAST _ '(' _ Typename _ AS _ Typename _ ')')
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ PARSER _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ DICTIONARY _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ CONFIGURATION _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ FOREIGN _ DATA _ WRAPPER _ Name)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ TEMPLATE _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ OptProcedural _ LANGUAGE _ Name)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ MATERIALIZED _ VIEW _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ FOREIGN _ TABLE _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ EVENT _ TRIGGER _ Name)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ ACCESS _ METHOD _ Name)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ SCHEMA _ Name)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ TABLE _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ ROUTINE _ FunctionWithArgtypes)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ PROCEDURE _ FunctionWithArgtypes)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ OperatorWithArgtypes)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ FUNCTION _ FunctionWithArgtypes)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ SEQUENCE _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ VIEW _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ DOMAIN _ Typename)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ CONVERSION _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ COLLATION _ AnyName)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ SERVER _ Name)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ AGGREGATE _ AggregateWithArgtypes)
+    / (ALTER _ EXTENSION _ Name _ AddDrop _ TYPE _ Typename)
+
+CreateFdwStmt
+    = (CREATE _ FOREIGN _ DATA _ WRAPPER _ Name _ OptFdwOptions _ CreateGenericOptions)
+
+FdwOption
+    = (HANDLER _ HandlerName)
+    / (NO _ HANDLER)
+    / (VALIDATOR _ HandlerName)
+    / (NO _ VALIDATOR)
+
+FdwOptions
+    = FdwOption (_ FdwOption)*
+
+OptFdwOptions
+    = FdwOptions?
+
+AlterFdwStmt
+    = (ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ OptFdwOptions _ AlterGenericOptions)
+    / (ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ FdwOptions)
+
+CreateGenericOptions
+    = (OPTIONS _ '(' _ GenericOptionList _ ')')?
+
+GenericOptionList
+    = GenericOptionElem (_ ',' _ GenericOptionElem)*
+
+AlterGenericOptions
+    = (OPTIONS _ '(' _ AlterGenericOptionList _ ')')
+
+AlterGenericOptionList
+    = AlterGenericOptionElem (_ ',' _ AlterGenericOptionElem)*
+
+AlterGenericOptionElem
+    = (SET _ GenericOptionElem)
+    / (ADD _ GenericOptionElem)
+    / (DROP _ GenericOptionName)
+    / GenericOptionElem
+
+GenericOptionElem
+    = (GenericOptionName _ GenericOptionArg)
+
+GenericOptionName
+    = ColLabel
+
+GenericOptionArg
+    = Sconst
+
+CreateForeignServerStmt
+    = (CREATE _ SERVER _ IF _ NOT _ EXISTS _ Name _ OptType _ OptForeignServerVersion _ FOREIGN _ DATA _ WRAPPER _ Name _ CreateGenericOptions)
+    / (CREATE _ SERVER _ Name _ OptType _ OptForeignServerVersion _ FOREIGN _ DATA _ WRAPPER _ Name _ CreateGenericOptions)
+
+OptType
+    = (TYPE _ Sconst)?
+
+ForeignServerVersion
+    = (VERSION _ Sconst)
+    / (VERSION _ NULL)
+
+OptForeignServerVersion
+    = ForeignServerVersion?
+
+AlterForeignServerStmt
+    = (ALTER _ SERVER _ Name _ ForeignServerVersion _ AlterGenericOptions)
+    / (ALTER _ SERVER _ Name _ ForeignServerVersion)
+    / (ALTER _ SERVER _ Name _ AlterGenericOptions)
+
+CreateForeignTableStmt
+    = (CREATE _ FOREIGN _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ SERVER _ Name _ CreateGenericOptions)
+    / (CREATE _ FOREIGN _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ '(' _ OptTableElementList _ ')' _ OptInherit _ SERVER _ Name _ CreateGenericOptions)
+    / (CREATE _ FOREIGN _ TABLE _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ SERVER _ Name _ CreateGenericOptions)
+    / (CREATE _ FOREIGN _ TABLE _ QualifiedName _ '(' _ OptTableElementList _ ')' _ OptInherit _ SERVER _ Name _ CreateGenericOptions)
+
+AlterForeignTableStmt
+    = (ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ AlterTableCmds)
+    / (ALTER _ FOREIGN _ TABLE _ RelationExpr _ AlterTableCmds)
+
+ImportForeignSchemaStmt
+    = (IMPORT _ FOREIGN _ SCHEMA _ Name _ ImportQualification _ FROM _ SERVER _ Name _ INTO _ Name _ CreateGenericOptions)
+
+ImportQualificationType
+    = (LIMIT _ TO)
+    / EXCEPT
+
+ImportQualification
+    = (ImportQualificationType _ '(' _ RelationExprList _ ')')?
+
+CreateUserMappingStmt
+    = (CREATE _ USER _ MAPPING _ IF _ NOT _ EXISTS _ FOR _ AuthIdent _ SERVER _ Name _ CreateGenericOptions)
+    / (CREATE _ USER _ MAPPING _ FOR _ AuthIdent _ SERVER _ Name _ CreateGenericOptions)
+
+AuthIdent
+    = RoleSpec
+    / USER
+
+DropUserMappingStmt
+    = (DROP _ USER _ MAPPING _ IF _ EXISTS _ FOR _ AuthIdent _ SERVER _ Name)
+    / (DROP _ USER _ MAPPING _ FOR _ AuthIdent _ SERVER _ Name)
+
+AlterUserMappingStmt
+    = (ALTER _ USER _ MAPPING _ FOR _ AuthIdent _ SERVER _ Name _ AlterGenericOptions)
+
+CreatePolicyStmt
+    = (CREATE _ POLICY _ Name _ ON _ QualifiedName _ RowSecurityDefaultPermissive _ RowSecurityDefaultForCmd _ RowSecurityDefaultToRole _ RowSecurityOptionalExpr _ RowSecurityOptionalWithCheck)
+
+AlterPolicyStmt
+    = (ALTER _ POLICY _ Name _ ON _ QualifiedName _ RowSecurityOptionalToRole _ RowSecurityOptionalExpr _ RowSecurityOptionalWithCheck)
+
+RowSecurityOptionalExpr
+    = (USING _ '(' _ AExpr _ ')')?
+
+RowSecurityOptionalWithCheck
+    = (WITH _ CHECK _ '(' _ AExpr _ ')')?
+
+RowSecurityDefaultToRole
+    = (TO _ RoleList)?
+
+RowSecurityOptionalToRole
+    = (TO _ RoleList)?
+
+RowSecurityDefaultPermissive
+    = (AS _ IDENT)?
+
+RowSecurityDefaultForCmd
+    = (FOR _ RowSecurityCmd)?
+
+RowSecurityCmd
+    = ALL
+    / SELECT
+    / INSERT
+    / UPDATE
+    / DELETE
+
+CreateAmStmt
+    = (CREATE _ ACCESS _ METHOD _ Name _ TYPE _ INDEX _ HANDLER _ HandlerName)
+
+CreateTrigStmt
+    = (CREATE _ CONSTRAINT _ TRIGGER _ Name _ AFTER _ TriggerEvents _ ON _ QualifiedName _ OptConstrFromTable _ ConstraintAttributeSpec _ FOR _ EACH _ ROW _ TriggerWhen _ EXECUTE _ PROCEDURE _ FuncName _ '(' _ TriggerFuncArgs _ ')')
+    / (CREATE _ TRIGGER _ Name _ TriggerActionTime _ TriggerEvents _ ON _ QualifiedName _ TriggerReferencing _ TriggerForSpec _ TriggerWhen _ EXECUTE _ PROCEDURE _ FuncName _ '(' _ TriggerFuncArgs _ ')')
+
+TriggerActionTime
+    = (INSTEAD _ OF)
+    / BEFORE
+    / AFTER
+
+TriggerEvents
+    = TriggerOneEvent (_ OR _ TriggerOneEvent)*
+
+TriggerOneEvent
+    = (UPDATE _ OF _ ColumnList)
+    / INSERT
+    / DELETE
+    / UPDATE
+    / TRUNCATE
+
+TriggerReferencing
+    = (REFERENCING _ TriggerTransitions)?
+
+TriggerTransitions
+    = TriggerTransition (_ TriggerTransition)*
+
+TriggerTransition
+    = (TransitionOldOrNew _ TransitionRowOrTable _ OptAs _ TransitionRelName)
+
+TransitionOldOrNew
+    = NEW
+    / OLD
+
+TransitionRowOrTable
+    = TABLE
+    / ROW
+
+TransitionRelName
+    = ColId
+
+TriggerForSpec
+    = (FOR _ TriggerForOptEach _ TriggerForType)?
+
+TriggerForOptEach
+    = EACH?
+
+TriggerForType
+    = ROW
+    / STATEMENT
+
+TriggerWhen
+    = (WHEN _ '(' _ AExpr _ ')')?
+
+TriggerFuncArgs
+    = (TriggerFuncArg (_ ',' _ TriggerFuncArg)*)?
+
+TriggerFuncArg
+    = Iconst
+    / FCONST
+    / Sconst
+    / ColLabel
+
+OptConstrFromTable
+    = (FROM _ QualifiedName)?
+
+ConstraintAttributeSpec
+    = (ConstraintAttributeSpec _ ConstraintAttributeElem)?
+
+ConstraintAttributeElem
+    = (NOT _ DEFERRABLE)
+    / (INITIALLY _ IMMEDIATE)
+    / (INITIALLY _ DEFERRED)
+    / (NOT _ VALID)
+    / (NO _ INHERIT)
+    / DEFERRABLE
+
+CreateEventTrigStmt
+    = (CREATE _ EVENT _ TRIGGER _ Name _ ON _ ColLabel _ WHEN _ EventTriggerWhenList _ EXECUTE _ PROCEDURE _ FuncName _ '(' _ ')')
+    / (CREATE _ EVENT _ TRIGGER _ Name _ ON _ ColLabel _ EXECUTE _ PROCEDURE _ FuncName _ '(' _ ')')
+
+EventTriggerWhenList
+    = EventTriggerWhenItem (_ AND _ EventTriggerWhenItem)*
+
+EventTriggerWhenItem
+    = (ColId _ IN _ '(' _ EventTriggerValueList _ ')')
+
+EventTriggerValueList
+    = SCONST (_ ',' _ SCONST)*
+
+AlterEventTrigStmt
+    = (ALTER _ EVENT _ TRIGGER _ Name _ EnableTrigger)
+
+EnableTrigger
+    = (ENABLE _ REPLICA)
+    / (ENABLE _ ALWAYS)
+    / ENABLE
+    / DISABLE
+
+CreateAssertStmt
+    = (CREATE _ ASSERTION _ Name _ CHECK _ '(' _ AExpr _ ')' _ ConstraintAttributeSpec)
+
+DropAssertStmt
+    = (DROP _ ASSERTION _ Name _ OptDropBehavior)
+
+DefineStmt
+    = (CREATE _ COLLATION _ IF _ NOT _ EXISTS _ AnyName _ FROM _ AnyName)
+    / (CREATE _ TYPE _ AnyName _ AS _ ENUM _ '(' _ OptEnumValList _ ')')
+    / (CREATE _ COLLATION _ IF _ NOT _ EXISTS _ AnyName _ Definition)
+    / (CREATE _ TYPE _ AnyName _ AS _ '(' _ OptTableFuncElementList _ ')')
+    / (CREATE _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ Definition)
+    / (CREATE _ TEXT _ SEARCH _ TEMPLATE _ AnyName _ Definition)
+    / (CREATE _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ Definition)
+    / (CREATE _ TYPE _ AnyName _ AS _ RANGE _ Definition)
+    / (CREATE _ TEXT _ SEARCH _ PARSER _ AnyName _ Definition)
+    / (CREATE _ AGGREGATE _ FuncName _ AggrArgs _ Definition)
+    / (CREATE _ COLLATION _ AnyName _ FROM _ AnyName)
+    / (CREATE _ TYPE _ AnyName _ Definition)
+    / (CREATE _ OPERATOR _ AnyOperator _ Definition)
+    / (CREATE _ COLLATION _ AnyName _ Definition)
+    / (CREATE _ AGGREGATE _ FuncName _ OldAggrDefinition)
+    / (CREATE _ TYPE _ AnyName)
+
+Definition
+    = ('(' _ DefList _ ')')
+
+DefList
+    = DefElem (_ ',' _ DefElem)*
+
+DefElem
+    = (ColLabel _ '=' _ DefArg)
+    / ColLabel
+
+DefArg
+    = FuncType
+    / ReservedKeyword
+    / QualAllOp
+    / NumericOnly
+    / Sconst
+    / NONE
+
+OldAggrDefinition
+    = ('(' _ OldAggrList _ ')')
+
+OldAggrList
+    = OldAggrElem (_ ',' _ OldAggrElem)*
+
+OldAggrElem
+    = (IDENT _ '=' _ DefArg)
+
+OptEnumValList
+    = EnumValList?
+
+EnumValList
+    = Sconst (_ ',' _ Sconst)*
+
+AlterEnumStmt
+    = (ALTER _ TYPE _ AnyName _ ADD _ VALUE _ OptIfNotExists _ Sconst _ BEFORE _ Sconst)
+    / (ALTER _ TYPE _ AnyName _ ADD _ VALUE _ OptIfNotExists _ Sconst _ AFTER _ Sconst)
+    / (ALTER _ TYPE _ AnyName _ RENAME _ VALUE _ Sconst _ TO _ Sconst)
+    / (ALTER _ TYPE _ AnyName _ ADD _ VALUE _ OptIfNotExists _ Sconst)
+
+OptIfNotExists
+    = (IF _ NOT _ EXISTS)?
+
+CreateOpClassStmt
+    = (CREATE _ OPERATOR _ CLASS _ AnyName _ OptDefault _ FOR _ TYPE _ Typename _ USING _ AccessMethod _ OptOpfamily _ AS _ OpclassItemList)
+
+OpclassItemList
+    = OpclassItem (_ ',' _ OpclassItem)*
+
+OpclassItem
+    = (FUNCTION _ Iconst _ '(' _ TypeList _ ')' _ FunctionWithArgtypes)
+    / (OPERATOR _ Iconst _ AnyOperator _ OpclassPurpose _ OptRecheck)
+    / (OPERATOR _ Iconst _ OperatorWithArgtypes _ OpclassPurpose _ OptRecheck)
+    / (FUNCTION _ Iconst _ FunctionWithArgtypes)
+    / (STORAGE _ Typename)
+
+OptDefault
+    = DEFAULT?
+
+OptOpfamily
+    = (FAMILY _ AnyName)?
+
+OpclassPurpose
+    = ((FOR _ ORDER _ BY _ AnyName)
+    / (FOR _ SEARCH))?
+
+OptRecheck
+    = RECHECK?
+
+CreateOpFamilyStmt
+    = (CREATE _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod)
+
+AlterOpFamilyStmt
+    = (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ ADD _ OpclassItemList)
+    / (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ DROP _ OpclassDropList)
+
+OpclassDropList
+    = OpclassDrop (_ ',' _ OpclassDrop)*
+
+OpclassDrop
+    = (OPERATOR _ Iconst _ '(' _ TypeList _ ')')
+    / (FUNCTION _ Iconst _ '(' _ TypeList _ ')')
+
+DropOpClassStmt
+    = (DROP _ OPERATOR _ CLASS _ IF _ EXISTS _ AnyName _ USING _ AccessMethod _ OptDropBehavior)
+    / (DROP _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ OptDropBehavior)
+
+DropOpFamilyStmt
+    = (DROP _ OPERATOR _ FAMILY _ IF _ EXISTS _ AnyName _ USING _ AccessMethod _ OptDropBehavior)
+    / (DROP _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ OptDropBehavior)
+
+DropOwnedStmt
+    = (DROP _ OWNED _ BY _ RoleList _ OptDropBehavior)
+
+ReassignOwnedStmt
+    = (REASSIGN _ OWNED _ BY _ RoleList _ TO _ RoleSpec)
+
+DropStmt
+    = (DROP _ DropTypeNameOnAnyName _ IF _ EXISTS _ Name _ ON _ AnyName _ OptDropBehavior)
+    / (DROP _ INDEX _ CONCURRENTLY _ IF _ EXISTS _ AnyNameList _ OptDropBehavior)
+    / (DROP _ DropTypeAnyName _ IF _ EXISTS _ AnyNameList _ OptDropBehavior)
+    / (DROP _ TYPE _ IF _ EXISTS _ TypeNameList _ OptDropBehavior)
+    / (DROP _ DropTypeName _ IF _ EXISTS _ NameList _ OptDropBehavior)
+    / (DROP _ DOMAIN _ IF _ EXISTS _ TypeNameList _ OptDropBehavior)
+    / (DROP _ DropTypeNameOnAnyName _ Name _ ON _ AnyName _ OptDropBehavior)
+    / (DROP _ INDEX _ CONCURRENTLY _ AnyNameList _ OptDropBehavior)
+    / (DROP _ TYPE _ TypeNameList _ OptDropBehavior)
+    / (DROP _ DropTypeAnyName _ AnyNameList _ OptDropBehavior)
+    / (DROP _ DOMAIN _ TypeNameList _ OptDropBehavior)
+    / (DROP _ DropTypeName _ NameList _ OptDropBehavior)
+
+DropTypeAnyName
+    = (TEXT _ SEARCH _ CONFIGURATION)
+    / (TEXT _ SEARCH _ TEMPLATE)
+    / (TEXT _ SEARCH _ DICTIONARY)
+    / (TEXT _ SEARCH _ PARSER)
+    / (MATERIALIZED _ VIEW)
+    / (FOREIGN _ TABLE)
+    / COLLATION
+    / CONVERSION
+    / STATISTICS
+    / INDEX
+    / VIEW
+    / SEQUENCE
+    / TABLE
+
+DropTypeName
+    = (FOREIGN _ DATA _ WRAPPER)
+    / (ACCESS _ METHOD)
+    / (EVENT _ TRIGGER)
+    / EXTENSION
+    / PUBLICATION
+    / SCHEMA
+    / SERVER
+
+DropTypeNameOnAnyName
+    = POLICY
+    / RULE
+    / TRIGGER
+
+AnyNameList
+    = AnyName (_ ',' _ AnyName)*
+
+AnyName
+    = (ColId _ Attrs)
+    / ColId
+
+Attrs
+    = '.' _ AttrName (_ '.' _ AttrName)*
+
+TypeNameList
+    = Typename (_ ',' _ Typename _ TruncateStmt: _ TRUNCATE _ OptTable _ RelationExprList _ OptRestartSeqs _ OptDropBehavior)*
+
+OptRestartSeqs
+    = ((CONTINUE _ IDENTITY)
+    / (RESTART _ IDENTITY))?
+
+CommentStmt
+    = (COMMENT _ ON _ CAST _ '(' _ Typename _ AS _ Typename _ ')' _ IS _ CommentText)
+    / (COMMENT _ ON _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ IS _ CommentText)
+    / (COMMENT _ ON _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ IS _ CommentText)
+    / (COMMENT _ ON _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name _ IS _ CommentText)
+    / (COMMENT _ ON _ CONSTRAINT _ Name _ ON _ DOMAIN _ AnyName _ IS _ CommentText)
+    / (COMMENT _ ON _ TRIGGER _ Name _ ON _ AnyName _ IS _ CommentText)
+    / (COMMENT _ ON _ RULE _ Name _ ON _ AnyName _ IS _ CommentText)
+    / (COMMENT _ ON _ CONSTRAINT _ Name _ ON _ AnyName _ IS _ CommentText)
+    / (COMMENT _ ON _ POLICY _ Name _ ON _ AnyName _ IS _ CommentText)
+    / (COMMENT _ ON _ LARGE _ OBJECT _ NumericOnly _ IS _ CommentText)
+    / (COMMENT _ ON _ OPERATOR _ OperatorWithArgtypes _ IS _ CommentText)
+    / (COMMENT _ ON _ PROCEDURE _ FunctionWithArgtypes _ IS _ CommentText)
+    / (COMMENT _ ON _ FUNCTION _ FunctionWithArgtypes _ IS _ CommentText)
+    / (COMMENT _ ON _ AGGREGATE _ AggregateWithArgtypes _ IS _ CommentText)
+    / (COMMENT _ ON _ DOMAIN _ Typename _ IS _ CommentText)
+    / (COMMENT _ ON _ TYPE _ Typename _ IS _ CommentText)
+    / (COMMENT _ ON _ CommentTypeName _ Name _ IS _ CommentText)
+    / (COMMENT _ ON _ ROUTINE _ FunctionWithArgtypes _ IS _ CommentText)
+    / (COMMENT _ ON _ CommentTypeAnyName _ AnyName _ IS _ CommentText)
+
+CommentTypeAnyName
+    = (TEXT _ SEARCH _ PARSER)
+    / (TEXT _ SEARCH _ DICTIONARY)
+    / (TEXT _ SEARCH _ CONFIGURATION)
+    / (TEXT _ SEARCH _ TEMPLATE)
+    / (MATERIALIZED _ VIEW)
+    / (FOREIGN _ TABLE)
+    / COLLATION
+    / VIEW
+    / CONVERSION
+    / TABLE
+    / STATISTICS
+    / SEQUENCE
+    / INDEX
+    / COLUMN
+
+CommentTypeName
+    = (FOREIGN _ DATA _ WRAPPER)
+    / (ACCESS _ METHOD)
+    / (EVENT _ TRIGGER)
+    / (OptProcedural _ LANGUAGE)
+    / DATABASE
+    / EXTENSION
+    / PUBLICATION
+    / ROLE
+    / SCHEMA
+    / SERVER
+    / SUBSCRIPTION
+    / TABLESPACE
+
+CommentText
+    = Sconst
+    / NULL
+
+SecLabelStmt
+    = (SECURITY _ LABEL _ OptProvider _ ON _ LARGE _ OBJECT _ NumericOnly _ IS _ SecurityLabel)
+    / (SECURITY _ LABEL _ OptProvider _ ON _ SecurityLabelTypeName _ Name _ IS _ SecurityLabel)
+    / (SECURITY _ LABEL _ OptProvider _ ON _ TYPE _ Typename _ IS _ SecurityLabel)
+    / (SECURITY _ LABEL _ OptProvider _ ON _ DOMAIN _ Typename _ IS _ SecurityLabel)
+    / (SECURITY _ LABEL _ OptProvider _ ON _ AGGREGATE _ AggregateWithArgtypes _ IS _ SecurityLabel)
+    / (SECURITY _ LABEL _ OptProvider _ ON _ FUNCTION _ FunctionWithArgtypes _ IS _ SecurityLabel)
+    / (SECURITY _ LABEL _ OptProvider _ ON _ SecurityLabelTypeAnyName _ AnyName _ IS _ SecurityLabel)
+    / (SECURITY _ LABEL _ OptProvider _ ON _ PROCEDURE _ FunctionWithArgtypes _ IS _ SecurityLabel)
+    / (SECURITY _ LABEL _ OptProvider _ ON _ ROUTINE _ FunctionWithArgtypes _ IS _ SecurityLabel)
+
+OptProvider
+    = (FOR _ NonReservedWordOrSconst)?
+
+SecurityLabelTypeAnyName
+    = (FOREIGN _ TABLE)
+    / (MATERIALIZED _ VIEW)
+    / COLUMN
+    / SEQUENCE
+    / TABLE
+    / VIEW
+
+SecurityLabelTypeName
+    = (EVENT _ TRIGGER)
+    / (OptProcedural _ LANGUAGE)
+    / DATABASE
+    / PUBLICATION
+    / ROLE
+    / SCHEMA
+    / SUBSCRIPTION
+    / TABLESPACE
+
+SecurityLabel
+    = Sconst
+    / NULL
+
+FetchStmt
+    = (FETCH _ FetchArgs)
+    / (MOVE _ FetchArgs)
+
+FetchArgs
+    = (ABSOLUTE _ SignedIconst _ OptFromIn _ CursorName)
+    / (BACKWARD _ SignedIconst _ OptFromIn _ CursorName)
+    / (FORWARD _ ALL _ OptFromIn _ CursorName)
+    / (FORWARD _ SignedIconst _ OptFromIn _ CursorName)
+    / (BACKWARD _ ALL _ OptFromIn _ CursorName)
+    / (RELATIVE _ SignedIconst _ OptFromIn _ CursorName)
+    / (SignedIconst _ OptFromIn _ CursorName)
+    / (LAST _ OptFromIn _ CursorName)
+    / (FIRST _ OptFromIn _ CursorName)
+    / (ALL _ OptFromIn _ CursorName)
+    / (FORWARD _ OptFromIn _ CursorName)
+    / (PRIOR _ OptFromIn _ CursorName)
+    / (NEXT _ OptFromIn _ CursorName)
+    / (BACKWARD _ OptFromIn _ CursorName)
+    / (FromIn _ CursorName)
+    / CursorName
+
+FromIn
+    = FROM
+    / IN
+
+OptFromIn
+    = FromIn?
+
+GrantStmt
+    = (GRANT _ Privileges _ ON _ PrivilegeTarget _ TO _ GranteeList _ OptGrantGrantOption)
+
+RevokeStmt
+    = (REVOKE _ GRANT _ OPTION _ FOR _ Privileges _ ON _ PrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior)
+    / (REVOKE _ Privileges _ ON _ PrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior)
+
+Privileges
+    = (ALL _ PRIVILEGES _ '(' _ ColumnList _ ')')
+    / (ALL _ '(' _ ColumnList _ ')')
+    / (ALL _ PRIVILEGES)
+    / PrivilegeList
+    / ALL
+
+PrivilegeList
+    = Privilege (_ ',' _ Privilege)*
+
+Privilege
+    = (SELECT _ OptColumnList)
+    / (REFERENCES _ OptColumnList)
+    / (CREATE _ OptColumnList)
+    / (ColId _ OptColumnList)
+
+PrivilegeTarget
+    = (ALL _ ROUTINES _ IN _ SCHEMA _ NameList)
+    / (ALL _ PROCEDURES _ IN _ SCHEMA _ NameList)
+    / (ALL _ FUNCTIONS _ IN _ SCHEMA _ NameList)
+    / (ALL _ SEQUENCES _ IN _ SCHEMA _ NameList)
+    / (ALL _ TABLES _ IN _ SCHEMA _ NameList)
+    / (FOREIGN _ DATA _ WRAPPER _ NameList)
+    / (FOREIGN _ SERVER _ NameList)
+    / (LARGE _ OBJECT _ NumericOnlyList)
+    / (LANGUAGE _ NameList)
+    / (DOMAIN _ AnyNameList)
+    / (DATABASE _ NameList)
+    / (ROUTINE _ FunctionWithArgtypesList)
+    / (SCHEMA _ NameList)
+    / (TABLESPACE _ NameList)
+    / (TYPE _ AnyNameList)
+    / (PROCEDURE _ FunctionWithArgtypesList)
+    / (FUNCTION _ FunctionWithArgtypesList)
+    / (SEQUENCE _ QualifiedNameList)
+    / (TABLE _ QualifiedNameList)
+    / QualifiedNameList
+
+GranteeList
+    = Grantee (_ ',' _ Grantee)*
+
+Grantee
+    = (GROUP _ RoleSpec)
+    / RoleSpec
+
+OptGrantGrantOption
+    = (WITH _ GRANT _ OPTION)?
+
+GrantRoleStmt
+    = (GRANT _ PrivilegeList _ TO _ RoleList _ OptGrantAdminOption _ OptGrantedBy)
+
+RevokeRoleStmt
+    = (REVOKE _ ADMIN _ OPTION _ FOR _ PrivilegeList _ FROM _ RoleList _ OptGrantedBy _ OptDropBehavior)
+    / (REVOKE _ PrivilegeList _ FROM _ RoleList _ OptGrantedBy _ OptDropBehavior)
+
+OptGrantAdminOption
+    = (WITH _ ADMIN _ OPTION)?
+
+OptGrantedBy
+    = (GRANTED _ BY _ RoleSpec)?
+
+AlterDefaultPrivilegesStmt
+    = (ALTER _ DEFAULT _ PRIVILEGES _ DefACLOptionList _ DefACLAction)
+
+DefACLOptionList
+    = (DefACLOptionList _ DefACLOption)?
+
+DefACLOption
+    = (IN _ SCHEMA _ NameList)
+    / (FOR _ ROLE _ RoleList)
+    / (FOR _ USER _ RoleList)
+
+DefACLAction
+    = (REVOKE _ GRANT _ OPTION _ FOR _ Privileges _ ON _ DefaclPrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior)
+    / (GRANT _ Privileges _ ON _ DefaclPrivilegeTarget _ TO _ GranteeList _ OptGrantGrantOption)
+    / (REVOKE _ Privileges _ ON _ DefaclPrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior)
+
+DefaclPrivilegeTarget
+    = TABLES
+    / FUNCTIONS
+    / ROUTINES
+    / SEQUENCES
+    / TYPES
+    / SCHEMAS
+
+IndexStmt
+    = (CREATE _ OptUnique _ INDEX _ OptConcurrently _ IF _ NOT _ EXISTS _ IndexName _ ON _ RelationExpr _ AccessMethodClause _ '(' _ IndexParams _ ')' _ OptInclude _ OptReloptions _ OptTableSpace _ WhereClause)
+    / (CREATE _ OptUnique _ INDEX _ OptConcurrently _ OptIndexName _ ON _ RelationExpr _ AccessMethodClause _ '(' _ IndexParams _ ')' _ OptInclude _ OptReloptions _ OptTableSpace _ WhereClause)
+
+OptUnique
+    = UNIQUE?
+
+OptConcurrently
+    = CONCURRENTLY?
+
+OptIndexName
+    = IndexName?
+
+AccessMethodClause
+    = (USING _ AccessMethod)?
+
+IndexParams
+    = IndexElem (_ ',' _ IndexElem)*
+
+IndexElem
+    = ('(' _ AExpr _ ')' _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder)
+    / (ColId _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder)
+    / (FuncExprWindowless _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder)
+
+OptInclude
+    = (INCLUDE _ '(' _ IndexIncludingParams _ ')')?
+
+IndexIncludingParams
+    = IndexElem (_ ',' _ IndexElem)*
+
+OptCollate
+    = (COLLATE _ AnyName)?
+
+OptClass
+    = AnyName?
+
+OptAscDesc
+    = (ASC
+    / DESC)?
+
+OptNullsOrder
+    = ((NULLS _ FIRST)
+    / (NULLS _ LAST))?
+
+CreateFunctionStmt
+    = (CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ RETURNS _ TABLE _ '(' _ TableFuncColumnList _ ')' _ CreatefuncOptList)
+    / (CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ RETURNS _ FuncReturn _ CreatefuncOptList)
+    / (CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ CreatefuncOptList)
+    / (CREATE _ OptOrReplace _ PROCEDURE _ FuncName _ FuncArgsWithDefaults _ CreatefuncOptList)
+
+OptOrReplace
+    = (OR _ REPLACE)?
+
+FuncArgs
+    = ('(' _ FuncArgsList _ ')')
+    / ('(' _ ')')
+
+FuncArgsList
+    = FuncArg (_ ',' _ FuncArg)*
+
+FunctionWithArgtypesList
+    = FunctionWithArgtypes (_ ',' _ FunctionWithArgtypes)*
+
+FunctionWithArgtypes
+    = (FuncName _ FuncArgs)
+    / (ColId _ Indirection)
+    / TypeFuncNameKeyword
+    / ColId
+
+FuncArgsWithDefaults
+    = ('(' _ FuncArgsWithDefaultsList _ ')')
+    / ('(' _ ')')
+
+FuncArgsWithDefaultsList
+    = FuncArgWithDefault (_ ',' _ FuncArgWithDefault)*
+
+FuncArg
+    = (ArgClass _ ParamName _ FuncType)
+    / (ParamName _ ArgClass _ FuncType)
+    / (ParamName _ FuncType)
+    / (ArgClass _ FuncType)
+    / FuncType
+
+ArgClass
+    = (IN _ OUT)
+    / IN
+    / OUT
+    / INOUT
+    / VARIADIC
+
+ParamName
+    = TypeFunctionName
+
+FuncReturn
+    = FuncType
+
+FuncType
+    = (SETOF _ TypeFunctionName _ Attrs _ '%' _ TYPE)
+    / (TypeFunctionName _ Attrs _ '%' _ TYPE)
+    / Typename
+
+FuncArgWithDefault
+    = (FuncArg _ DEFAULT _ AExpr)
+    / (FuncArg _ '=' _ AExpr)
+    / FuncArg
+
+AggrArg
+    = FuncArg
+
+AggrArgs
+    = ('(' _ AggrArgsList _ ORDER _ BY _ AggrArgsList _ ')')
+    / ('(' _ ORDER _ BY _ AggrArgsList _ ')')
+    / ('(' _ '*' _ ')')
+    / ('(' _ AggrArgsList _ ')')
+
+AggrArgsList
+    = AggrArg (_ ',' _ AggrArg)*
+
+AggregateWithArgtypes
+    = (FuncName _ AggrArgs)
+
+AggregateWithArgtypesList
+    = AggregateWithArgtypes (_ ',' _ AggregateWithArgtypes)*
+
+CreatefuncOptList
+    = CreatefuncOptItem (_ CreatefuncOptItem)*
+
+CommonFuncOptItem
+    = (RETURNS _ NULL _ ON _ NULL _ INPUT)
+    / (CALLED _ ON _ NULL _ INPUT)
+    / (EXTERNAL _ SECURITY _ DEFINER)
+    / (EXTERNAL _ SECURITY _ INVOKER)
+    / (ROWS _ NumericOnly)
+    / (COST _ NumericOnly)
+    / (NOT _ LEAKPROOF)
+    / (SECURITY _ INVOKER)
+    / (SECURITY _ DEFINER)
+    / (PARALLEL _ ColId)
+    / LEAKPROOF
+    / STABLE
+    / IMMUTABLE
+    / STRICT
+    / FunctionSetResetClause
+    / VOLATILE
+
+CreatefuncOptItem
+    = (AS _ FuncAs)
+    / (LANGUAGE _ NonReservedWordOrSconst)
+    / (TRANSFORM _ TransformTypeList)
+    / WINDOW
+    / CommonFuncOptItem
+
+FuncAs
+    = (Sconst _ ',' _ Sconst)
+    / Sconst
+
+TransformTypeList
+    = FOR _ TYPE _ Typename (_ ',' _ FOR _ TYPE _ Typename)*
+
+OptDefinition
+    = (WITH _ Definition)?
+
+TableFuncColumn
+    = (ParamName _ FuncType)
+
+TableFuncColumnList
+    = TableFuncColumn (_ ',' _ TableFuncColumn)*
+
+AlterFunctionStmt
+    = (ALTER _ FUNCTION _ FunctionWithArgtypes _ AlterfuncOptList _ OptRestrict)
+    / (ALTER _ PROCEDURE _ FunctionWithArgtypes _ AlterfuncOptList _ OptRestrict)
+    / (ALTER _ ROUTINE _ FunctionWithArgtypes _ AlterfuncOptList _ OptRestrict)
+
+AlterfuncOptList
+    = CommonFuncOptItem (_ CommonFuncOptItem)*
+
+OptRestrict
+    = RESTRICT?
+
+RemoveFuncStmt
+    = (DROP _ FUNCTION _ IF _ EXISTS _ FunctionWithArgtypesList _ OptDropBehavior)
+    / (DROP _ PROCEDURE _ IF _ EXISTS _ FunctionWithArgtypesList _ OptDropBehavior)
+    / (DROP _ ROUTINE _ IF _ EXISTS _ FunctionWithArgtypesList _ OptDropBehavior)
+    / (DROP _ FUNCTION _ FunctionWithArgtypesList _ OptDropBehavior)
+    / (DROP _ PROCEDURE _ FunctionWithArgtypesList _ OptDropBehavior)
+    / (DROP _ ROUTINE _ FunctionWithArgtypesList _ OptDropBehavior)
+
+RemoveAggrStmt
+    = (DROP _ AGGREGATE _ IF _ EXISTS _ AggregateWithArgtypesList _ OptDropBehavior)
+    / (DROP _ AGGREGATE _ AggregateWithArgtypesList _ OptDropBehavior)
+
+RemoveOperStmt
+    = (DROP _ OPERATOR _ IF _ EXISTS _ OperatorWithArgtypesList _ OptDropBehavior)
+    / (DROP _ OPERATOR _ OperatorWithArgtypesList _ OptDropBehavior)
+
+OperArgtypes
+    = ('(' _ Typename _ ',' _ Typename _ ')')
+    / ('(' _ NONE _ ',' _ Typename _ ')')
+    / ('(' _ Typename _ ',' _ NONE _ ')')
+    / ('(' _ Typename _ ')')
+
+AnyOperator
+    = (ColId _ '.' _)* AllOp
+
+OperatorWithArgtypesList
+    = OperatorWithArgtypes (_ ',' _ OperatorWithArgtypes)*
+
+OperatorWithArgtypes
+    = (AnyOperator _ OperArgtypes)
+
+DoStmt
+    = (DO _ DostmtOptList)
+
+DostmtOptList
+    = DostmtOptItem (_ DostmtOptItem)*
+
+DostmtOptItem
+    = (LANGUAGE _ NonReservedWordOrSconst)
+    / Sconst
+
+CreateCastStmt
+    = (CREATE _ CAST _ '(' _ Typename _ AS _ Typename _ ')' _ WITH _ FUNCTION _ FunctionWithArgtypes _ CastContext)
+    / (CREATE _ CAST _ '(' _ Typename _ AS _ Typename _ ')' _ WITHOUT _ FUNCTION _ CastContext)
+    / (CREATE _ CAST _ '(' _ Typename _ AS _ Typename _ ')' _ WITH _ INOUT _ CastContext)
+
+CastContext
+    = ((AS _ IMPLICIT)
+    / (AS _ ASSIGNMENT))?
+
+DropCastStmt
+    = (DROP _ CAST _ OptIfExists _ '(' _ Typename _ AS _ Typename _ ')' _ OptDropBehavior)
+
+OptIfExists
+    = (IF _ EXISTS)?
+
+CreateTransformStmt
+    = (CREATE _ OptOrReplace _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name _ '(' _ TransformElementList _ ')')
+
+TransformElementList
+    = (FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes _ ',' _ TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
+    / (TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes _ ',' _ FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
+    / (FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
+    / (TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
+
+DropTransformStmt
+    = (DROP _ TRANSFORM _ OptIfExists _ FOR _ Typename _ LANGUAGE _ Name _ OptDropBehavior)
+
+ReindexStmt
+    = (REINDEX _ '(' _ ReindexOptionList _ ')' _ ReindexTargetType _ QualifiedName)
+    / (REINDEX _ '(' _ ReindexOptionList _ ')' _ ReindexTargetMultitable _ Name)
+    / (REINDEX _ ReindexTargetType _ QualifiedName)
+    / (REINDEX _ ReindexTargetMultitable _ Name)
+
+ReindexTargetType
+    = INDEX
+    / TABLE
+
+ReindexTargetMultitable
+    = SCHEMA
+    / SYSTEM
+    / DATABASE
+
+ReindexOptionList
+    = ReindexOptionElem (_ ',' _ ReindexOptionElem)*
+
+ReindexOptionElem
+    = VERBOSE
+
+AlterTblSpcStmt
+    = (ALTER _ TABLESPACE _ Name _ SET _ Reloptions)
+    / (ALTER _ TABLESPACE _ Name _ RESET _ Reloptions)
+
+RenameStmt
+    = (ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name)
+    / (ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ RENAME _ OptColumn _ Name _ TO _ Name)
+    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ CONSTRAINT _ Name _ TO _ Name)
+    / (ALTER _ POLICY _ IF _ EXISTS _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name)
+    / (ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ RENAME _ OptColumn _ Name _ TO _ Name)
+    / (ALTER _ FOREIGN _ TABLE _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name)
+    / (ALTER _ TYPE _ AnyName _ RENAME _ ATTRIBUTE _ Name _ TO _ Name _ OptDropBehavior)
+    / (ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ TO _ Name)
+    / (ALTER _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ RENAME _ TO _ Name)
+    / (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ RENAME _ TO _ Name)
+    / (ALTER _ POLICY _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ TRIGGER _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ RENAME _ TO _ Name)
+    / (ALTER _ TABLE _ RelationExpr _ RENAME _ CONSTRAINT _ Name _ TO _ Name)
+    / (ALTER _ DOMAIN _ AnyName _ RENAME _ CONSTRAINT _ Name _ TO _ Name)
+    / (ALTER _ TEXT _ SEARCH _ PARSER _ AnyName _ RENAME _ TO _ Name)
+    / (ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ RENAME _ TO _ Name)
+    / (ALTER _ TEXT _ SEARCH _ TEMPLATE _ AnyName _ RENAME _ TO _ Name)
+    / (ALTER _ TABLE _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name)
+    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ TO _ Name)
+    / (ALTER _ INDEX _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ RENAME _ TO _ Name)
+    / (ALTER _ VIEW _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ RULE _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ OptProcedural _ LANGUAGE _ Name _ RENAME _ TO _ Name)
+    / (ALTER _ EVENT _ TRIGGER _ Name _ RENAME _ TO _ Name)
+    / (ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ FOREIGN _ TABLE _ RelationExpr _ RENAME _ TO _ Name)
+    / (ALTER _ STATISTICS _ AnyName _ RENAME _ TO _ Name)
+    / (ALTER _ TABLE _ RelationExpr _ RENAME _ TO _ Name)
+    / (ALTER _ SERVER _ Name _ RENAME _ TO _ Name)
+    / (ALTER _ SCHEMA _ Name _ RENAME _ TO _ Name)
+    / (ALTER _ ROUTINE _ FunctionWithArgtypes _ RENAME _ TO _ Name)
+    / (ALTER _ PUBLICATION _ Name _ RENAME _ TO _ Name)
+    / (ALTER _ PROCEDURE _ FunctionWithArgtypes _ RENAME _ TO _ Name)
+    / (ALTER _ AGGREGATE _ AggregateWithArgtypes _ RENAME _ TO _ Name)
+    / (ALTER _ SUBSCRIPTION _ Name _ RENAME _ TO _ Name)
+    / (ALTER _ SEQUENCE _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ GROUP _ RoleId _ RENAME _ TO _ RoleId)
+    / (ALTER _ INDEX _ QualifiedName _ RENAME _ TO _ Name)
+    / (ALTER _ ROLE _ RoleId _ RENAME _ TO _ RoleId)
+    / (ALTER _ USER _ RoleId _ RENAME _ TO _ RoleId)
+    / (ALTER _ TABLESPACE _ Name _ RENAME _ TO _ Name)
+    / (ALTER _ FUNCTION _ FunctionWithArgtypes _ RENAME _ TO _ Name)
+    / (ALTER _ DOMAIN _ AnyName _ RENAME _ TO _ Name)
+    / (ALTER _ DATABASE _ DatabaseName _ RENAME _ TO _ DatabaseName)
+    / (ALTER _ CONVERSION _ AnyName _ RENAME _ TO _ Name)
+    / (ALTER _ COLLATION _ AnyName _ RENAME _ TO _ Name)
+    / (ALTER _ TYPE _ AnyName _ RENAME _ TO _ Name)
+    / (ALTER _ VIEW _ QualifiedName _ RENAME _ TO _ Name)
+
+OptColumn
+    = COLUMN?
+
+OptSetData
+    = (SET _ DATA)?
+
+AlterObjectDependsStmt
+    = (ALTER _ TRIGGER _ Name _ ON _ QualifiedName _ DEPENDS _ ON _ EXTENSION _ Name)
+    / (ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ DEPENDS _ ON _ EXTENSION _ Name)
+    / (ALTER _ FUNCTION _ FunctionWithArgtypes _ DEPENDS _ ON _ EXTENSION _ Name)
+    / (ALTER _ PROCEDURE _ FunctionWithArgtypes _ DEPENDS _ ON _ EXTENSION _ Name)
+    / (ALTER _ ROUTINE _ FunctionWithArgtypes _ DEPENDS _ ON _ EXTENSION _ Name)
+    / (ALTER _ INDEX _ QualifiedName _ DEPENDS _ ON _ EXTENSION _ Name)
+
+AlterObjectSchemaStmt
+    = (ALTER _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ SET _ SCHEMA _ Name)
+    / (ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ SET _ SCHEMA _ Name)
+    / (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ SET _ SCHEMA _ Name)
+    / (ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ SET _ SCHEMA _ Name)
+    / (ALTER _ TEXT _ SEARCH _ PARSER _ AnyName _ SET _ SCHEMA _ Name)
+    / (ALTER _ VIEW _ IF _ EXISTS _ QualifiedName _ SET _ SCHEMA _ Name)
+    / (ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ SET _ SCHEMA _ Name)
+    / (ALTER _ TEXT _ SEARCH _ TEMPLATE _ AnyName _ SET _ SCHEMA _ Name)
+    / (ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ SET _ SCHEMA _ Name)
+    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ SET _ SCHEMA _ Name)
+    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ SET _ SCHEMA _ Name)
+    / (ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ SET _ SCHEMA _ Name)
+    / (ALTER _ FOREIGN _ TABLE _ RelationExpr _ SET _ SCHEMA _ Name)
+    / (ALTER _ AGGREGATE _ AggregateWithArgtypes _ SET _ SCHEMA _ Name)
+    / (ALTER _ STATISTICS _ AnyName _ SET _ SCHEMA _ Name)
+    / (ALTER _ TABLE _ RelationExpr _ SET _ SCHEMA _ Name)
+    / (ALTER _ ROUTINE _ FunctionWithArgtypes _ SET _ SCHEMA _ Name)
+    / (ALTER _ PROCEDURE _ FunctionWithArgtypes _ SET _ SCHEMA _ Name)
+    / (ALTER _ SEQUENCE _ QualifiedName _ SET _ SCHEMA _ Name)
+    / (ALTER _ OPERATOR _ OperatorWithArgtypes _ SET _ SCHEMA _ Name)
+    / (ALTER _ VIEW _ QualifiedName _ SET _ SCHEMA _ Name)
+    / (ALTER _ FUNCTION _ FunctionWithArgtypes _ SET _ SCHEMA _ Name)
+    / (ALTER _ EXTENSION _ Name _ SET _ SCHEMA _ Name)
+    / (ALTER _ DOMAIN _ AnyName _ SET _ SCHEMA _ Name)
+    / (ALTER _ CONVERSION _ AnyName _ SET _ SCHEMA _ Name)
+    / (ALTER _ COLLATION _ AnyName _ SET _ SCHEMA _ Name)
+    / (ALTER _ TYPE _ AnyName _ SET _ SCHEMA _ Name)
+
+AlterOperatorStmt
+    = (ALTER _ OPERATOR _ OperatorWithArgtypes _ SET _ '(' _ OperatorDefList _ ')')
+
+OperatorDefList
+    = OperatorDefElem (_ ',' _ OperatorDefElem)*
+
+OperatorDefElem
+    = (ColLabel _ '=' _ NONE)
+    / (ColLabel _ '=' _ OperatorDefArg)
+
+OperatorDefArg
+    = FuncType
+    / ReservedKeyword
+    / QualAllOp
+    / NumericOnly
+    / Sconst
+
+AlterOwnerStmt
+    = (ALTER _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ EVENT _ TRIGGER _ Name _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ OptProcedural _ LANGUAGE _ Name _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ LARGE _ OBJECT _ NumericOnly _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ AGGREGATE _ AggregateWithArgtypes _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ OPERATOR _ OperatorWithArgtypes _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ FUNCTION _ FunctionWithArgtypes _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ PROCEDURE _ FunctionWithArgtypes _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ ROUTINE _ FunctionWithArgtypes _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ SCHEMA _ Name _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ TYPE _ AnyName _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ TABLESPACE _ Name _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ STATISTICS _ AnyName _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ DOMAIN _ AnyName _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ DATABASE _ DatabaseName _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ CONVERSION _ AnyName _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ SERVER _ Name _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ COLLATION _ AnyName _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ PUBLICATION _ Name _ OWNER _ TO _ RoleSpec)
+    / (ALTER _ SUBSCRIPTION _ Name _ OWNER _ TO _ RoleSpec)
+
+CreatePublicationStmt
+    = (CREATE _ PUBLICATION _ Name _ OptPublicationForTables _ OptDefinition)
+
+OptPublicationForTables
+    = PublicationForTables?
+
+PublicationForTables
+    = (FOR _ TABLE _ RelationExprList)
+    / (FOR _ ALL _ TABLES)
+
+AlterPublicationStmt
+    = (ALTER _ PUBLICATION _ Name _ ADD _ TABLE _ RelationExprList)
+    / (ALTER _ PUBLICATION _ Name _ SET _ TABLE _ RelationExprList)
+    / (ALTER _ PUBLICATION _ Name _ DROP _ TABLE _ RelationExprList)
+    / (ALTER _ PUBLICATION _ Name _ SET _ Definition)
+
+CreateSubscriptionStmt
+    = (CREATE _ SUBSCRIPTION _ Name _ CONNECTION _ Sconst _ PUBLICATION _ PublicationNameList _ OptDefinition)
+
+PublicationNameList
+    = PublicationNameItem (_ ',' _ PublicationNameItem)*
+
+PublicationNameItem
+    = ColLabel
+
+AlterSubscriptionStmt
+    = (ALTER _ SUBSCRIPTION _ Name _ SET _ PUBLICATION _ PublicationNameList _ OptDefinition)
+    / (ALTER _ SUBSCRIPTION _ Name _ REFRESH _ PUBLICATION _ OptDefinition)
+    / (ALTER _ SUBSCRIPTION _ Name _ SET _ Definition)
+    / (ALTER _ SUBSCRIPTION _ Name _ CONNECTION _ Sconst)
+    / (ALTER _ SUBSCRIPTION _ Name _ ENABLE)
+    / (ALTER _ SUBSCRIPTION _ Name _ DISABLE)
+
+DropSubscriptionStmt
+    = (DROP _ SUBSCRIPTION _ IF _ EXISTS _ Name _ OptDropBehavior)
+    / (DROP _ SUBSCRIPTION _ Name _ OptDropBehavior)
+
+RuleStmt
+    = (CREATE _ OptOrReplace _ RULE _ Name _ AS _ ON _ Event _ TO _ QualifiedName _ WhereClause _ DO _ OptInstead _ RuleActionList)
+
+RuleActionList
+    = ('(' _ RuleActionMulti _ ')')
+    / NOTHING
+    / RuleActionStmt
+
+RuleActionMulti
+    = RuleActionStmtOrEmpty (_ ';' _ RuleActionStmtOrEmpty)*
+
+RuleActionStmt
+    = SelectStmt
+    / InsertStmt
+    / UpdateStmt
+    / DeleteStmt
+    / NotifyStmt
+
+RuleActionStmtOrEmpty
+    = RuleActionStmt?
+
+Event
+    = SELECT
+    / UPDATE
+    / DELETE
+    / INSERT
+
+OptInstead
+    = (INSTEAD
+    / ALSO)?
+
+NotifyStmt
+    = (NOTIFY _ ColId _ NotifyPayload)
+
+NotifyPayload
+    = (',' _ Sconst)?
+
+ListenStmt
+    = (LISTEN _ ColId)
+
+UnlistenStmt
+    = (UNLISTEN _ ColId)
+    / (UNLISTEN _ '*')
+
+TransactionStmt
+    = (ROLLBACK _ OptTransaction _ TO _ SAVEPOINT _ ColId)
+    / (ROLLBACK _ OptTransaction _ TO _ ColId)
+    / (BEGIN _ OptTransaction _ TransactionModeListOrEmpty)
+    / (START _ TRANSACTION _ TransactionModeListOrEmpty)
+    / (COMMIT _ PREPARED _ Sconst)
+    / (PREPARE _ TRANSACTION _ Sconst)
+    / (RELEASE _ SAVEPOINT _ ColId)
+    / (ROLLBACK _ PREPARED _ Sconst)
+    / (RELEASE _ ColId)
+    / (SAVEPOINT _ ColId)
+    / (ROLLBACK _ OptTransaction)
+    / (END _ OptTransaction)
+    / (COMMIT _ OptTransaction)
+    / (ABORT _ OptTransaction)
+
+OptTransaction
+    = (WORK
+    / TRANSACTION)?
+
+TransactionModeItem
+    = (ISOLATION _ LEVEL _ IsoLevel)
+    / (READ _ ONLY)
+    / (READ _ WRITE)
+    / (NOT _ DEFERRABLE)
+    / DEFERRABLE
+
+TransactionModeList
+    = TransactionModeItem ((_ ',' _ TransactionModeItem) / (_ TransactionModeItem))*
+
+TransactionModeListOrEmpty
+    = TransactionModeList?
+
+ViewStmt
+    = (CREATE _ OR _ REPLACE _ OptTemp _ RECURSIVE _ VIEW _ QualifiedName _ '(' _ ColumnList _ ')' _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
+    / (CREATE _ OptTemp _ RECURSIVE _ VIEW _ QualifiedName _ '(' _ ColumnList _ ')' _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
+    / (CREATE _ OR _ REPLACE _ OptTemp _ VIEW _ QualifiedName _ OptColumnList _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
+    / (CREATE _ OptTemp _ VIEW _ QualifiedName _ OptColumnList _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
+
+OptCheckOption
+    = ((WITH _ CASCADED _ CHECK _ OPTION)
+    / (WITH _ LOCAL _ CHECK _ OPTION)
+    / (WITH _ CHECK _ OPTION))?
+
+LoadStmt
+    = (LOAD _ FileName)
+
+CreatedbStmt
+    = (CREATE _ DATABASE _ DatabaseName _ OptWith _ CreatedbOptList)
+
+CreatedbOptList
+    = CreatedbOptItems?
+
+CreatedbOptItems
+    = CreatedbOptItem (_ CreatedbOptItem)*
+
+CreatedbOptItem
+    = (CreatedbOptName _ OptEqual _ SignedIconst)
+    / (CreatedbOptName _ OptEqual _ OptBooleanOrString)
+    / (CreatedbOptName _ OptEqual _ DEFAULT)
+
+CreatedbOptName
+    = (CONNECTION _ LIMIT)
+    / IDENT
+    / ENCODING
+    / LOCATION
+    / OWNER
+    / TABLESPACE
+    / TEMPLATE
+
+OptEqual
+    = '='?
+
+AlterDatabaseStmt
+    = (ALTER _ DATABASE _ DatabaseName _ SET _ TABLESPACE _ Name)
+    / (ALTER _ DATABASE _ DatabaseName _ WITH _ CreatedbOptList)
+    / (ALTER _ DATABASE _ DatabaseName _ CreatedbOptList)
+
+AlterDatabaseSetStmt
+    = (ALTER _ DATABASE _ DatabaseName _ SetResetClause)
+
+DropdbStmt
+    = (DROP _ DATABASE _ IF _ EXISTS _ DatabaseName)
+    / (DROP _ DATABASE _ DatabaseName)
+
+AlterCollationStmt
+    = (ALTER _ COLLATION _ AnyName _ REFRESH _ VERSION)
+
+AlterSystemStmt
+    = (ALTER _ SYSTEM _ SET _ GenericSet)
+    / (ALTER _ SYSTEM _ RESET _ GenericReset)
+
+CreateDomainStmt
+    = (CREATE _ DOMAIN _ AnyName _ OptAs _ Typename _ ColQualList)
+
+AlterDomainStmt
+    = (ALTER _ DOMAIN _ AnyName _ DROP _ CONSTRAINT _ IF _ EXISTS _ Name _ OptDropBehavior)
+    / (ALTER _ DOMAIN _ AnyName _ DROP _ CONSTRAINT _ Name _ OptDropBehavior)
+    / (ALTER _ DOMAIN _ AnyName _ VALIDATE _ CONSTRAINT _ Name)
+    / (ALTER _ DOMAIN _ AnyName _ DROP _ NOT _ NULL)
+    / (ALTER _ DOMAIN _ AnyName _ SET _ NOT _ NULL)
+    / (ALTER _ DOMAIN _ AnyName _ ADD _ TableConstraint)
+    / (ALTER _ DOMAIN _ AnyName _ AlterColumnDefault)
+
+OptAs
+    = AS?
+
+AlterTSDictionaryStmt
+    = (ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ Definition)
+
+AlterTSConfigurationStmt
+    = (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ALTER _ MAPPING _ FOR _ NameList _ REPLACE _ AnyName _ AnyWith _ AnyName)
+    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ADD _ MAPPING _ FOR _ NameList _ AnyWith _ AnyNameList)
+    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ALTER _ MAPPING _ FOR _ NameList _ AnyWith _ AnyNameList)
+    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ALTER _ MAPPING _ REPLACE _ AnyName _ AnyWith _ AnyName)
+    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ DROP _ MAPPING _ IF _ EXISTS _ FOR _ NameList)
+    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ DROP _ MAPPING _ FOR _ NameList)
+
+AnyWith
+    = WITH
+
+CreateConversionStmt
+    = (CREATE _ OptDefault _ CONVERSION _ AnyName _ FOR _ Sconst _ TO _ Sconst _ FROM _ AnyName)
+
+ClusterStmt
+    = (CLUSTER _ OptVerbose _ IndexName _ ON _ QualifiedName)
+    / (CLUSTER _ OptVerbose _ QualifiedName _ ClusterIndexSpecification)
+    / (CLUSTER _ OptVerbose)
+
+ClusterIndexSpecification
+    = (USING _ IndexName)?
+
+VacuumStmt
+    = (VACUUM _ OptFull _ OptFreeze _ OptVerbose _ OptAnalyze _ OptVacuumRelationList)
+    / (VACUUM _ '(' _ VacuumOptionList _ ')' _ OptVacuumRelationList)
+
+VacuumOptionList
+    = VacuumOptionElem (_ ',' _ VacuumOptionElem)*
+
+VacuumOptionElem
+    = AnalyzeKeyword
+    / VERBOSE
+    / FREEZE
+    / FULL
+    / IDENT
+
+AnalyzeStmt
+    = (AnalyzeKeyword _ '(' _ AnalyzeOptionList _ ')' _ OptVacuumRelationList)
+    / (AnalyzeKeyword _ OptVerbose _ OptVacuumRelationList)
+
+AnalyzeOptionList
+    = AnalyzeOptionElem (_ ',' _ AnalyzeOptionElem)*
+
+AnalyzeOptionElem
+    = VERBOSE
+
+AnalyzeKeyword
+    = ANALYZE
+    / ANALYSE
+
+OptAnalyze
+    = AnalyzeKeyword?
+
+OptVerbose
+    = VERBOSE?
+
+OptFull
+    = FULL?
+
+OptFreeze
+    = FREEZE?
+
+OptNameList
+    = ('(' _ NameList _ ')')?
+
+VacuumRelation
+    = (QualifiedName _ OptNameList)
+
+VacuumRelationList
+    = VacuumRelation (_ ',' _ VacuumRelation)*
+
+OptVacuumRelationList
+    = VacuumRelationList?
+
+ExplainStmt
+    = (EXPLAIN _ '(' _ ExplainOptionList _ ')' _ ExplainableStmt)
+    / (EXPLAIN _ AnalyzeKeyword _ OptVerbose _ ExplainableStmt)
+    / (EXPLAIN _ VERBOSE _ ExplainableStmt)
+    / (EXPLAIN _ ExplainableStmt)
+
+ExplainableStmt
+    = SelectStmt
+    / InsertStmt
+    / UpdateStmt
+    / DeleteStmt
+    / DeclareCursorStmt
+    / CreateAsStmt
+    / CreateMatViewStmt
+    / RefreshMatViewStmt
+    / ExecuteStmt
+
+ExplainOptionList
+    = ExplainOptionElem (_ ',' _ ExplainOptionElem)*
+
+ExplainOptionElem
+    = (ExplainOptionName _ ExplainOptionArg)
+
+ExplainOptionName
+    = NonReservedWord
+    / AnalyzeKeyword
+
+ExplainOptionArg
+    = (OptBooleanOrString
+    / NumericOnly)?
+
+PrepareStmt
+    = (PREPARE _ Name _ PrepTypeClause _ AS _ PreparableStmt)
+
+PrepTypeClause
+    = ('(' _ TypeList _ ')')?
+
+PreparableStmt
+    = SelectStmt
+    / InsertStmt
+    / UpdateStmt
+    / DeleteStmt
+
+ExecuteStmt
+    = (CREATE _ OptTemp _ TABLE _ CreateAsTarget _ AS _ EXECUTE _ Name _ ExecuteParamClause _ OptWithData)
+    / (EXECUTE _ Name _ ExecuteParamClause)
+
+ExecuteParamClause
+    = ('(' _ ExprList _ ')')?
+
+DeallocateStmt
+    = (DEALLOCATE _ PREPARE _ Name)
+    / (DEALLOCATE _ PREPARE _ ALL)
+    / (DEALLOCATE _ Name)
+    / (DEALLOCATE _ ALL)
+
+InsertStmt
+    = (OptWithClause _ INSERT _ INTO _ InsertTarget _ InsertRest _ OptOnConflict _ ReturningClause)
+
+InsertTarget
+    = (QualifiedName _ AS _ ColId)
+    / QualifiedName
+
+InsertRest
+    = ('(' _ InsertColumnList _ ')' _ OVERRIDING _ OverrideKind _ VALUE _ SelectStmt)
+    / (OVERRIDING _ OverrideKind _ VALUE _ SelectStmt)
+    / ('(' _ InsertColumnList _ ')' _ SelectStmt)
+    / (DEFAULT _ VALUES)
+    / SelectStmt
+
+OverrideKind
+    = USER
+    / SYSTEM
+
+InsertColumnList
+    = InsertColumnItem (_ ',' _ InsertColumnItem)*
+
+InsertColumnItem
+    = (ColId _ OptIndirection)
+
+OptOnConflict
+    = ((ON _ CONFLICT _ OptConfExpr _ DO _ UPDATE _ SET _ SetClauseList _ WhereClause)
+    / (ON _ CONFLICT _ OptConfExpr _ DO _ NOTHING))?
+
+OptConfExpr
+    = (('(' _ IndexParams _ ')' _ WhereClause)
+    / (ON _ CONSTRAINT _ Name))?
+
+ReturningClause
+    = (RETURNING _ TargetList)?
+
+DeleteStmt
+    = (OptWithClause _ DELETE _ FROM _ RelationExprOptAlias _ UsingClause _ WhereOrCurrentClause _ ReturningClause)
+
+UsingClause
+    = (USING _ FromList)?
+
+LockStmt
+    = (LOCK _ OptTable _ RelationExprList _ OptLock _ OptNowait)
+
+OptLock
+    = (IN _ LockType _ MODE)?
+
+LockType
+    = (SHARE _ UPDATE _ EXCLUSIVE)
+    / (SHARE _ ROW _ EXCLUSIVE)
+    / (ACCESS _ SHARE)
+    / (ROW _ SHARE)
+    / (ROW _ EXCLUSIVE)
+    / (ACCESS _ EXCLUSIVE)
+    / SHARE
+    / EXCLUSIVE
+
+OptNowait
+    = NOWAIT?
+
+OptNowaitOrSkip
+    = ((SKIP _ LOCKED)
+    / NOWAIT)?
+
+UpdateStmt
+    = (OptWithClause _ UPDATE _ RelationExprOptAlias _ SET _ SetClauseList _ FromClause _ WhereOrCurrentClause _ ReturningClause)
+
+SetClauseList
+    = SetClause (_ ',' _ SetClause)*
+
+SetClause
+    = ('(' _ SetTargetList _ ')' _ '=' _ AExpr)
+    / (SetTarget _ '=' _ AExpr)
+
+SetTarget
+    = (ColId _ OptIndirection)
+
+SetTargetList
+    = SetTarget (_ ',' _ SetTarget)*
+
+DeclareCursorStmt
+    = (DECLARE _ CursorName _ CursorOptions _ CURSOR _ OptHold _ FOR _ SelectStmt)
+
+CursorName
+    = Name
+
+CursorOptions
+    = ((_ NO _ SCROLL)
+    / (_ SCROLL)
+    / (_ BINARY)
+    / (_ INSENSITIVE))*
+
+OptHold
+    = ((WITH _ HOLD)
+    / (WITHOUT _ HOLD))?
+
+SelectStmt
+    = SelectNoParens
+    / SelectWithParens
+
+SelectWithParens
+    = ('(' _ SelectNoParens _ ')')
+    / ('(' _ SelectWithParens _ ')')
+
+SelectNoParens
+    = (WithClause _ SelectClause _ OptSortClause _ ForLockingClause _ OptSelectLimit)
+    / (WithClause _ SelectClause _ OptSortClause _ SelectLimit _ OptForLockingClause)
+    / (SelectClause _ OptSortClause _ ForLockingClause _ OptSelectLimit)
+    / (SelectClause _ OptSortClause _ SelectLimit _ OptForLockingClause)
+    / (WithClause _ SelectClause _ SortClause)
+    / (WithClause _ SelectClause)
+    / (SelectClause _ SortClause)
+    / SimpleSelect
+
+SelectClause
+    = SimpleSelect
+    / SelectWithParens
+
+SimpleSelect
+    = (SELECT _ OptAllClause _ OptTargetList _ IntoClause _ FromClause _ WhereClause _ GroupClause _ HavingClause _ WindowClause)
+    / (SELECT _ DistinctClause _ TargetList _ IntoClause _ FromClause _ WhereClause _ GroupClause _ HavingClause _ WindowClause)
+    / (SelectClause _ UNION _ AllOrDistinct _ SelectClause)
+    / (SelectClause _ INTERSECT _ AllOrDistinct _ SelectClause)
+    / (SelectClause _ EXCEPT _ AllOrDistinct _ SelectClause)
+    / (TABLE _ RelationExpr)
+    / ValuesClause
+
+WithClause
+    = (WITH _ RECURSIVE _ CteList)
+    / (WITH _ CteList)
+
+CteList
+    = CommonTableExpr (_ ',' _ CommonTableExpr)*
+
+CommonTableExpr
+    = (Name _ OptNameList _ AS _ '(' _ PreparableStmt _ ')')
+
+OptWithClause
+    = WithClause?
+
+IntoClause
+    = (INTO _ OptTempTableName)?
+
+OptTempTableName
+    = (LOCAL _ TEMPORARY _ OptTable _ QualifiedName)
+    / (LOCAL _ TEMP _ OptTable _ QualifiedName)
+    / (GLOBAL _ TEMPORARY _ OptTable _ QualifiedName)
+    / (GLOBAL _ TEMP _ OptTable _ QualifiedName)
+    / (TEMPORARY _ OptTable _ QualifiedName)
+    / (TEMP _ OptTable _ QualifiedName)
+    / (UNLOGGED _ OptTable _ QualifiedName)
+    / (TABLE _ QualifiedName)
+    / QualifiedName
+
+OptTable
+    = TABLE?
+
+AllOrDistinct
+    = (ALL
+    / DISTINCT)?
+
+DistinctClause
+    = (DISTINCT _ ON _ '(' _ ExprList _ ')')
+    / DISTINCT
+
+OptAllClause
+    = ALL?
+
+OptSortClause
+    = SortClause?
+
+SortClause
+    = (ORDER _ BY _ SortbyList)
+
+SortbyList
+    = Sortby (_ ',' _ Sortby)*
+
+Sortby
+    = (AExpr _ USING _ QualAllOp _ OptNullsOrder)
+    / (AExpr _ OptAscDesc _ OptNullsOrder)
+
+SelectLimit
+    = (LimitClause _ OffsetClause)
+    / (OffsetClause _ LimitClause)
+    / LimitClause
+    / OffsetClause
+
+OptSelectLimit
+    = SelectLimit?
+
+LimitClause
+    = (FETCH _ FirstOrNext _ OptSelectFetchFirstValue _ RowOrRows _ ONLY)
+    / (LIMIT _ SelectLimitValue _ ',' _ SelectOffsetValue)
+    / (LIMIT _ SelectLimitValue)
+
+OffsetClause
+    = (OFFSET _ SelectOffsetValue2 _ RowOrRows)
+    / (OFFSET _ SelectOffsetValue)
+
+SelectLimitValue
+    = AExpr
+    / ALL
+
+SelectOffsetValue
+    = AExpr
+
+OptSelectFetchFirstValue
+    = (('(' _ AExpr _ ')')
+    / SignedIconst)?
+
+SelectOffsetValue2
+    = CExpr
+
+RowOrRows
+    = ROW
+    / ROWS
+
+FirstOrNext
+    = FIRST
+    / NEXT
+
+GroupClause
+    = (GROUP _ BY _ GroupByList)?
+
+GroupByList
+    = GroupByItem (_ ',' _ GroupByItem)*
+
+GroupByItem
+    = AExpr
+    / EmptyGroupingSet
+    / CubeClause
+    / RollupClause
+    / GroupingSetsClause
+
+EmptyGroupingSet
+    = ('(' _ ')')
+
+RollupClause
+    = (ROLLUP _ '(' _ ExprList _ ')')
+
+CubeClause
+    = (CUBE _ '(' _ ExprList _ ')')
+
+GroupingSetsClause
+    = (GROUPING _ SETS _ '(' _ GroupByList _ ')')
+
+HavingClause
+    = (HAVING _ AExpr)?
+
+ForLockingClause
+    = (FOR _ READ _ ONLY)
+    / ForLockingItems
+
+OptForLockingClause
+    = ForLockingClause?
+
+ForLockingItems
+    = ForLockingItem (_ ForLockingItem)*
+
+ForLockingItem
+    = (ForLockingStrength _ LockedRelsList _ OptNowaitOrSkip)
+
+ForLockingStrength
+    = (FOR _ NO _ KEY _ UPDATE)
+    / (FOR _ KEY _ SHARE)
+    / (FOR _ UPDATE)
+    / (FOR _ SHARE)
+
+LockedRelsList
+    = (OF _ QualifiedNameList)?
+
+ValuesClause
+    = VALUES _ '(' _ ExprList _ ')' (_ ',' _ '(' _ ExprList _ ')')*
+
+FromClause
+    = (FROM _ FromList)?
+
+FromList
+    = TableRef (_ ',' _ TableRef)*
+
+TableRef
+    = ('(' _ JoinedTable _ ')' _ AliasClause)
+    / (RelationExpr _ OptAliasClause _ TablesampleClause)
+    / (LATERAL _ Xmltable _ OptAliasClause)
+    / (LATERAL _ SelectWithParens _ OptAliasClause)
+    / (LATERAL _ FuncTable _ FuncAliasClause)
+    / (RelationExpr _ OptAliasClause)
+    / (FuncTable _ FuncAliasClause)
+    / (Xmltable _ OptAliasClause)
+    / (SelectWithParens _ OptAliasClause)
+    / JoinedTable
+
+JoinedTable
+    = (TableRef _ JoinType _ JOIN _ TableRef _ JoinQual)
+    / (TableRef _ NATURAL _ JoinType _ JOIN _ TableRef)
+    / (TableRef _ CROSS _ JOIN _ TableRef)
+    / (TableRef _ JOIN _ TableRef _ JoinQual)
+    / (TableRef _ NATURAL _ JOIN _ TableRef)
+    / ('(' _ JoinedTable _ ')')
+
+AliasClause
+    = (AS _ ColId _ '(' _ NameList _ ')')
+    / (ColId _ '(' _ NameList _ ')')
+    / (AS _ ColId)
+    / ColId
+
+OptAliasClause
+    = AliasClause?
+
+FuncAliasClause
+    = ((AS _ ColId _ '(' _ TableFuncElementList _ ')')
+    / (AS _ '(' _ TableFuncElementList _ ')')
+    / (ColId _ '(' _ TableFuncElementList _ ')')
+    / AliasClause)?
+
+JoinType
+    = (FULL _ JoinOuter)
+    / (LEFT _ JoinOuter)
+    / (RIGHT _ JoinOuter)
+    / INNER
+
+JoinOuter
+    = OUTER?
+
+JoinQual
+    = (USING _ '(' _ NameList _ ')')
+    / (ON _ AExpr)
+
+RelationExpr
+    = (ONLY _ '(' _ QualifiedName _ ')')
+    / (QualifiedName _ '*')
+    / (ONLY _ QualifiedName)
+    / QualifiedName
+
+RelationExprList
+    = RelationExpr (_ ',' _ RelationExpr)*
+
+RelationExprOptAlias
+    = (RelationExpr _ AS _ ColId)
+    / (RelationExpr _ ColId)
+    / RelationExpr
+
+TablesampleClause
+    = (TABLESAMPLE _ FuncName _ '(' _ ExprList _ ')' _ OptRepeatableClause)
+
+OptRepeatableClause
+    = (REPEATABLE _ '(' _ AExpr _ ')')?
+
+FuncTable
+    = (ROWS _ FROM _ '(' _ RowsfromList _ ')' _ OptOrdinality)
+    / (FuncExprWindowless _ OptOrdinality)
+
+RowsfromItem
+    = (FuncExprWindowless _ OptColDefList)
+
+RowsfromList
+    = RowsfromItem (_ ',' _ RowsfromItem)*
+
+OptColDefList
+    = (AS _ '(' _ TableFuncElementList _ ')')?
+
+OptOrdinality
+    = (WITH _ ORDINALITY)?
+
+WhereClause
+    = (WHERE _ AExpr)?
+
+WhereOrCurrentClause
+    = ((WHERE _ CURRENT _ OF _ CursorName)
+    / (WHERE _ AExpr))?
+
+OptTableFuncElementList
+    = TableFuncElementList?
+
+TableFuncElementList
+    = TableFuncElement (_ ',' _ TableFuncElement)*
+
+TableFuncElement
+    = (ColId _ Typename _ OptCollateClause)
+
+Xmltable
+    = (XMLTABLE _ '(' _ XMLNAMESPACES _ '(' _ XmlNamespaceList _ ')' _ ',' _ CExpr _ XmlexistsArgument _ COLUMNS _ XmltableColumnList _ ')')
+    / (XMLTABLE _ '(' _ CExpr _ XmlexistsArgument _ COLUMNS _ XmltableColumnList _ ')')
+
+XmltableColumnList
+    = XmltableColumnEl (_ ',' _ XmltableColumnEl)*
+
+XmltableColumnEl
+    = (ColId _ Typename _ XmltableColumnOptionList)
+    / (ColId _ FOR _ ORDINALITY)
+    / (ColId _ Typename)
+
+XmltableColumnOptionList
+    = XmltableColumnOptionEl (_ XmltableColumnOptionEl)*
+
+XmltableColumnOptionEl
+    = (IDENT _ BExpr)
+    / (DEFAULT _ BExpr)
+    / (NOT _ NULL)
+    / NULL
+
+XmlNamespaceList
+    = XmlNamespaceEl (_ ',' _ XmlNamespaceEl)*
+
+XmlNamespaceEl
+    = (BExpr _ AS _ ColLabel)
+    / (DEFAULT _ BExpr)
+
+Typename
+    = (SETOF _ SimpleTypename _ ARRAY _ '[' _ Iconst _ ']')
+    / (SimpleTypename _ ARRAY _ '[' _ Iconst _ ']')
+    / (SETOF _ SimpleTypename _ OptArrayBounds)
+    / (SETOF _ SimpleTypename _ ARRAY)
+    / (SimpleTypename _ OptArrayBounds)
+    / (SimpleTypename _ ARRAY)
+
+OptArrayBounds
+    = ((_ '[' _ Iconst _ ']')
+    / (_ '[' _ ']'))*
+
+SimpleTypename
+    = (ConstInterval _ '(' _ Iconst _ ')')
+    / (ConstInterval _ OptInterval)
+    / Numeric
+    / Bit
+    / Character
+    / ConstDatetime
+    / GenericType
+
+ConstTypename
+    = Numeric
+    / ConstBit
+    / ConstCharacter
+    / ConstDatetime
+
+GenericType
+    = (TypeFunctionName _ Attrs _ OptTypeModifiers)
+    / (TypeFunctionName _ OptTypeModifiers)
+
+OptTypeModifiers
+    = ('(' _ ExprList _ ')')?
+
+Numeric
+    = (DOUBLE _ PRECISION)
+    / (DECIMAL _ OptTypeModifiers)
+    / (DEC _ OptTypeModifiers)
+    / (NUMERIC _ OptTypeModifiers)
+    / (FLOAT _ OptFloat)
+    / REAL
+    / INT
+    / INTEGER
+    / SMALLINT
+    / BIGINT
+    / BOOLEAN
+
+OptFloat
+    = ('(' _ Iconst _ ')')?
+
+Bit
+    = BitWithLength
+    / BitWithoutLength
+
+ConstBit
+    = BitWithLength
+    / BitWithoutLength
+
+BitWithLength
+    = (BIT _ OptVarying _ '(' _ ExprList _ ')')
+
+BitWithoutLength
+    = (BIT _ OptVarying)
+
+Character
+    = CharacterWithLength
+    / CharacterWithoutLength
+
+ConstCharacter
+    = CharacterWithLength
+    / CharacterWithoutLength
+
+CharacterWithLength
+    = (Character1 _ '(' _ Iconst _ ')')
+
+CharacterWithoutLength
+    = Character1
+
+Character1
+    = (NATIONAL _ CHARACTER _ OptVarying)
+    / (NATIONAL _ CHAR _ OptVarying)
+    / (CHARACTER _ OptVarying)
+    / (CHAR _ OptVarying)
+    / (NCHAR _ OptVarying)
+    / VARCHAR
+
+OptVarying
+    = VARYING?
+
+ConstDatetime
+    = (TIMESTAMP _ '(' _ Iconst _ ')' _ OptTimezone)
+    / (TIME _ '(' _ Iconst _ ')' _ OptTimezone)
+    / (TIMESTAMP _ OptTimezone)
+    / (TIME _ OptTimezone)
+
+ConstInterval
+    = INTERVAL
+
+OptTimezone
+    = ((WITH _ TIME _ ZONE)
+    / (WITHOUT _ TIME _ ZONE))?
+
+OptInterval
+    = ((YEAR _ TO _ MONTH)
+    / (HOUR _ TO _ IntervalSecond)
+    / (HOUR _ TO _ MINUTE)
+    / (DAY _ TO _ IntervalSecond)
+    / (DAY _ TO _ MINUTE)
+    / (DAY _ TO _ HOUR)
+    / (MINUTE _ TO _ IntervalSecond)
+    / IntervalSecond
+    / MINUTE
+    / HOUR
+    / DAY
+    / MONTH
+    / YEAR)?
+
+IntervalSecond
+    = (SECOND _ '(' _ Iconst _ ')')
+    / SECOND
+
+AExpr
+    = (AExpr1 _ NOT _ BETWEEN _ SYMMETRIC _ BExpr _ AND _ AExpr1)
+    / (AExpr1 _ IS _ NOT _ OF _ '(' _ TypeList _ ')')
+    / (AExpr1 _ NOT _ BETWEEN _ OptAsymmetric _ BExpr _ AND _ AExpr1)
+    / (AExpr1 _ NOT _ SIMILAR _ TO _ AExpr1 _ ESCAPE _ AExpr1)
+    / (AExpr1 _ IS _ NOT _ DISTINCT _ FROM _ AExpr1)
+    / (AExpr1 _ SIMILAR _ TO _ AExpr1 _ ESCAPE _ AExpr1)
+    / (AExpr1 _ SubqueryOp _ SubType _ '(' _ AExpr1 _ ')')
+    / (AExpr1 _ BETWEEN _ SYMMETRIC _ BExpr _ AND _ AExpr1)
+    / (AExpr1 _ NOT _ ILIKE _ AExpr1 _ ESCAPE _ AExpr1)
+    / (AExpr1 _ BETWEEN _ OptAsymmetric _ BExpr _ AND _ AExpr1)
+    / (AExpr1 _ NOT _ LIKE _ AExpr1 _ ESCAPE _ AExpr1)
+    / (AExpr1 _ IS _ OF _ '(' _ TypeList _ ')')
+    / (AExpr1 _ ILIKE _ AExpr1 _ ESCAPE _ AExpr1)
+    / (AExpr1 _ AT _ TIME _ ZONE _ AExpr1)
+    / (AExpr1 _ LIKE _ AExpr1 _ ESCAPE _ AExpr1)
+    / (AExpr1 _ IS _ DISTINCT _ FROM _ AExpr1)
+    / (AExpr1 _ NOT _ SIMILAR _ TO _ AExpr1)
+    / (AExpr1 _ IS _ NOT _ UNKNOWN)
+    / (AExpr1 _ IS _ NOT _ NULL)
+    / (AExpr1 _ IS _ NOT _ TRUE)
+    / (AExpr1 _ IS _ NOT _ FALSE)
+    / (AExpr1 _ NOT _ IN _ InExpr)
+    / (AExpr1 _ SubqueryOp _ SubType _ SelectWithParens)
+    / (AExpr1 _ SIMILAR _ TO _ AExpr1)
+    / (AExpr1 _ IS _ NOT _ DOCUMENT)
+    / (AExpr1 _ NOT _ ILIKE _ AExpr1)
+    / (AExpr1 _ NOT _ LIKE _ AExpr1)
+    / (AExpr1 _ TYPECAST _ Typename)
+    / (AExpr1 _ LIKE _ AExpr1)
+    / (AExpr1 _ OR _ AExpr1)
+    / (AExpr1 _ AND _ AExpr1)
+    / (AExpr1 _ IS _ NULL)
+    / (AExpr1 _ COLLATE _ AnyName)
+    / (AExpr1 _ IS _ DOCUMENT)
+    / (AExpr1 _ '+' _ AExpr1)
+    / (AExpr1 _ IS _ TRUE)
+    / (AExpr1 _ QualOp _ AExpr1)
+    / (AExpr1 _ IS _ FALSE)
+    / (AExpr1 _ NOT_EQUALS _ AExpr1)
+    / (AExpr1 _ IS _ UNKNOWN)
+    / (AExpr1 _ GREATER_EQUALS _ AExpr1)
+    / (AExpr1 _ ILIKE _ AExpr1)
+    / (AExpr1 _ LESS_EQUALS _ AExpr1)
+    / (AExpr1 _ '=' _ AExpr1)
+    / (AExpr1 _ '>' _ AExpr1)
+    / (AExpr1 _ '<' _ AExpr1)
+    / (AExpr1 _ '^' _ AExpr1)
+    / (AExpr1 _ '%' _ AExpr1)
+    / (AExpr1 _ '/' _ AExpr1)
+    / (AExpr1 _ IN _ InExpr)
+    / (AExpr1 _ '*' _ AExpr1)
+    / (AExpr1 _ '-' _ AExpr1)
+    / (AExpr1 _ NOTNULL)
+    / (AExpr1 _ QualOp)
+    / (AExpr1 _ ISNULL)
+    / AExpr1
+
+AExpr1
+    = (Row _ OVERLAPS _ Row)
+    / (UNIQUE _ SelectWithParens)
+    / ('+' _ AExpr)
+    / ('-' _ AExpr)
+    / (QualOp _ AExpr)
+    / (NOT _ AExpr)
+    / CExpr
+    / DEFAULT
+
+BExpr
+    = (BExpr1 _ IS _ NOT _ OF _ '(' _ TypeList _ ')')
+    / (BExpr1 _ IS _ OF _ '(' _ TypeList _ ')')
+    / (BExpr1 _ IS _ NOT _ DISTINCT _ FROM _ BExpr1)
+    / (BExpr1 _ IS _ DISTINCT _ FROM _ BExpr1)
+    / (BExpr1 _ IS _ NOT _ DOCUMENT)
+    / (BExpr1 _ TYPECAST _ Typename)
+    / (BExpr1 _ '^' _ BExpr1)
+    / (BExpr1 _ '<' _ BExpr1)
+    / (BExpr1 _ '>' _ BExpr1)
+    / (BExpr1 _ '=' _ BExpr1)
+    / (BExpr1 _ LESS_EQUALS _ BExpr1)
+    / (BExpr1 _ GREATER_EQUALS _ BExpr1)
+    / (BExpr1 _ NOT_EQUALS _ BExpr1)
+    / (BExpr1 _ QualOp _ BExpr1)
+    / (BExpr1 _ '%' _ BExpr1)
+    / (BExpr1 _ '/' _ BExpr1)
+    / (BExpr1 _ '*' _ BExpr1)
+    / (BExpr1 _ '-' _ BExpr1)
+    / (BExpr1 _ '+' _ BExpr1)
+    / (BExpr1 _ IS _ DOCUMENT)
+    / (BExpr1 _ QualOp)
+    / BExpr1
+
+BExpr1
+    = ('+' _ BExpr)
+    / ('-' _ BExpr)
+    / (QualOp _ BExpr)
+    / CExpr
+
+CExpr
+    = (GROUPING _ '(' _ ExprList _ ')')
+    / ('(' _ AExpr _ ')' _ OptIndirection)
+    / (ARRAY _ ArrayExpr)
+    / (PARAM _ OptIndirection)
+    / (ARRAY _ SelectWithParens)
+    / (EXISTS _ SelectWithParens)
+    / (SelectWithParens _ Indirection)
+    / SelectWithParens
+    / FuncExpr
+    / CaseExpr
+    / AexprConst
+    / ExplicitRow
+    / ImplicitRow
+    / Columnref
+
+FuncApplication
+    = (FuncName _ '(' _ FuncArgList _ ',' _ VARIADIC _ FuncArgExpr _ OptSortClause _ ')')
+    / (FuncName _ '(' _ VARIADIC _ FuncArgExpr _ OptSortClause _ ')')
+    / (FuncName _ '(' _ ALL _ FuncArgList _ OptSortClause _ ')')
+    / (FuncName _ '(' _ DISTINCT _ FuncArgList _ OptSortClause _ ')')
+    / (FuncName _ '(' _ FuncArgList _ OptSortClause _ ')')
+    / (FuncName _ '(' _ '*' _ ')')
+    / (FuncName _ '(' _ ')')
+
+FuncExpr
+    = (FuncApplication _ WithinGroupClause _ FilterClause _ OverClause)
+    / FuncExprCommonSubexpr
+
+FuncExprWindowless
+    = FuncApplication
+    / FuncExprCommonSubexpr
+
+FuncExprCommonSubexpr
+    = (XMLELEMENT _ '(' _ NAME _ ColLabel _ ',' _ XmlAttributes _ ',' _ ExprList _ ')')
+    / (XMLROOT _ '(' _ AExpr _ ',' _ XmlRootVersion _ OptXmlRootStandalone _ ')')
+    / (XMLPI _ '(' _ NAME _ ColLabel _ ',' _ AExpr _ ')')
+    / (XMLELEMENT _ '(' _ NAME _ ColLabel _ ',' _ XmlAttributes _ ')')
+    / (XMLSERIALIZE _ '(' _ DocumentOrContent _ AExpr _ AS _ SimpleTypename _ ')')
+    / (XMLELEMENT _ '(' _ NAME _ ColLabel _ ',' _ ExprList _ ')')
+    / (NULLIF _ '(' _ AExpr _ ',' _ AExpr _ ')')
+    / (XMLPARSE _ '(' _ DocumentOrContent _ AExpr _ XmlWhitespaceOption _ ')')
+    / (CAST _ '(' _ AExpr _ AS _ Typename _ ')')
+    / (TREAT _ '(' _ AExpr _ AS _ Typename _ ')')
+    / (COLLATION _ FOR _ '(' _ AExpr _ ')')
+    / (XMLPI _ '(' _ NAME _ ColLabel _ ')')
+    / (TRIM _ '(' _ TRAILING _ TrimList _ ')')
+    / (TRIM _ '(' _ LEADING _ TrimList _ ')')
+    / (TRIM _ '(' _ BOTH _ TrimList _ ')')
+    / (XMLEXISTS _ '(' _ CExpr _ XmlexistsArgument _ ')')
+    / (XMLELEMENT _ '(' _ NAME _ ColLabel _ ')')
+    / (LEAST _ '(' _ ExprList _ ')')
+    / (OVERLAY _ '(' _ OverlayList _ ')')
+    / (POSITION _ '(' _ PositionList _ ')')
+    / (SUBSTRING _ '(' _ SubstrList _ ')')
+    / (CURRENT_TIME _ '(' _ Iconst _ ')')
+    / (LOCALTIME _ '(' _ Iconst _ ')')
+    / (LOCALTIMESTAMP _ '(' _ Iconst _ ')')
+    / (XMLFOREST _ '(' _ XmlAttributeList _ ')')
+    / (TRIM _ '(' _ TrimList _ ')')
+    / (XMLCONCAT _ '(' _ ExprList _ ')')
+    / (COALESCE _ '(' _ ExprList _ ')')
+    / (GREATEST _ '(' _ ExprList _ ')')
+    / (EXTRACT _ '(' _ ExtractList _ ')')
+    / (CURRENT_TIMESTAMP _ '(' _ Iconst _ ')')
+    / CURRENT_USER
+    / SESSION_USER
+    / CURRENT_ROLE
+    / USER
+    / LOCALTIMESTAMP
+    / LOCALTIME
+    / CURRENT_TIMESTAMP
+    / CURRENT_SCHEMA
+    / CURRENT_TIME
+    / CURRENT_DATE
+    / CURRENT_CATALOG
+
+XmlRootVersion
+    = (VERSION _ NO _ VALUE)
+    / (VERSION _ AExpr)
+
+OptXmlRootStandalone
+    = ((',' _ STANDALONE _ NO _ VALUE)
+    / (',' _ STANDALONE _ YES)
+    / (',' _ STANDALONE _ NO))?
+
+XmlAttributes
+    = (XMLATTRIBUTES _ '(' _ XmlAttributeList _ ')')
+
+XmlAttributeList
+    = XmlAttributeEl (_ ',' _ XmlAttributeEl)*
+
+XmlAttributeEl
+    = (AExpr _ AS _ ColLabel)
+    / AExpr
+
+DocumentOrContent
+    = DOCUMENT
+    / CONTENT
+
+XmlWhitespaceOption
+    = ((PRESERVE _ WHITESPACE)
+    / (STRIP _ WHITESPACE))?
+
+XmlexistsArgument
+    = (PASSING _ BY _ REF _ CExpr _ BY _ REF)
+    / (PASSING _ CExpr _ BY _ REF)
+    / (PASSING _ BY _ REF _ CExpr)
+    / (PASSING _ CExpr)
+
+WithinGroupClause
+    = (WITHIN _ GROUP _ '(' _ SortClause _ ')')?
+
+FilterClause
+    = (FILTER _ '(' _ WHERE _ AExpr _ ')')?
+
+WindowClause
+    = (WINDOW _ WindowDefinitionList)?
+
+WindowDefinitionList
+    = WindowDefinition (_ ',' _ WindowDefinition)*
+
+WindowDefinition
+    = (ColId _ AS _ WindowSpecification)
+
+OverClause
+    = ((OVER _ WindowSpecification)
+    / (OVER _ ColId))?
+
+WindowSpecification
+    = ('(' _ OptExistingWindowName _ OptPartitionClause _ OptSortClause _ OptFrameClause _ ')')
+
+OptExistingWindowName
+    = ColId?
+
+OptPartitionClause
+    = (PARTITION _ BY _ ExprList)?
+
+OptFrameClause
+    = ((RANGE _ FrameExtent _ OptWindowExclusionClause)
+    / (ROWS _ FrameExtent _ OptWindowExclusionClause)
+    / (GROUPS _ FrameExtent _ OptWindowExclusionClause))?
+
+FrameExtent
+    = (BETWEEN _ FrameBound _ AND _ FrameBound)
+    / FrameBound
+
+FrameBound
+    = (UNBOUNDED _ PRECEDING)
+    / (UNBOUNDED _ FOLLOWING)
+    / (CURRENT _ ROW)
+    / (AExpr _ PRECEDING)
+    / (AExpr _ FOLLOWING)
+
+OptWindowExclusionClause
+    = ((EXCLUDE _ CURRENT _ ROW)
+    / (EXCLUDE _ NO _ OTHERS)
+    / (EXCLUDE _ GROUP)
+    / (EXCLUDE _ TIES))?
+
+Row
+    = ('(' _ ExprList _ ',' _ AExpr _ ')')
+    / (ROW _ '(' _ ExprList _ ')')
+    / (ROW _ '(' _ ')')
+
+ExplicitRow
+    = (ROW _ '(' _ ExprList _ ')')
+    / (ROW _ '(' _ ')')
+
+ImplicitRow
+    = ('(' _ ExprList _ ',' _ AExpr _ ')')
+
+SubType
+    = ANY
+    / SOME
+    / ALL
+
+AllOp
+    = Op
+    / MathOp
+
+MathOp
+    = '+'
+    / '-'
+    / '*'
+    / '/'
+    / '%'
+    / '^'
+    / '<'
+    / '>'
+    / '='
+    / LESS_EQUALS
+    / GREATER_EQUALS
+    / NOT_EQUALS
+
+QualOp
+    = (OPERATOR _ '(' _ AnyOperator _ ')')
+    / Op
+
+QualAllOp
+    = (OPERATOR _ '(' _ AnyOperator _ ')')
+    / AllOp
+
+SubqueryOp
+    = (OPERATOR _ '(' _ AnyOperator _ ')')
+    / (NOT _ LIKE)
+    / (NOT _ ILIKE)
+    / AllOp
+    / LIKE
+    / ILIKE
+
+ExprList
+    = AExpr (_ ',' _ AExpr)*
+
+FuncArgList
+    = FuncArgExpr (_ ',' _ FuncArgExpr)*
+
+FuncArgExpr
+    = (ParamName _ COLON_EQUALS _ AExpr)
+    / (ParamName _ EQUALS_GREATER _ AExpr)
+    / AExpr
+
+TypeList
+    = Typename (_ ',' _ Typename)*
+
+ArrayExpr
+    = ('[' _ ExprList _ ']')
+    / ('[' _ ArrayExprList _ ']')
+    / ('[' _ ']')
+
+ArrayExprList
+    = ArrayExpr (_ ',' _ ArrayExpr)*
+
+ExtractList
+    = (ExtractArg _ FROM _ AExpr)?
+
+ExtractArg
+    = IDENT
+    / YEAR
+    / MONTH
+    / DAY
+    / HOUR
+    / MINUTE
+    / SECOND
+    / Sconst
+
+OverlayList
+    = (AExpr _ OverlayPlacing _ SubstrFrom _ SubstrFor)
+    / (AExpr _ OverlayPlacing _ SubstrFrom)
+
+OverlayPlacing
+    = (PLACING _ AExpr)
+
+PositionList
+    = (BExpr _ IN _ BExpr)?
+
+SubstrList
+    = ((AExpr _ SubstrFrom _ SubstrFor)
+    / (AExpr _ SubstrFor _ SubstrFrom)
+    / (AExpr _ SubstrFrom)
+    / (AExpr _ SubstrFor)
+    / ExprList)?
+
+SubstrFrom
+    = (FROM _ AExpr)
+
+SubstrFor
+    = (FOR _ AExpr)
+
+TrimList
+    = (AExpr _ FROM _ ExprList)
+    / (FROM _ ExprList)
+    / ExprList
+
+InExpr
+    = ('(' _ ExprList _ ')')
+    / SelectWithParens
+
+CaseExpr
+    = (CASE _ CaseArg _ WhenClauseList _ CaseDefault _ END)
+
+WhenClauseList
+    = WhenClause (_ WhenClause)*
+
+WhenClause
+    = (WHEN _ AExpr _ THEN _ AExpr)
+
+CaseDefault
+    = (ELSE _ AExpr)?
+
+CaseArg
+    = AExpr?
+
+Columnref
+    = (ColId _ Indirection)
+    / ColId
+
+IndirectionEl
+    = ('[' _ OptSliceBound _ ':' _ OptSliceBound _ ']')
+    / ('[' _ AExpr _ ']')
+    / ('.' _ AttrName)
+    / ('.' _ '*')
+
+OptSliceBound
+    = AExpr?
+
+Indirection
+    = IndirectionEl (_ IndirectionEl)*
+
+OptIndirection
+    = (OptIndirection _ IndirectionEl)?
+
+OptAsymmetric
+    = ASYMMETRIC?
+
+OptTargetList
+    = TargetList?
+
+TargetList
+    = TargetEl (_ ',' _ TargetEl)*
+
+TargetEl
+    = (AExpr _ AS _ ColLabel)
+    / (AExpr _ IDENT)
+    / AExpr
+    / '*'
+
+QualifiedNameList
+    = QualifiedName (_ ',' _ QualifiedName)*
+
+QualifiedName
+    = (ColId _ Indirection)
+    / ColId
+
+NameList
+    = Name (_ ',' _ Name)*
+
+Name
+    = ColId
+
+DatabaseName
+    = ColId
+
+AccessMethod
+    = ColId
+
+AttrName
+    = ColLabel
+
+IndexName
+    = ColId
+
+FileName
+    = Sconst
+
+FuncName
+    = (ColId _ Indirection)
+    / TypeFunctionName
+
+AexprConst
+    = (FuncName _ '(' _ FuncArgList _ OptSortClause _ ')' _ Sconst)
+    / (ConstInterval _ '(' _ Iconst _ ')' _ Sconst)
+    / (ConstInterval _ Sconst _ OptInterval)
+    / (FuncName _ Sconst)
+    / (ConstTypename _ Sconst)
+    / Iconst
+    / XCONST
+    / BCONST
+    / Sconst
+    / FCONST
+    / TRUE
+    / FALSE
+    / NULL
+
+Iconst
+    = ICONST
+
+Sconst
+    = SCONST
+
+SignedIconst
+    = ('+' _ Iconst)
+    / ('-' _ Iconst)
+    / Iconst
+
+RoleId
+    = RoleSpec
+
+RoleSpec
+    = NonReservedWord
+    / CURRENT_USER
+    / SESSION_USER
+
+RoleList
+    = RoleSpec (_ ',' _ RoleSpec)*
+
+ColId
+    = IDENT
+    / UnreservedKeyword
+    / ColNameKeyword
+
+TypeFunctionName
+    = IDENT
+    / UnreservedKeyword
+    / TypeFuncNameKeyword
+
+NonReservedWord
+    = IDENT
+    / UnreservedKeyword
+    / ColNameKeyword
+    / TypeFuncNameKeyword
+
+ColLabel
+    = IDENT
+    / UnreservedKeyword
+    / ColNameKeyword
+    / TypeFuncNameKeyword
+    / ReservedKeyword
+
+UnreservedKeyword
+    = ABORT
+    / ABSOLUTE
+    / ACCESS
+    / ACTION
+    / ADD
+    / ADMIN
+    / AFTER
+    / AGGREGATE
+    / ALSO
+    / ALTER
+    / ALWAYS
+    / ASSERTION
+    / ASSIGNMENT
+    / AT
+    / ATTACH
+    / ATTRIBUTE
+    / BACKWARD
+    / BEFORE
+    / BEGIN
+    / BY
+    / CACHE
+    / CALL
+    / CALLED
+    / CASCADE
+    / CASCADED
+    / CATALOG
+    / CHAIN
+    / CHARACTERISTICS
+    / CHECKPOINT
+    / CLASS
+    / CLOSE
+    / CLUSTER
+    / COLUMNS
+    / COMMENT
+    / COMMENTS
+    / COMMIT
+    / COMMITTED
+    / CONFIGURATION
+    / CONFLICT
+    / CONNECTION
+    / CONSTRAINTS
+    / CONTENT
+    / CONTINUE
+    / CONVERSION
+    / COPY
+    / COST
+    / CSV
+    / CUBE
+    / CURRENT
+    / CURSOR
+    / CYCLE
+    / DATA
+    / DATABASE
+    / DAY
+    / DEALLOCATE
+    / DECLARE
+    / DEFAULTS
+    / DEFERRED
+    / DEFINER
+    / DELETE
+    / DELIMITER
+    / DELIMITERS
+    / DEPENDS
+    / DETACH
+    / DICTIONARY
+    / DISABLE
+    / DISCARD
+    / DOCUMENT
+    / DOMAIN
+    / DOUBLE
+    / DROP
+    / EACH
+    / ENABLE
+    / ENCODING
+    / ENCRYPTED
+    / ENUM
+    / ESCAPE
+    / EVENT
+    / EXCLUDE
+    / EXCLUDING
+    / EXCLUSIVE
+    / EXECUTE
+    / EXPLAIN
+    / EXTENSION
+    / EXTERNAL
+    / FAMILY
+    / FILTER
+    / FIRST
+    / FOLLOWING
+    / FORCE
+    / FORWARD
+    / FUNCTION
+    / FUNCTIONS
+    / GENERATED
+    / GLOBAL
+    / GRANTED
+    / GROUPS
+    / HANDLER
+    / HEADER
+    / HOLD
+    / HOUR
+    / IDENTITY
+    / IF
+    / IMMEDIATE
+    / IMMUTABLE
+    / IMPLICIT
+    / IMPORT
+    / INCLUDE
+    / INCLUDING
+    / INCREMENT
+    / INDEX
+    / INDEXES
+    / INHERIT
+    / INHERITS
+    / INLINE
+    / INPUT
+    / INSENSITIVE
+    / INSERT
+    / INSTEAD
+    / INVOKER
+    / ISOLATION
+    / KEY
+    / LABEL
+    / LANGUAGE
+    / LARGE
+    / LAST
+    / LEAKPROOF
+    / LEVEL
+    / LISTEN
+    / LOAD
+    / LOCAL
+    / LOCATION
+    / LOCK
+    / LOCKED
+    / LOGGED
+    / MAPPING
+    / MATCH
+    / MATERIALIZED
+    / MAXVALUE
+    / METHOD
+    / MINUTE
+    / MINVALUE
+    / MODE
+    / MONTH
+    / MOVE
+    / NAME
+    / NAMES
+    / NEW
+    / NEXT
+    / NO
+    / NOTHING
+    / NOTIFY
+    / NOWAIT
+    / NULLS
+    / OBJECT
+    / OF
+    / OFF
+    / OIDS
+    / OLD
+    / OPERATOR
+    / OPTION
+    / OPTIONS
+    / ORDINALITY
+    / OTHERS
+    / OVER
+    / OVERRIDING
+    / OWNED
+    / OWNER
+    / PARALLEL
+    / PARSER
+    / PARTIAL
+    / PARTITION
+    / PASSING
+    / PASSWORD
+    / PLANS
+    / POLICY
+    / PRECEDING
+    / PREPARE
+    / PREPARED
+    / PRESERVE
+    / PRIOR
+    / PRIVILEGES
+    / PROCEDURAL
+    / PROCEDURE
+    / PROCEDURES
+    / PROGRAM
+    / PUBLICATION
+    / QUOTE
+    / RANGE
+    / READ
+    / REASSIGN
+    / RECHECK
+    / RECURSIVE
+    / REF
+    / REFERENCING
+    / REFRESH
+    / REINDEX
+    / RELATIVE
+    / RELEASE
+    / RENAME
+    / REPEATABLE
+    / REPLACE
+    / REPLICA
+    / RESET
+    / RESTART
+    / RESTRICT
+    / RETURNS
+    / REVOKE
+    / ROLE
+    / ROLLBACK
+    / ROLLUP
+    / ROUTINE
+    / ROUTINES
+    / ROWS
+    / RULE
+    / SAVEPOINT
+    / SCHEMA
+    / SCHEMAS
+    / SCROLL
+    / SEARCH
+    / SECOND
+    / SECURITY
+    / SEQUENCE
+    / SEQUENCES
+    / SERIALIZABLE
+    / SERVER
+    / SESSION
+    / SET
+    / SETS
+    / SHARE
+    / SHOW
+    / SIMPLE
+    / SKIP
+    / SNAPSHOT
+    / SQL
+    / STABLE
+    / STANDALONE
+    / START
+    / STATEMENT
+    / STATISTICS
+    / STDIN
+    / STDOUT
+    / STORAGE
+    / STRICT
+    / STRIP
+    / SUBSCRIPTION
+    / SYSID
+    / SYSTEM
+    / TABLES
+    / TABLESPACE
+    / TEMP
+    / TEMPLATE
+    / TEMPORARY
+    / TEXT
+    / TIES
+    / TRANSACTION
+    / TRANSFORM
+    / TRIGGER
+    / TRUNCATE
+    / TRUSTED
+    / TYPE
+    / TYPES
+    / UNBOUNDED
+    / UNCOMMITTED
+    / UNENCRYPTED
+    / UNKNOWN
+    / UNLISTEN
+    / UNLOGGED
+    / UNTIL
+    / UPDATE
+    / VACUUM
+    / VALID
+    / VALIDATE
+    / VALIDATOR
+    / VALUE
+    / VARYING
+    / VERSION
+    / VIEW
+    / VIEWS
+    / VOLATILE
+    / WHITESPACE
+    / WITHIN
+    / WITHOUT
+    / WORK
+    / WRAPPER
+    / WRITE
+    / XML
+    / YEAR
+    / YES
+    / ZONE
+
+ColNameKeyword
+    = BETWEEN
+    / BIGINT
+    / BIT
+    / BOOLEAN
+    / CHAR
+    / CHARACTER
+    / COALESCE
+    / DEC
+    / DECIMAL
+    / EXISTS
+    / EXTRACT
+    / FLOAT
+    / GREATEST
+    / GROUPING
+    / INOUT
+    / INT
+    / INTEGER
+    / INTERVAL
+    / LEAST
+    / NATIONAL
+    / NCHAR
+    / NONE
+    / NULLIF
+    / NUMERIC
+    / OUT
+    / OVERLAY
+    / POSITION
+    / PRECISION
+    / REAL
+    / ROW
+    / SETOF
+    / SMALLINT
+    / SUBSTRING
+    / TIME
+    / TIMESTAMP
+    / TREAT
+    / TRIM
+    / VALUES
+    / VARCHAR
+    / XMLATTRIBUTES
+    / XMLCONCAT
+    / XMLELEMENT
+    / XMLEXISTS
+    / XMLFOREST
+    / XMLNAMESPACES
+    / XMLPARSE
+    / XMLPI
+    / XMLROOT
+    / XMLSERIALIZE
+    / XMLTABLE
+
+TypeFuncNameKeyword
+    = AUTHORIZATION
+    / BINARY
+    / COLLATION
+    / CONCURRENTLY
+    / CROSS
+    / CURRENT_SCHEMA
+    / FREEZE
+    / FULL
+    / ILIKE
+    / INNER
+    / IS
+    / ISNULL
+    / JOIN
+    / LEFT
+    / LIKE
+    / NATURAL
+    / NOTNULL
+    / OUTER
+    / OVERLAPS
+    / RIGHT
+    / SIMILAR
+    / TABLESAMPLE
+    / VERBOSE
+
+ReservedKeyword
+    = ALL
+    / ANALYSE
+    / ANALYZE
+    / AND
+    / ANY
+    / ARRAY
+    / AS
+    / ASC
+    / ASYMMETRIC
+    / BOTH
+    / CASE
+    / CAST
+    / CHECK
+    / COLLATE
+    / COLUMN
+    / CONSTRAINT
+    / CREATE
+    / CURRENT_CATALOG
+    / CURRENT_DATE
+    / CURRENT_ROLE
+    / CURRENT_TIME
+    / CURRENT_TIMESTAMP
+    / CURRENT_USER
+    / DEFAULT
+    / DEFERRABLE
+    / DESC
+    / DISTINCT
+    / DO
+    / ELSE
+    / END
+    / EXCEPT
+    / FALSE
+    / FETCH
+    / FOR
+    / FOREIGN
+    / FROM
+    / GRANT
+    / GROUP
+    / HAVING
+    / IN
+    / INITIALLY
+    / INTERSECT
+    / INTO
+    / LATERAL
+    / LEADING
+    / LIMIT
+    / LOCALTIME
+    / LOCALTIMESTAMP
+    / NOT
+    / NULL
+    / OFFSET
+    / ON
+    / ONLY
+    / OR
+    / ORDER
+    / PLACING
+    / PRIMARY
+    / REFERENCES
+    / RETURNING
+    / SELECT
+    / SESSION_USER
+    / SOME
+    / SYMMETRIC
+    / TABLE
+    / THEN
+    / TO
+    / TRAILING
+    / TRUE
+    / UNION
+    / UNIQUE
+    / USER
+    / USING
+    / VARIADIC
+    / WHEN
+    / WHERE
+    / WINDOW
+    / WITH
+

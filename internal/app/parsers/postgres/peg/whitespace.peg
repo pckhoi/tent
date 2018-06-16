@@ -1,0 +1,26 @@
+_
+    <- Whitespace* {
+        return nil, nil
+    }
+
+Space
+    <- [ \t\n\r\f]
+HorizSpace
+    <- [ \t\f]
+Newline
+    <- [\n\r]
+NonNewline
+    <- [^\n\r]
+
+Comment
+    <- "--" NonNewline*
+
+Whitespace
+    <- Space+ | Comment
+
+SpecialWhitespace
+    <- Space+ | Comment Newline
+HorizWhitespace
+    <- HorizSpace | Comment
+WhitespaceWithNewline
+    <- HorizWhitespace* Newline SpecialWhitespace*

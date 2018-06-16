@@ -1,0 +1,181 @@
+select_no_parens:
+            simple_select
+            | select_clause SortClause
+            | select_clause OptSortClause for_locking_clause opt_select_limit
+            | select_clause OptSortClause select_limit opt_for_locking_clause
+            | with_clause select_clause
+            | with_clause select_clause SortClause
+            | with_clause select_clause OptSortClause for_locking_clause opt_select_limit
+            | with_clause select_clause OptSortClause select_limit opt_for_locking_clause
+
+
+simple_select:
+            SELECT _ ALL? _ OptTargetList _ IntoClause FromClause where_clause
+            group_clause having_clause window_clause
+            | SELECT distinct_clause target_list
+            IntoClause FromClause where_clause
+            group_clause having_clause window_clause
+            | values_clause                         
+            | TABLE RelationExpr
+            | select_clause UNION all_or_distinct select_clause
+            | select_clause INTERSECT all_or_distinct select_clause
+            | select_clause EXCEPT all_or_distinct select_clause
+
+
+OptTargetList
+    <- (TargetEl ( _ , _ TargetEl)*)?
+
+TargetEl
+    <- (AExpr _ AS _ Ident) / (AExpr _ IDENT) / AExpr / '*'
+
+IntoClause
+    <- INTO _ OptTempTableName
+
+OptTempTableName
+    <- (((LOCAL / GLOBAL)? _ (TEMPORARY / TEMP)) / UNLOGGED)? _ TABLE? _ QualifiedName
+
+QualifiedName
+    <- Ident (_ IndirectionEl)*
+
+IndirectionEl
+    <- ('.' _ Ident) / ('.' _ '*') / ('[' _ AExpr _ ']') / ('[' _ AExpr? _ ':' _ AExpr? _ ']')
+
+FromClause
+    <- (FROM _ TableRef (_ ',' _ TableRef)*)?
+
+
+table_ref:  RelationExpr _ AliasClause? _ TablesampleClause?
+            | func_table func_alias_clause
+            | LATERAL_P func_table func_alias_clause
+            | xmltable AliasClause?
+            | LATERAL_P xmltable AliasClause?
+            | select_with_parens AliasClause?
+            | LATERAL_P select_with_parens AliasClause?
+            | joined_table
+            | '(' joined_table ')' alias_clause
+
+RelationExpr
+    <- (ONLY _ '(' _ QualifiedName _ ')') / (ONLY _ QualifiedName) / (QualifiedName (_ '*')?)
+
+AliasClause
+    <- (AS _ Ident _ '(' _ NameList _ ')') / (AS _ Ident) / (Ident _ '(' _ NameList _ ')') / Ident
+
+NameList
+    <- Ident (_ ',' _ Ident)*
+
+TablesampleClause
+    <- TABLESAMPLE _ FuncName _ '(' _ ExprList _ ')' _ (REPEATABLE _ '(' _ AExpr _ ')')?
+
+FuncName
+    <- QualifiedName / Ident
+
+func_table
+    <- (FuncExprWindowless opt_ordinality) / (ROWS FROM '(' rowsfrom_list ')' opt_ordinality)
+
+FuncExprWindowless
+    <- FuncApplication / FuncExprCommonSubexpr
+
+FuncApplication
+    <- (FuncName _ '(' _ (
+        (((ALL / DISTINCT) _)? FuncArgList _ OptSortClause) /
+        ((FuncArgList _ ',' _)? VARIADIC _ FuncArgExpr _ OptSortClause) /
+        '*'
+    ) _ ')')
+
+FuncArgList
+    <- FuncArgExpr (_ ',' _ FuncArgExpr)*
+
+FuncArgExpr
+    <- AExpr /
+    (Ident _ COLON_EQUALS _ AExpr) /
+    (Ident _ EQUALS_GREATER _ AExpr)
+
+OptSortClause
+    <- SortClause?
+
+SortClause
+    <- ORDER _ BY _ SortbyList
+
+SortbyList
+    <- Sortby (_ ',' _ Sortby)*
+
+Sortby
+    <- (AExpr _ USING _ QualAllOp _ OptsNullOrder) /
+    (AExpr _ OptAscDesc _ OptsNullOrder)
+
+OptsNullOrder
+    <- (NULLS _ (FIRST / LAST))?
+
+OptAscDesc
+    <- (ASC / DESC)?
+
+
+FuncExprCommonSubexpr
+    <- (COLLATION _ FOR _ '(' _ AExpr _ ')') /
+    CURRENT_DATE /
+    (CURRENT_TIME (_ '(' _ Integer _ ')')?) /
+    (CURRENT_TIMESTAMP (_ '(' _ Integer _ ')')?) /
+    (LOCALTIME (_ '(' _ Integer _ ')')?) /
+    (LOCALTIMESTAMP (_ '(' _ Integer _ ')')?) /
+    CURRENT_ROLE /
+    CURRENT_USER /
+    SESSION_USER /
+    USER /
+    CURRENT_CATALOG /
+    CURRENT_SCHEMA /
+    (CAST _ '(' _ AExpr _ AS _ Typename ')') /
+    (EXTRACT _ '(' _ ExtractList _ ')') /
+    (OVERLAY _ '(' _ OverlayList _ ')') /
+    (POSITION _ '(' _ PositionList _ ')') /
+    (SUBSTRING _ '(' _ SubstrList _ ')') /
+    (TREAT _ '(' _ AExpr _ AS _ Typename _ ')') /
+    (TRIM _ '(' (_ (BOTH / LEADING / TRAILING))? _ TrimList _ ')') /
+    (NULLIF _ '(' _ AExpr _ ',' _ AExpr _ ')') /
+    (COALESCE _ '(' _ ExprList _ ')') /
+    (GREATEST _'(' _ExprList _')') /
+    (LEAST _ '(' _ ExprList _ ')') /
+    (XMLCONCAT _ '(' _ ExprList _ ')') /
+    (XMLELEMENT _ '(' _ NAME _ Ident (_ ',' _ XmlAttributes)? (_ ',' _ ExprList)? _ ')') /
+    (XMLEXISTS _ '(' _ c_expr _ xmlexists_argument _ ')') /
+    (XMLFOREST _ '(' _ xml_attribute_list _ ')') /
+    (XMLPARSE _ '(' _ document_or_content _ AExpr _ xml_whitespace_option _ ')') /
+    (XMLPI _ '(' _ NAME _ Ident (_ ',' _ AExpr)? _ ')') /
+    (XMLROOT _ '(' _ AExpr _ ',' _ xml_root_version _ opt_xml_root_standalone _ ')') /
+    (XMLSERIALIZE _ '(' _ document_or_content _ AExpr _ AS _ SimpleTypename _ ')')
+
+ExtractList
+    <- (ExtractArg _ FROM _ AExpr)?
+
+ExtractArg
+    <- IDENT /
+    YEAR /
+    MONTH /
+    DAY /
+    HOUR /
+    MINUTE /
+    SECOND /
+    StringConstant
+
+OverlayList
+    <- (AExpr _ PLACING _ AExpr _ FROM _ AExpr (_ FOR _ AExpr)?)
+
+PositionList
+    <- (BExpr IN BExpr)?
+
+SubstrList
+    <- ((AExpr _ FROM _ AExpr (_ FOR _ AExpr)?) /
+    (AExpr _ FOR _ AExpr (_ FROM _ AExpr)?) /
+    ExprList)?
+
+TrimList
+    <- ((AExpr _)? FROM _ ExprList)?
+
+XmlAttributes
+    <- XMLATTRIBUTES _ '(' _ XmlAttributeList _ ')'
+        ;
+
+XmlAttributeList
+    <- XmlAttributeEl (_ ',' _ XmlAttributeEl)*
+
+XmlAttributeEl
+    <- (AExpr (_ AS _ Ident)?)

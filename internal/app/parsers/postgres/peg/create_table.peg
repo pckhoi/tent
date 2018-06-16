@@ -1,0 +1,33 @@
+CreateStmt
+    <- CreateStmt1 / CreateStmt2 / CreateStmt3 /
+    CreateStmt4 / CreateStmt5 / CreateStmt6
+
+CreateStmt1
+    <- CREATE _ OptTemp _ TABLE _ Ident _ '(' _ OptTableElementList _ ')'
+    _ OptInherit _ OptPartitionSpec _ OptWith _ OnCommitOption _ OptTableSpace
+
+CreateStmt2
+    <- _ CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ Ident _ '('
+    _ OptTableElementList _ ')' _ OptInherit _ OptPartitionSpec _ OptWith
+    _ OnCommitOption _ OptTableSpace
+
+CreateStmt3
+    <- _ CREATE _ OptTemp _ TABLE _ Ident _ OF _ any_name
+    _ OptTypedTableElementList _ OptPartitionSpec _ OptWith _ OnCommitOption
+    _ OptTableSpace
+
+CreateStmt4
+    <- _ CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ Ident _ OF _ any_name
+    _ OptTypedTableElementList _ OptPartitionSpec _ OptWith _ OnCommitOption
+    _ OptTableSpace
+
+CreateStmt5
+    <- _ CREATE _ OptTemp _ TABLE _ Ident _ PARTITION _ OF _ Ident
+    _ OptTypedTableElementList _ PartitionBoundSpec _ OptPartitionSpec _ OptWith
+    _ OnCommitOption _ OptTableSpace
+
+CreateStmt6
+    <- _ CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ Ident _ PARTITION _ OF
+    _ Ident _ OptTypedTableElementList _ PartitionBoundSpec _ OptPartitionSpec
+    _ OptWith _ OnCommitOption _ OptTableSpace
+

@@ -1,0 +1,18 @@
+AllOp <- Op / MathOp
+
+MathOp
+    <- '+' / '-' / '*' / '/' / '%' / '^' / '<' / '>' / '=' / "<=" / ">=" / "<>" / "!="
+
+QualOp
+    <- Op / (OPERATOR _ '(' _ AnyOperator _ ')')
+
+QualAllOp
+    <- AllOp / (OPERATOR _ '(' _ AnyOperator _ ')')
+
+SubqueryOp
+    <- AllOp / (OPERATOR _ '(' _ AnyOperator _ ')') / LIKE / (NOT _ (LIKE / ILIKE)) / ILIKE
+
+AnyOperator
+    <- ( Ident _ '.' _ )* AllOp
+
+Op <- [\~\!\@\#\^\&\|\`\?\+\-\*\/\%\<\>\=]+

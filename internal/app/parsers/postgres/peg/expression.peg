@@ -1,0 +1,109 @@
+// Unrestricted expression
+AExpr:     CExpr
+            | AExpr TYPECAST Typename
+            | AExpr COLLATE any_name
+            | AExpr AT TIME ZONE AExpr            %prec AT
+            | '+' AExpr                    %prec UMINUS
+            | '-' AExpr                    %prec UMINUS
+            | AExpr '+' AExpr
+            | AExpr '-' AExpr
+            | AExpr '*' AExpr
+            | AExpr '/' AExpr
+            | AExpr '%' AExpr
+            | AExpr '^' AExpr
+            | AExpr '<' AExpr
+            | AExpr '>' AExpr
+            | AExpr '=' AExpr
+            | AExpr LESS_EQUALS AExpr
+            | AExpr GREATER_EQUALS AExpr
+            | AExpr NOT_EQUALS AExpr
+
+            | AExpr qual_Op AExpr             %prec Op
+            | qual_Op AExpr                    %prec Op
+            | AExpr qual_Op                    %prec POSTFIXOP
+
+            | AExpr AND AExpr
+            | AExpr OR AExpr
+            | NOT AExpr
+            | NOT_LA AExpr                     %prec NOT
+
+            | AExpr LIKE AExpr
+            | AExpr LIKE AExpr ESCAPE AExpr                  %prec LIKE
+            | AExpr NOT_LA LIKE AExpr                         %prec NOT_LA
+            | AExpr NOT_LA LIKE AExpr ESCAPE AExpr           %prec NOT_LA
+            | AExpr ILIKE AExpr
+            | AExpr ILIKE AExpr ESCAPE AExpr                 %prec ILIKE
+            | AExpr NOT_LA ILIKE AExpr                        %prec NOT_LA
+            | AExpr NOT_LA ILIKE AExpr ESCAPE AExpr          %prec NOT_LA
+
+            | AExpr SIMILAR TO AExpr                          %prec SIMILAR
+            | AExpr SIMILAR TO AExpr ESCAPE AExpr            %prec SIMILAR
+            | AExpr NOT_LA SIMILAR TO AExpr                   %prec NOT_LA
+            | AExpr NOT_LA SIMILAR TO AExpr ESCAPE AExpr     %prec NOT_LA
+
+            | AExpr IS NULL_P                          %prec IS
+            | AExpr ISNULL
+            | AExpr IS NOT NULL_P                      %prec IS
+            | AExpr NOTNULL
+            | row OVERLAPS row
+            | AExpr IS TRUE_P                          %prec IS
+            | AExpr IS NOT TRUE_P                      %prec IS
+            | AExpr IS FALSE_P                         %prec IS
+            | AExpr IS NOT FALSE_P                     %prec IS
+            | AExpr IS UNKNOWN                         %prec IS
+            | AExpr IS NOT UNKNOWN                     %prec IS
+            | AExpr IS DISTINCT FROM AExpr            %prec IS
+            | AExpr IS NOT DISTINCT FROM AExpr        %prec IS
+            | AExpr IS OF '(' type_list ')'            %prec IS
+            | AExpr IS NOT OF '(' type_list ')'        %prec IS
+            | AExpr BETWEEN opt_asymmetric b_expr AND AExpr       %prec BETWEEN
+            | AExpr NOT_LA BETWEEN opt_asymmetric b_expr AND AExpr %prec NOT_LA
+            | AExpr BETWEEN SYMMETRIC b_expr AND AExpr            %prec BETWEEN
+            | AExpr NOT_LA BETWEEN SYMMETRIC b_expr AND AExpr     %prec NOT_LA
+            | AExpr IN_P in_expr
+            | AExpr NOT_LA IN_P in_expr                        %prec NOT_LA
+            | AExpr subquery_Op sub_type select_with_parens    %prec Op
+            | AExpr subquery_Op sub_type '(' AExpr ')'        %prec Op
+            | UNIQUE select_with_parens
+            | AExpr IS DOCUMENT_P                  %prec IS
+            | AExpr IS NOT DOCUMENT_P              %prec IS
+            | DEFAULT
+
+AExpr
+    <- AExpr1 _
+    (
+        '+' / '-' / '*' / '/' / '%' / '^' / '<' / '>' / '=' / "<=" / ">=" / "<>" / "!="
+        / AND / OR / IN / LIKE / ILIKE / (NOT _ (IN / LIKE / ILIKE / (SIMILAR _ TO))) / (SIMILAR _ TO)
+    )
+    _ AExpr1
+
+AExpr1
+    <- AExpr2 _ (
+        (IS _ NOT? _ (NULL / TRUE / FALSE / UNKNOWN / (OF _ '(' _ type_list _ ')')))
+        / ISNULL / NOTNULL
+        / (TYPECAST _ Typename) / (COLLATE _ any_name)
+    )
+
+AExpr2
+    <- NOT _ AExpr3
+
+AExpr3
+    <- AExpr4 _ NOT? _ BETWEEN _ (SYMMETRIC / ASYMMETRIC)? _ BExpr AND AExpr4
+
+AExpr3
+    <- AExpr4 _ (LIKE / ILIKE / (NOT _ (LIKE / ILIKE / (SIMILAR _ TO))) / (SIMILAR _ TO)) _ AExpr4 _ ESCAPE _ AExpr4
+
+AExpr3
+    <- AExpr4 _ ((AT _ TIME _ ZONE) / (IS (_ NOT)? _ DISTINCT _ FROM) / QualOp) AExpr4
+
+AExpr4
+    <- ('+' / '-' / QualOp) _ AExpr5
+
+AExpr5
+    <- AExpr6 _ (QualOp / (SubqueryOp _ (ANY / SOME / ALL) _ select_with_parens))
+
+AExpr7
+    <- ( Row _ OVERLAPS _ Row ) / CExpr
+
+ExprList
+    <- AExpr (_ ',' _ AExpr)*

@@ -2,22 +2,12 @@ package main
 
 import (
 	"bytes"
+	"log"
 	"regexp"
 )
 
-type Token struct {
-	IsRuleName    bool
-	DisplayString string
-}
-
-type Context struct {
-	TokenMap      map[string]Token
-	SiblingsCount int
-}
-
 type Grammar struct {
-	Rules    []Rule
-	TokenMap map[string]Token
+	Rules []Rule
 }
 
 func cleanInput(bytesSlice []byte) string {
@@ -71,27 +61,41 @@ func MakeFromBison(bytes []byte) Grammar {
 	re := regexp.MustCompile(`\s*\n *;\n\s*`)
 	ruleStrings := re.Split(src, -1)
 	rules := []Rule{}
-	tokenMap := map[string]Token{}
 	for _, ruleString := range ruleStrings {
-		rule, err := MakeRule(ruleString, tokenMap)
+		rule, err := MakeRule(ruleString)
 		if err != nil {
 			continue
 		}
-		rules = append(rules, rule)
+		rule.Inspect()
+		if rule.SelfRefAtBeginOnly {
+			rule.FixSelfRefAtBeginOnly(false)
+			rules = append(rules, rule)
+		} else if rule.SelfRefAtEndOnly {
+			rule.FixSelfRefAtBeginOnly(true)
+			rules = append(rules, rule)
+		} else if rule.SelfRefAtBegin {
+			replacingRules := rule.SplitSelfRef()
+			rules = append(rules, replacingRules...)
+		} else if rule.SelfReferencing {
+			log.Println(rule.Name.String())
+			rules = append(rules, rule)
+		} else {
+			rules = append(rules, rule)
+		}
+	}
+	for ind, rule := range rules {
+		rule.Simplify()
+		rule.ReorderSubrules()
+		rules[ind] = rule
 	}
 	return Grammar{
-		TokenMap: tokenMap,
-		Rules:    rules,
+		Rules: rules,
 	}
 }
 
 func (g Grammar) WritePegTo(buffer *bytes.Buffer) {
-	context := Context{
-		TokenMap:      g.TokenMap,
-		SiblingsCount: 0,
-	}
 	for _, rule := range g.Rules {
-		rule.WritePegTo(buffer, context)
+		rule.WritePegTo(buffer)
 		buffer.WriteString("\n\n")
 	}
 }

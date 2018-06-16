@@ -1,0 +1,10 @@
+Float <- Real / Decimal
+
+Integer <- [0-9]+
+
+Decimal <- ([0-9]* '.' [0-9]+) / ([0-9]+ '.' [0-9]*)
+
+Real <- ( Decimal / Integer ) 'E'i [-+]? [0-9]+
+
+
+NumericOnly <- ( '+' / '-' )? _ ( Float / Integer )

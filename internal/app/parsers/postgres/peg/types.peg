@@ -1,0 +1,46 @@
+SimpleTypename
+    <- GenericType / NumericType / BitType / CharacterType / ConstDatetime / (INTERVAL _ Interval?) / (INTERVAL _ '(' Integer ')')
+
+
+GenericType
+    <- Ident ('.' Ident)* _ OptTypeModifier
+
+
+NumericType
+    <- INT / INTEGER / SMALLINT / BIGINT / REAL / (FLOAT _ '(' Integer ')')
+    / DOUBLE _ PRECISION / (DECIMAL _ OptTypeModifier)
+    / (DEC _ OptTypeModifier) / (NUMERIC _ OptTypeModifier) / BOOLEAN
+
+
+BitType
+    <- BIT _ VARYING? _ OptTypeModifier
+
+
+CharacterType
+    <- Character _ ('(' Integer ')')?
+
+Character
+    <- (CHARACTER _ VARYING?) / (CHAR _ VARYING?) / VARCHAR
+    / (NATIONAL _ CHARACTER _ VARYING?) / (NATIONAL _ CHAR _ VARYING?)
+    / (NCHAR _ VARYING?)
+
+
+ConstDatetime
+    <- (TIMESTAMP / TIME) _ ('(' Integer ')')? _ OptTimeZone
+
+OptTimeZone
+    <- ((WITH_LA _ TIME _ ZONE) / (WITHOUT _ TIME _ ZONE))?
+
+
+Interval
+    <- YEAR / MONTH / DAY / HOUR / MINUTE / IntervalSecond
+    / (YEAR _ TO _ MONTH) / (DAY _ TO _ HOUR) / (DAY _ TO _ MINUTE)
+    / (DAY _ TO _ IntervalSecond) / (HOUR TO _ MINUTE)
+    / (HOUR _ TO _ IntervalSecond) / (MINUTE _ TO _ IntervalSecond)
+
+IntervalSecond
+    <- SECOND _ ('(' Integer ')')?
+
+
+OptTypeModifier
+    <- ('(' ExprList ')')?

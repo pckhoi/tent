@@ -1,0 +1,28 @@
+StringConstant
+    <- QuoUniString / QuoEscString / QuoString
+
+QuoString
+    <- `'` ( QuoteContinue / `''` / [^`'`] )+ `'`
+
+QuoUniString
+    <- 'U'i `&'` ( QuoteContinue / `''` / [^`'`] )+ `'` ( _ "UESCAPE"i _ `'` [^'] `'` )?
+
+QuoEscString
+    <- 'E'i `'` ( UnicodeEscape / HexEscape / OctalEscape / GenericEscape / QuoteContinue / `''` / [^\`'`]+ )+ `'`
+
+UnicodeEscape
+    <- `\` ( 'u' [0-9A-Fa-f]{4} | 'U' [0-9A-Fa-f]{8} )
+
+GenericEscape
+    <- `\` [^0-7]
+
+OctalEscape
+    <- `\` [0-7]{1,3}
+
+HexEscape
+    <- `\` 'x' [0-9A-Fa-f]{1,2}
+
+QuoteContinue
+    <- `'` WhitespaceWithNewline `'` {
+        return nil, nil
+    }
