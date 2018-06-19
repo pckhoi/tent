@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"log"
+	// "log"
 	"regexp"
 )
 
@@ -76,9 +76,6 @@ func MakeFromBison(bytes []byte) Grammar {
 		} else if rule.SelfRefAtBegin {
 			replacingRules := rule.SplitSelfRef()
 			rules = append(rules, replacingRules...)
-		} else if rule.SelfReferencing {
-			log.Println(rule.Name.String())
-			rules = append(rules, rule)
 		} else {
 			rules = append(rules, rule)
 		}
@@ -88,6 +85,8 @@ func MakeFromBison(bytes []byte) Grammar {
 		rule.ReorderSubrules()
 		rules[ind] = rule
 	}
+	rules = append(rules, keywordRules()...)
+	rules = append(rules, miscellaneousRules()...)
 	return Grammar{
 		Rules: rules,
 	}

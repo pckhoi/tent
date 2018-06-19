@@ -39,17 +39,17 @@ func (group TokenGroup) GetTokenGroups() func() (int, *TokenGroup) {
 	}
 }
 
-func (group TokenGroup) GetSimpleTokens() func() (int, *SimpleToken) {
+func (group TokenGroup) GetSimpleTokens() func() (int, *ReferToken) {
 	ind := -1
 	lenTokens := len(group.Tokens)
 
-	return func() (int, *SimpleToken) {
+	return func() (int, *ReferToken) {
 		for true {
 			ind++
 			if ind >= lenTokens {
 				break
 			}
-			if val, ok := group.Tokens[ind].(*SimpleToken); ok {
+			if val, ok := group.Tokens[ind].(*ReferToken); ok {
 				return ind, val
 			}
 		}
@@ -103,7 +103,7 @@ func (group *TokenGroup) GetRepeat() RepeatCharacteristic {
 	return group.Repeat
 }
 
-func (s *TokenGroup) IndexOfToken(tok SimpleToken) int {
+func (s *TokenGroup) IndexOfToken(tok ReferToken) int {
 	gen := s.GetSimpleTokens()
 	for ind, token := gen(); token != nil; ind, token = gen() {
 		if token.Name == tok.Name {
@@ -113,7 +113,7 @@ func (s *TokenGroup) IndexOfToken(tok SimpleToken) int {
 	return -1
 }
 
-func (s *TokenGroup) AllIndexOfToken(tok SimpleToken) []int {
+func (s *TokenGroup) AllIndexOfToken(tok ReferToken) []int {
 	result := []int{}
 	gen := s.GetSimpleTokens()
 	for ind, token := gen(); token != nil; ind, token = gen() {
@@ -124,7 +124,7 @@ func (s *TokenGroup) AllIndexOfToken(tok SimpleToken) []int {
 	return result
 }
 
-func (s *TokenGroup) ReplaceToken(search, replace SimpleToken) {
+func (s *TokenGroup) ReplaceToken(search, replace ReferToken) {
 	gen := s.GetSimpleTokens()
 	for ind, val := gen(); val != nil; ind, val = gen() {
 		if val.Name == search.Name {
@@ -133,7 +133,7 @@ func (s *TokenGroup) ReplaceToken(search, replace SimpleToken) {
 	}
 }
 
-func (group *TokenGroup) DetectSelfReferencing(name SimpleToken) (bool, bool, bool, bool) {
+func (group *TokenGroup) DetectSelfReferencing(name ReferToken) (bool, bool, bool, bool) {
 	selfRef := false
 	selfRefAtBegin := false
 	selfRefAtBeginOnly := false
@@ -168,7 +168,7 @@ func (group *TokenGroup) DetectSelfReferencing(name SimpleToken) (bool, bool, bo
 	return selfRef, selfRefAtBegin, selfRefAtBeginOnly, selfRefAtEndOnly
 }
 
-func (group *TokenGroup) FixSelfRefAtBeginOnly(name SimpleToken, reversed bool) {
+func (group *TokenGroup) FixSelfRefAtBeginOnly(name ReferToken, reversed bool) {
 	beginTokens := []TokenPointer{}
 	var beginToken TokenPointer
 	for _, token := range group.Tokens {
@@ -178,7 +178,7 @@ func (group *TokenGroup) FixSelfRefAtBeginOnly(name SimpleToken, reversed bool) 
 				beginToken = val
 				break
 			}
-		} else if val, ok := token.(*SimpleToken); ok {
+		} else if val, ok := token.(*ReferToken); ok {
 			beginTokens = []TokenPointer{val}
 			beginToken = val
 			break
@@ -208,7 +208,7 @@ func (group *TokenGroup) FixSelfRefAtBeginOnly(name SimpleToken, reversed bool) 
 				Type:   Sequence,
 			}
 			processedTokens = append(processedTokens, &childTokenGroup)
-		} else if val, ok := token.(*SimpleToken); ok {
+		} else if val, ok := token.(*ReferToken); ok {
 			normalTokens = append(normalTokens, val)
 		}
 	}
@@ -305,7 +305,7 @@ func (group *TokenGroup) Deduplicate() TokenPointer {
 			}
 		}
 	}
-	if val, ok := group.Tokens[0].(*SimpleToken); len(group.Tokens) == 1 && ok {
+	if val, ok := group.Tokens[0].(*ReferToken); len(group.Tokens) == 1 && ok {
 		val.SetRepeat(group.Repeat)
 		return val
 	}
@@ -333,8 +333,8 @@ func (group *TokenGroup) InsertSpace() {
 }
 
 func tokenEqual(tokenA, tokenB TokenPointer) bool {
-	simA, simAOk := tokenA.(*SimpleToken)
-	simB, simBOk := tokenB.(*SimpleToken)
+	simA, simAOk := tokenA.(*ReferToken)
+	simB, simBOk := tokenB.(*ReferToken)
 	if simAOk && simBOk {
 		return simA.Name == simB.Name
 	}

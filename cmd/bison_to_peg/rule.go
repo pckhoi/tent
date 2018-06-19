@@ -9,7 +9,7 @@ import (
 )
 
 type Rule struct {
-	Name               SimpleToken
+	Name               ReferToken
 	Expression         TokenPointer
 	SelfReferencing    bool
 	SelfRefAtBegin     bool
@@ -58,8 +58,7 @@ func (r Rule) SplitSelfRef() []Rule {
 	}
 	var normalGroups []TokenPointer
 	var selfRefGroups []TokenPointer
-	newRuleName := MakeSimpleToken(r.Name.Name + "1")
-	newRuleName.MarkAsRuleName()
+	newRuleName := MakeReferToken(r.Name.Name+"1", true, 0)
 	for _, token := range tokenGroup.Tokens {
 		group, ok := token.(*TokenGroup)
 		if !ok {
@@ -122,7 +121,7 @@ func MakeRule(src string) (Rule, error) {
 	}
 
 	ruleName := src[indicies[2]:indicies[3]]
-	nameToken := SimpleToken{
+	nameToken := ReferToken{
 		Name: ruleName,
 	}
 	nameToken.MarkAsRuleName()

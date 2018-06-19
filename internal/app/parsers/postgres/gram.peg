@@ -2,7 +2,7 @@ Stmtblock
     = Stmtmulti
 
 Stmtmulti
-    = Stmt (_ ';' _ Stmt)*
+    = Stmt (_ ";" _ Stmt)*
 
 Stmt
     = (AlterEventTrigStmt
@@ -230,9 +230,9 @@ SetRest
 
 GenericSet
     = (VarName _ TO _ VarList)
-    / (VarName _ '=' _ VarList)
+    / (VarName _ "=" _ VarList)
     / (VarName _ TO _ DEFAULT)
-    / (VarName _ '=' _ DEFAULT)
+    / (VarName _ "=" _ DEFAULT)
 
 SetRestMore
     = (VarName _ FROM _ CURRENT)
@@ -248,10 +248,10 @@ SetRestMore
     / GenericSet
 
 VarName
-    = ColId (_ '.' _ ColId)*
+    = ColId (_ "." _ ColId)*
 
 VarList
-    = VarValue (_ ',' _ VarValue)*
+    = VarValue (_ "," _ VarValue)*
 
 VarValue
     = OptBooleanOrString
@@ -270,7 +270,7 @@ OptBooleanOrString
     / NonReservedWordOrSconst
 
 ZoneValue
-    = (ConstInterval _ '(' _ Iconst _ ')' _ Sconst)
+    = (ConstInterval _ "(" _ Iconst _ ")" _ Sconst)
     / (ConstInterval _ Sconst _ OptInterval)
     / Sconst
     / IDENT
@@ -357,7 +357,7 @@ AlterTableStmt
     / (ALTER _ TABLE _ RelationExpr _ AlterTableCmds)
 
 AlterTableCmds
-    = AlterTableCmd (_ ',' _ AlterTableCmd)*
+    = AlterTableCmd (_ "," _ AlterTableCmd)*
 
 PartitionCmd
     = (ATTACH _ PARTITION _ QualifiedName _ PartitionBoundSpec)
@@ -446,18 +446,18 @@ ReplicaIdentity
     / DEFAULT
 
 Reloptions
-    = ('(' _ ReloptionList _ ')')
+    = ("(" _ ReloptionList _ ")")
 
 OptReloptions
     = (WITH _ Reloptions)?
 
 ReloptionList
-    = ReloptionElem (_ ',' _ ReloptionElem)*
+    = ReloptionElem (_ "," _ ReloptionElem)*
 
 ReloptionElem
-    = (ColLabel _ '.' _ ColLabel _ '=' _ DefArg)
-    / (ColLabel _ '=' _ DefArg)
-    / (ColLabel _ '.' _ ColLabel)
+    = (ColLabel _ "." _ ColLabel _ "=" _ DefArg)
+    / (ColLabel _ "=" _ DefArg)
+    / (ColLabel _ "." _ ColLabel)
     / ColLabel
 
 AlterIdentityColumnOptionList
@@ -470,16 +470,16 @@ AlterIdentityColumnOption
     / RESTART
 
 PartitionBoundSpec
-    = (FOR _ VALUES _ FROM _ '(' _ RangeDatumList _ ')' _ TO _ '(' _ RangeDatumList _ ')')
-    / (FOR _ VALUES _ WITH _ '(' _ HashPartbound _ ')')
-    / (FOR _ VALUES _ IN _ '(' _ PartboundDatumList _ ')')
+    = (FOR _ VALUES _ FROM _ "(" _ RangeDatumList _ ")" _ TO _ "(" _ RangeDatumList _ ")")
+    / (FOR _ VALUES _ WITH _ "(" _ HashPartbound _ ")")
+    / (FOR _ VALUES _ IN _ "(" _ PartboundDatumList _ ")")
     / DEFAULT
 
 HashPartboundElem
     = (NonReservedWord _ Iconst)
 
 HashPartbound
-    = HashPartboundElem (_ ',' _ HashPartboundElem)*
+    = HashPartboundElem (_ "," _ HashPartboundElem)*
 
 PartboundDatum
     = Sconst
@@ -489,10 +489,10 @@ PartboundDatum
     / NULL
 
 PartboundDatumList
-    = PartboundDatum (_ ',' _ PartboundDatum)*
+    = PartboundDatum (_ "," _ PartboundDatum)*
 
 RangeDatumList
-    = PartitionRangeDatum (_ ',' _ PartitionRangeDatum)*
+    = PartitionRangeDatum (_ "," _ PartitionRangeDatum)*
 
 PartitionRangeDatum
     = MINVALUE
@@ -503,7 +503,7 @@ AlterCompositeTypeStmt
     = (ALTER _ TYPE _ AnyName _ AlterTypeCmds)
 
 AlterTypeCmds
-    = AlterTypeCmd (_ ',' _ AlterTypeCmd)*
+    = AlterTypeCmd (_ "," _ AlterTypeCmd)*
 
 AlterTypeCmd
     = (ALTER _ ATTRIBUTE _ ColId _ OptSetData _ TYPE _ Typename _ OptCollateClause _ OptDropBehavior)
@@ -517,7 +517,7 @@ ClosePortalStmt
 
 CopyStmt
     = (COPY _ OptBinary _ QualifiedName _ OptColumnList _ OptOids _ CopyFrom _ OptProgram _ CopyFileName _ CopyDelimiter _ OptWith _ CopyOptions)
-    / (COPY _ '(' _ PreparableStmt _ ')' _ TO _ OptProgram _ CopyFileName _ OptWith _ CopyOptions)
+    / (COPY _ "(" _ PreparableStmt _ ")" _ TO _ OptProgram _ CopyFileName _ OptWith _ CopyOptions)
 
 CopyFrom
     = FROM
@@ -532,7 +532,7 @@ CopyFileName
     / STDOUT
 
 CopyOptions
-    = ('(' _ CopyGenericOptList _ ')')
+    = ("(" _ CopyGenericOptList _ ")")
     / CopyOptList
 
 CopyOptList
@@ -544,7 +544,7 @@ CopyOptItem
     / (FORCE _ NULL _ ColumnList)
     / (DELIMITER _ OptAs _ Sconst)
     / (NULL _ OptAs _ Sconst)
-    / (FORCE _ QUOTE _ '*')
+    / (FORCE _ QUOTE _ "*")
     / (FORCE _ QUOTE _ ColumnList)
     / (QUOTE _ OptAs _ Sconst)
     / (ENCODING _ Sconst)
@@ -567,29 +567,29 @@ OptUsing
     = USING?
 
 CopyGenericOptList
-    = CopyGenericOptElem (_ ',' _ CopyGenericOptElem)*
+    = CopyGenericOptElem (_ "," _ CopyGenericOptElem)*
 
 CopyGenericOptElem
     = (ColLabel _ CopyGenericOptArg)
 
 CopyGenericOptArg
-    = (('(' _ CopyGenericOptArgList _ ')')
+    = (("(" _ CopyGenericOptArgList _ ")")
     / OptBooleanOrString
     / NumericOnly
-    / '*')?
+    / "*")?
 
 CopyGenericOptArgList
-    = CopyGenericOptArgListItem (_ ',' _ CopyGenericOptArgListItem)*
+    = CopyGenericOptArgListItem (_ "," _ CopyGenericOptArgListItem)*
 
 CopyGenericOptArgListItem
     = OptBooleanOrString
 
 CreateStmt
     = (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
-    / (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ '(' _ OptTableElementList _ ')' _ OptInherit _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
+    / (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
     / (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ OF _ AnyName _ OptTypedTableElementList _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
     / (CREATE _ OptTemp _ TABLE _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
-    / (CREATE _ OptTemp _ TABLE _ QualifiedName _ '(' _ OptTableElementList _ ')' _ OptInherit _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
+    / (CREATE _ OptTemp _ TABLE _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
     / (CREATE _ OptTemp _ TABLE _ QualifiedName _ OF _ AnyName _ OptTypedTableElementList _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
 
 OptTemp
@@ -605,13 +605,13 @@ OptTableElementList
     = TableElementList?
 
 OptTypedTableElementList
-    = ('(' _ TypedTableElementList _ ')')?
+    = ("(" _ TypedTableElementList _ ")")?
 
 TableElementList
-    = TableElement (_ ',' _ TableElement)*
+    = TableElement (_ "," _ TableElement)*
 
 TypedTableElementList
-    = TypedTableElement (_ ',' _ TypedTableElement)*
+    = TypedTableElement (_ "," _ TypedTableElement)*
 
 TableElement
     = ColumnDef
@@ -641,7 +641,7 @@ ColConstraint
 ColConstraintElem
     = (GENERATED _ GeneratedWhen _ AS _ IDENTITY _ OptParenthesizedSeqOptList)
     / (REFERENCES _ QualifiedName _ OptColumnList _ KeyMatch _ KeyActions)
-    / (CHECK _ '(' _ AExpr _ ')' _ OptNoInherit)
+    / (CHECK _ "(" _ AExpr _ ")" _ OptNoInherit)
     / (PRIMARY _ KEY _ OptDefinition _ OptConsTableSpace)
     / (UNIQUE _ OptDefinition _ OptConsTableSpace)
     / (DEFAULT _ BExpr)
@@ -680,11 +680,11 @@ TableConstraint
     / ConstraintElem
 
 ConstraintElem
-    = (FOREIGN _ KEY _ '(' _ ColumnList _ ')' _ REFERENCES _ QualifiedName _ OptColumnList _ KeyMatch _ KeyActions _ ConstraintAttributeSpec)
-    / (EXCLUDE _ AccessMethodClause _ '(' _ ExclusionConstraintList _ ')' _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ExclusionWhereClause _ ConstraintAttributeSpec)
-    / (PRIMARY _ KEY _ '(' _ ColumnList _ ')' _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ConstraintAttributeSpec)
-    / (UNIQUE _ '(' _ ColumnList _ ')' _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ConstraintAttributeSpec)
-    / (CHECK _ '(' _ AExpr _ ')' _ ConstraintAttributeSpec)
+    = (FOREIGN _ KEY _ "(" _ ColumnList _ ")" _ REFERENCES _ QualifiedName _ OptColumnList _ KeyMatch _ KeyActions _ ConstraintAttributeSpec)
+    / (EXCLUDE _ AccessMethodClause _ "(" _ ExclusionConstraintList _ ")" _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ExclusionWhereClause _ ConstraintAttributeSpec)
+    / (PRIMARY _ KEY _ "(" _ ColumnList _ ")" _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ConstraintAttributeSpec)
+    / (UNIQUE _ "(" _ ColumnList _ ")" _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ConstraintAttributeSpec)
+    / (CHECK _ "(" _ AExpr _ ")" _ ConstraintAttributeSpec)
     / (PRIMARY _ KEY _ ExistingIndex _ ConstraintAttributeSpec)
     / (UNIQUE _ ExistingIndex _ ConstraintAttributeSpec)
 
@@ -692,16 +692,16 @@ OptNoInherit
     = (NO _ INHERIT)?
 
 OptColumnList
-    = ('(' _ ColumnList _ ')')?
+    = ("(" _ ColumnList _ ")")?
 
 ColumnList
-    = ColumnElem (_ ',' _ ColumnElem)*
+    = ColumnElem (_ "," _ ColumnElem)*
 
 ColumnElem
     = ColId
 
 OptCInclude
-    = (INCLUDE _ '(' _ ColumnList _ ')')?
+    = (INCLUDE _ "(" _ ColumnList _ ")")?
 
 KeyMatch
     = ((MATCH _ FULL)
@@ -709,14 +709,14 @@ KeyMatch
     / (MATCH _ SIMPLE))?
 
 ExclusionConstraintList
-    = ExclusionConstraintElem (_ ',' _ ExclusionConstraintElem)*
+    = ExclusionConstraintElem (_ "," _ ExclusionConstraintElem)*
 
 ExclusionConstraintElem
-    = (IndexElem _ WITH _ OPERATOR _ '(' _ AnyOperator _ ')')
+    = (IndexElem _ WITH _ OPERATOR _ "(" _ AnyOperator _ ")")
     / (IndexElem _ WITH _ AnyOperator)
 
 ExclusionWhereClause
-    = (WHERE _ '(' _ AExpr _ ')')?
+    = (WHERE _ "(" _ AExpr _ ")")?
 
 KeyActions
     = ((KeyUpdate _ KeyDelete)
@@ -738,23 +738,23 @@ KeyAction
     / CASCADE
 
 OptInherit
-    = (INHERITS _ '(' _ QualifiedNameList _ ')')?
+    = (INHERITS _ "(" _ QualifiedNameList _ ")")?
 
 OptPartitionSpec
     = PartitionSpec?
 
 PartitionSpec
-    = (PARTITION _ BY _ PartStrategy _ '(' _ PartParams _ ')')
+    = (PARTITION _ BY _ PartStrategy _ "(" _ PartParams _ ")")
 
 PartStrategy
     = IDENT
     / UnreservedKeyword
 
 PartParams
-    = PartElem (_ ',' _ PartElem)*
+    = PartElem (_ "," _ PartElem)*
 
 PartElem
-    = ('(' _ AExpr _ ')' _ OptCollate _ OptClass)
+    = ("(" _ AExpr _ ")" _ OptCollate _ OptClass)
     / (ColId _ OptCollate _ OptClass)
     / (FuncExprWindowless _ OptCollate _ OptClass)
 
@@ -817,7 +817,7 @@ OptSeqOptList
     = SeqOptList?
 
 OptParenthesizedSeqOptList
-    = ('(' _ SeqOptList _ ')')?
+    = ("(" _ SeqOptList _ ")")?
 
 SeqOptList
     = SeqOptElem (_ SeqOptElem)*
@@ -842,13 +842,13 @@ OptBy
     = BY?
 
 NumericOnly
-    = ('+' _ FCONST)
-    / ('-' _ FCONST)
+    = ("+" _ FCONST)
+    / ("-" _ FCONST)
     / FCONST
     / SignedIconst
 
 NumericOnlyList
-    = NumericOnly (_ ',' _ NumericOnly)*
+    = NumericOnly (_ "," _ NumericOnly)*
 
 CreatePLangStmt
     = (CREATE _ OptOrReplace _ OptTrusted _ OptProcedural _ LANGUAGE _ NonReservedWordOrSconst _ HANDLER _ HandlerName _ OptInlineHandler _ OptValidator)
@@ -911,7 +911,7 @@ AlterExtensionOptItem
     = (TO _ NonReservedWordOrSconst)
 
 AlterExtensionContentsStmt
-    = (ALTER _ EXTENSION _ Name _ AddDrop _ CAST _ '(' _ Typename _ AS _ Typename _ ')')
+    = (ALTER _ EXTENSION _ Name _ AddDrop _ CAST _ "(" _ Typename _ AS _ Typename _ ")")
     / (ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod)
     / (ALTER _ EXTENSION _ Name _ AddDrop _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name)
     / (ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod)
@@ -960,16 +960,16 @@ AlterFdwStmt
     / (ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ FdwOptions)
 
 CreateGenericOptions
-    = (OPTIONS _ '(' _ GenericOptionList _ ')')?
+    = (OPTIONS _ "(" _ GenericOptionList _ ")")?
 
 GenericOptionList
-    = GenericOptionElem (_ ',' _ GenericOptionElem)*
+    = GenericOptionElem (_ "," _ GenericOptionElem)*
 
 AlterGenericOptions
-    = (OPTIONS _ '(' _ AlterGenericOptionList _ ')')
+    = (OPTIONS _ "(" _ AlterGenericOptionList _ ")")
 
 AlterGenericOptionList
-    = AlterGenericOptionElem (_ ',' _ AlterGenericOptionElem)*
+    = AlterGenericOptionElem (_ "," _ AlterGenericOptionElem)*
 
 AlterGenericOptionElem
     = (SET _ GenericOptionElem)
@@ -1007,9 +1007,9 @@ AlterForeignServerStmt
 
 CreateForeignTableStmt
     = (CREATE _ FOREIGN _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ SERVER _ Name _ CreateGenericOptions)
-    / (CREATE _ FOREIGN _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ '(' _ OptTableElementList _ ')' _ OptInherit _ SERVER _ Name _ CreateGenericOptions)
+    / (CREATE _ FOREIGN _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ SERVER _ Name _ CreateGenericOptions)
     / (CREATE _ FOREIGN _ TABLE _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ SERVER _ Name _ CreateGenericOptions)
-    / (CREATE _ FOREIGN _ TABLE _ QualifiedName _ '(' _ OptTableElementList _ ')' _ OptInherit _ SERVER _ Name _ CreateGenericOptions)
+    / (CREATE _ FOREIGN _ TABLE _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ SERVER _ Name _ CreateGenericOptions)
 
 AlterForeignTableStmt
     = (ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ AlterTableCmds)
@@ -1023,7 +1023,7 @@ ImportQualificationType
     / EXCEPT
 
 ImportQualification
-    = (ImportQualificationType _ '(' _ RelationExprList _ ')')?
+    = (ImportQualificationType _ "(" _ RelationExprList _ ")")?
 
 CreateUserMappingStmt
     = (CREATE _ USER _ MAPPING _ IF _ NOT _ EXISTS _ FOR _ AuthIdent _ SERVER _ Name _ CreateGenericOptions)
@@ -1047,10 +1047,10 @@ AlterPolicyStmt
     = (ALTER _ POLICY _ Name _ ON _ QualifiedName _ RowSecurityOptionalToRole _ RowSecurityOptionalExpr _ RowSecurityOptionalWithCheck)
 
 RowSecurityOptionalExpr
-    = (USING _ '(' _ AExpr _ ')')?
+    = (USING _ "(" _ AExpr _ ")")?
 
 RowSecurityOptionalWithCheck
-    = (WITH _ CHECK _ '(' _ AExpr _ ')')?
+    = (WITH _ CHECK _ "(" _ AExpr _ ")")?
 
 RowSecurityDefaultToRole
     = (TO _ RoleList)?
@@ -1075,8 +1075,8 @@ CreateAmStmt
     = (CREATE _ ACCESS _ METHOD _ Name _ TYPE _ INDEX _ HANDLER _ HandlerName)
 
 CreateTrigStmt
-    = (CREATE _ CONSTRAINT _ TRIGGER _ Name _ AFTER _ TriggerEvents _ ON _ QualifiedName _ OptConstrFromTable _ ConstraintAttributeSpec _ FOR _ EACH _ ROW _ TriggerWhen _ EXECUTE _ PROCEDURE _ FuncName _ '(' _ TriggerFuncArgs _ ')')
-    / (CREATE _ TRIGGER _ Name _ TriggerActionTime _ TriggerEvents _ ON _ QualifiedName _ TriggerReferencing _ TriggerForSpec _ TriggerWhen _ EXECUTE _ PROCEDURE _ FuncName _ '(' _ TriggerFuncArgs _ ')')
+    = (CREATE _ CONSTRAINT _ TRIGGER _ Name _ AFTER _ TriggerEvents _ ON _ QualifiedName _ OptConstrFromTable _ ConstraintAttributeSpec _ FOR _ EACH _ ROW _ TriggerWhen _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ TriggerFuncArgs _ ")")
+    / (CREATE _ TRIGGER _ Name _ TriggerActionTime _ TriggerEvents _ ON _ QualifiedName _ TriggerReferencing _ TriggerForSpec _ TriggerWhen _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ TriggerFuncArgs _ ")")
 
 TriggerActionTime
     = (INSTEAD _ OF)
@@ -1124,10 +1124,10 @@ TriggerForType
     / STATEMENT
 
 TriggerWhen
-    = (WHEN _ '(' _ AExpr _ ')')?
+    = (WHEN _ "(" _ AExpr _ ")")?
 
 TriggerFuncArgs
-    = (TriggerFuncArg (_ ',' _ TriggerFuncArg)*)?
+    = (TriggerFuncArg (_ "," _ TriggerFuncArg)*)?
 
 TriggerFuncArg
     = Iconst
@@ -1150,17 +1150,17 @@ ConstraintAttributeElem
     / DEFERRABLE
 
 CreateEventTrigStmt
-    = (CREATE _ EVENT _ TRIGGER _ Name _ ON _ ColLabel _ WHEN _ EventTriggerWhenList _ EXECUTE _ PROCEDURE _ FuncName _ '(' _ ')')
-    / (CREATE _ EVENT _ TRIGGER _ Name _ ON _ ColLabel _ EXECUTE _ PROCEDURE _ FuncName _ '(' _ ')')
+    = (CREATE _ EVENT _ TRIGGER _ Name _ ON _ ColLabel _ WHEN _ EventTriggerWhenList _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ ")")
+    / (CREATE _ EVENT _ TRIGGER _ Name _ ON _ ColLabel _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ ")")
 
 EventTriggerWhenList
     = EventTriggerWhenItem (_ AND _ EventTriggerWhenItem)*
 
 EventTriggerWhenItem
-    = (ColId _ IN _ '(' _ EventTriggerValueList _ ')')
+    = (ColId _ IN _ "(" _ EventTriggerValueList _ ")")
 
 EventTriggerValueList
-    = SCONST (_ ',' _ SCONST)*
+    = SCONST (_ "," _ SCONST)*
 
 AlterEventTrigStmt
     = (ALTER _ EVENT _ TRIGGER _ Name _ EnableTrigger)
@@ -1172,16 +1172,16 @@ EnableTrigger
     / DISABLE
 
 CreateAssertStmt
-    = (CREATE _ ASSERTION _ Name _ CHECK _ '(' _ AExpr _ ')' _ ConstraintAttributeSpec)
+    = (CREATE _ ASSERTION _ Name _ CHECK _ "(" _ AExpr _ ")" _ ConstraintAttributeSpec)
 
 DropAssertStmt
     = (DROP _ ASSERTION _ Name _ OptDropBehavior)
 
 DefineStmt
     = (CREATE _ COLLATION _ IF _ NOT _ EXISTS _ AnyName _ FROM _ AnyName)
-    / (CREATE _ TYPE _ AnyName _ AS _ ENUM _ '(' _ OptEnumValList _ ')')
+    / (CREATE _ TYPE _ AnyName _ AS _ ENUM _ "(" _ OptEnumValList _ ")")
     / (CREATE _ COLLATION _ IF _ NOT _ EXISTS _ AnyName _ Definition)
-    / (CREATE _ TYPE _ AnyName _ AS _ '(' _ OptTableFuncElementList _ ')')
+    / (CREATE _ TYPE _ AnyName _ AS _ "(" _ OptTableFuncElementList _ ")")
     / (CREATE _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ Definition)
     / (CREATE _ TEXT _ SEARCH _ TEMPLATE _ AnyName _ Definition)
     / (CREATE _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ Definition)
@@ -1196,13 +1196,13 @@ DefineStmt
     / (CREATE _ TYPE _ AnyName)
 
 Definition
-    = ('(' _ DefList _ ')')
+    = ("(" _ DefList _ ")")
 
 DefList
-    = DefElem (_ ',' _ DefElem)*
+    = DefElem (_ "," _ DefElem)*
 
 DefElem
-    = (ColLabel _ '=' _ DefArg)
+    = (ColLabel _ "=" _ DefArg)
     / ColLabel
 
 DefArg
@@ -1214,19 +1214,19 @@ DefArg
     / NONE
 
 OldAggrDefinition
-    = ('(' _ OldAggrList _ ')')
+    = ("(" _ OldAggrList _ ")")
 
 OldAggrList
-    = OldAggrElem (_ ',' _ OldAggrElem)*
+    = OldAggrElem (_ "," _ OldAggrElem)*
 
 OldAggrElem
-    = (IDENT _ '=' _ DefArg)
+    = (IDENT _ "=" _ DefArg)
 
 OptEnumValList
     = EnumValList?
 
 EnumValList
-    = Sconst (_ ',' _ Sconst)*
+    = Sconst (_ "," _ Sconst)*
 
 AlterEnumStmt
     = (ALTER _ TYPE _ AnyName _ ADD _ VALUE _ OptIfNotExists _ Sconst _ BEFORE _ Sconst)
@@ -1241,10 +1241,10 @@ CreateOpClassStmt
     = (CREATE _ OPERATOR _ CLASS _ AnyName _ OptDefault _ FOR _ TYPE _ Typename _ USING _ AccessMethod _ OptOpfamily _ AS _ OpclassItemList)
 
 OpclassItemList
-    = OpclassItem (_ ',' _ OpclassItem)*
+    = OpclassItem (_ "," _ OpclassItem)*
 
 OpclassItem
-    = (FUNCTION _ Iconst _ '(' _ TypeList _ ')' _ FunctionWithArgtypes)
+    = (FUNCTION _ Iconst _ "(" _ TypeList _ ")" _ FunctionWithArgtypes)
     / (OPERATOR _ Iconst _ AnyOperator _ OpclassPurpose _ OptRecheck)
     / (OPERATOR _ Iconst _ OperatorWithArgtypes _ OpclassPurpose _ OptRecheck)
     / (FUNCTION _ Iconst _ FunctionWithArgtypes)
@@ -1271,11 +1271,11 @@ AlterOpFamilyStmt
     / (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ DROP _ OpclassDropList)
 
 OpclassDropList
-    = OpclassDrop (_ ',' _ OpclassDrop)*
+    = OpclassDrop (_ "," _ OpclassDrop)*
 
 OpclassDrop
-    = (OPERATOR _ Iconst _ '(' _ TypeList _ ')')
-    / (FUNCTION _ Iconst _ '(' _ TypeList _ ')')
+    = (OPERATOR _ Iconst _ "(" _ TypeList _ ")")
+    / (FUNCTION _ Iconst _ "(" _ TypeList _ ")")
 
 DropOpClassStmt
     = (DROP _ OPERATOR _ CLASS _ IF _ EXISTS _ AnyName _ USING _ AccessMethod _ OptDropBehavior)
@@ -1335,24 +1335,27 @@ DropTypeNameOnAnyName
     / TRIGGER
 
 AnyNameList
-    = AnyName (_ ',' _ AnyName)*
+    = AnyName (_ "," _ AnyName)*
 
 AnyName
     = (ColId _ Attrs)
     / ColId
 
 Attrs
-    = '.' _ AttrName (_ '.' _ AttrName)*
+    = "." _ AttrName (_ "." _ AttrName)*
 
 TypeNameList
-    = Typename (_ ',' _ Typename _ TruncateStmt: _ TRUNCATE _ OptTable _ RelationExprList _ OptRestartSeqs _ OptDropBehavior)*
+    = Typename (_ "," _ Typename)*
+
+TruncateStmt
+    = (TRUNCATE _ OptTable _ RelationExprList _ OptRestartSeqs _ OptDropBehavior)
 
 OptRestartSeqs
     = ((CONTINUE _ IDENTITY)
     / (RESTART _ IDENTITY))?
 
 CommentStmt
-    = (COMMENT _ ON _ CAST _ '(' _ Typename _ AS _ Typename _ ')' _ IS _ CommentText)
+    = (COMMENT _ ON _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ IS _ CommentText)
     / (COMMENT _ ON _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ IS _ CommentText)
     / (COMMENT _ ON _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ IS _ CommentText)
     / (COMMENT _ ON _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name _ IS _ CommentText)
@@ -1479,14 +1482,14 @@ RevokeStmt
     / (REVOKE _ Privileges _ ON _ PrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior)
 
 Privileges
-    = (ALL _ PRIVILEGES _ '(' _ ColumnList _ ')')
-    / (ALL _ '(' _ ColumnList _ ')')
+    = (ALL _ PRIVILEGES _ "(" _ ColumnList _ ")")
+    / (ALL _ "(" _ ColumnList _ ")")
     / (ALL _ PRIVILEGES)
     / PrivilegeList
     / ALL
 
 PrivilegeList
-    = Privilege (_ ',' _ Privilege)*
+    = Privilege (_ "," _ Privilege)*
 
 Privilege
     = (SELECT _ OptColumnList)
@@ -1517,7 +1520,7 @@ PrivilegeTarget
     / QualifiedNameList
 
 GranteeList
-    = Grantee (_ ',' _ Grantee)*
+    = Grantee (_ "," _ Grantee)*
 
 Grantee
     = (GROUP _ RoleSpec)
@@ -1564,8 +1567,8 @@ DefaclPrivilegeTarget
     / SCHEMAS
 
 IndexStmt
-    = (CREATE _ OptUnique _ INDEX _ OptConcurrently _ IF _ NOT _ EXISTS _ IndexName _ ON _ RelationExpr _ AccessMethodClause _ '(' _ IndexParams _ ')' _ OptInclude _ OptReloptions _ OptTableSpace _ WhereClause)
-    / (CREATE _ OptUnique _ INDEX _ OptConcurrently _ OptIndexName _ ON _ RelationExpr _ AccessMethodClause _ '(' _ IndexParams _ ')' _ OptInclude _ OptReloptions _ OptTableSpace _ WhereClause)
+    = (CREATE _ OptUnique _ INDEX _ OptConcurrently _ IF _ NOT _ EXISTS _ IndexName _ ON _ RelationExpr _ AccessMethodClause _ "(" _ IndexParams _ ")" _ OptInclude _ OptReloptions _ OptTableSpace _ WhereClause)
+    / (CREATE _ OptUnique _ INDEX _ OptConcurrently _ OptIndexName _ ON _ RelationExpr _ AccessMethodClause _ "(" _ IndexParams _ ")" _ OptInclude _ OptReloptions _ OptTableSpace _ WhereClause)
 
 OptUnique
     = UNIQUE?
@@ -1580,18 +1583,18 @@ AccessMethodClause
     = (USING _ AccessMethod)?
 
 IndexParams
-    = IndexElem (_ ',' _ IndexElem)*
+    = IndexElem (_ "," _ IndexElem)*
 
 IndexElem
-    = ('(' _ AExpr _ ')' _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder)
+    = ("(" _ AExpr _ ")" _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder)
     / (ColId _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder)
     / (FuncExprWindowless _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder)
 
 OptInclude
-    = (INCLUDE _ '(' _ IndexIncludingParams _ ')')?
+    = (INCLUDE _ "(" _ IndexIncludingParams _ ")")?
 
 IndexIncludingParams
-    = IndexElem (_ ',' _ IndexElem)*
+    = IndexElem (_ "," _ IndexElem)*
 
 OptCollate
     = (COLLATE _ AnyName)?
@@ -1608,7 +1611,7 @@ OptNullsOrder
     / (NULLS _ LAST))?
 
 CreateFunctionStmt
-    = (CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ RETURNS _ TABLE _ '(' _ TableFuncColumnList _ ')' _ CreatefuncOptList)
+    = (CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ RETURNS _ TABLE _ "(" _ TableFuncColumnList _ ")" _ CreatefuncOptList)
     / (CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ RETURNS _ FuncReturn _ CreatefuncOptList)
     / (CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ CreatefuncOptList)
     / (CREATE _ OptOrReplace _ PROCEDURE _ FuncName _ FuncArgsWithDefaults _ CreatefuncOptList)
@@ -1617,14 +1620,14 @@ OptOrReplace
     = (OR _ REPLACE)?
 
 FuncArgs
-    = ('(' _ FuncArgsList _ ')')
-    / ('(' _ ')')
+    = ("(" _ FuncArgsList _ ")")
+    / ("(" _ ")")
 
 FuncArgsList
-    = FuncArg (_ ',' _ FuncArg)*
+    = FuncArg (_ "," _ FuncArg)*
 
 FunctionWithArgtypesList
-    = FunctionWithArgtypes (_ ',' _ FunctionWithArgtypes)*
+    = FunctionWithArgtypes (_ "," _ FunctionWithArgtypes)*
 
 FunctionWithArgtypes
     = (FuncName _ FuncArgs)
@@ -1633,11 +1636,11 @@ FunctionWithArgtypes
     / ColId
 
 FuncArgsWithDefaults
-    = ('(' _ FuncArgsWithDefaultsList _ ')')
-    / ('(' _ ')')
+    = ("(" _ FuncArgsWithDefaultsList _ ")")
+    / ("(" _ ")")
 
 FuncArgsWithDefaultsList
-    = FuncArgWithDefault (_ ',' _ FuncArgWithDefault)*
+    = FuncArgWithDefault (_ "," _ FuncArgWithDefault)*
 
 FuncArg
     = (ArgClass _ ParamName _ FuncType)
@@ -1660,32 +1663,32 @@ FuncReturn
     = FuncType
 
 FuncType
-    = (SETOF _ TypeFunctionName _ Attrs _ '%' _ TYPE)
-    / (TypeFunctionName _ Attrs _ '%' _ TYPE)
+    = (SETOF _ TypeFunctionName _ Attrs _ "%" _ TYPE)
+    / (TypeFunctionName _ Attrs _ "%" _ TYPE)
     / Typename
 
 FuncArgWithDefault
     = (FuncArg _ DEFAULT _ AExpr)
-    / (FuncArg _ '=' _ AExpr)
+    / (FuncArg _ "=" _ AExpr)
     / FuncArg
 
 AggrArg
     = FuncArg
 
 AggrArgs
-    = ('(' _ AggrArgsList _ ORDER _ BY _ AggrArgsList _ ')')
-    / ('(' _ ORDER _ BY _ AggrArgsList _ ')')
-    / ('(' _ '*' _ ')')
-    / ('(' _ AggrArgsList _ ')')
+    = ("(" _ AggrArgsList _ ORDER _ BY _ AggrArgsList _ ")")
+    / ("(" _ ORDER _ BY _ AggrArgsList _ ")")
+    / ("(" _ "*" _ ")")
+    / ("(" _ AggrArgsList _ ")")
 
 AggrArgsList
-    = AggrArg (_ ',' _ AggrArg)*
+    = AggrArg (_ "," _ AggrArg)*
 
 AggregateWithArgtypes
     = (FuncName _ AggrArgs)
 
 AggregateWithArgtypesList
-    = AggregateWithArgtypes (_ ',' _ AggregateWithArgtypes)*
+    = AggregateWithArgtypes (_ "," _ AggregateWithArgtypes)*
 
 CreatefuncOptList
     = CreatefuncOptItem (_ CreatefuncOptItem)*
@@ -1716,11 +1719,11 @@ CreatefuncOptItem
     / CommonFuncOptItem
 
 FuncAs
-    = (Sconst _ ',' _ Sconst)
+    = (Sconst _ "," _ Sconst)
     / Sconst
 
 TransformTypeList
-    = FOR _ TYPE _ Typename (_ ',' _ FOR _ TYPE _ Typename)*
+    = FOR _ TYPE _ Typename (_ "," _ FOR _ TYPE _ Typename)*
 
 OptDefinition
     = (WITH _ Definition)?
@@ -1729,7 +1732,7 @@ TableFuncColumn
     = (ParamName _ FuncType)
 
 TableFuncColumnList
-    = TableFuncColumn (_ ',' _ TableFuncColumn)*
+    = TableFuncColumn (_ "," _ TableFuncColumn)*
 
 AlterFunctionStmt
     = (ALTER _ FUNCTION _ FunctionWithArgtypes _ AlterfuncOptList _ OptRestrict)
@@ -1759,16 +1762,16 @@ RemoveOperStmt
     / (DROP _ OPERATOR _ OperatorWithArgtypesList _ OptDropBehavior)
 
 OperArgtypes
-    = ('(' _ Typename _ ',' _ Typename _ ')')
-    / ('(' _ NONE _ ',' _ Typename _ ')')
-    / ('(' _ Typename _ ',' _ NONE _ ')')
-    / ('(' _ Typename _ ')')
+    = ("(" _ Typename _ "," _ Typename _ ")")
+    / ("(" _ NONE _ "," _ Typename _ ")")
+    / ("(" _ Typename _ "," _ NONE _ ")")
+    / ("(" _ Typename _ ")")
 
 AnyOperator
-    = (ColId _ '.' _)* AllOp
+    = (ColId _ "." _)* AllOp
 
 OperatorWithArgtypesList
-    = OperatorWithArgtypes (_ ',' _ OperatorWithArgtypes)*
+    = OperatorWithArgtypes (_ "," _ OperatorWithArgtypes)*
 
 OperatorWithArgtypes
     = (AnyOperator _ OperArgtypes)
@@ -1784,26 +1787,26 @@ DostmtOptItem
     / Sconst
 
 CreateCastStmt
-    = (CREATE _ CAST _ '(' _ Typename _ AS _ Typename _ ')' _ WITH _ FUNCTION _ FunctionWithArgtypes _ CastContext)
-    / (CREATE _ CAST _ '(' _ Typename _ AS _ Typename _ ')' _ WITHOUT _ FUNCTION _ CastContext)
-    / (CREATE _ CAST _ '(' _ Typename _ AS _ Typename _ ')' _ WITH _ INOUT _ CastContext)
+    = (CREATE _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ WITH _ FUNCTION _ FunctionWithArgtypes _ CastContext)
+    / (CREATE _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ WITHOUT _ FUNCTION _ CastContext)
+    / (CREATE _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ WITH _ INOUT _ CastContext)
 
 CastContext
     = ((AS _ IMPLICIT)
     / (AS _ ASSIGNMENT))?
 
 DropCastStmt
-    = (DROP _ CAST _ OptIfExists _ '(' _ Typename _ AS _ Typename _ ')' _ OptDropBehavior)
+    = (DROP _ CAST _ OptIfExists _ "(" _ Typename _ AS _ Typename _ ")" _ OptDropBehavior)
 
 OptIfExists
     = (IF _ EXISTS)?
 
 CreateTransformStmt
-    = (CREATE _ OptOrReplace _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name _ '(' _ TransformElementList _ ')')
+    = (CREATE _ OptOrReplace _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name _ "(" _ TransformElementList _ ")")
 
 TransformElementList
-    = (FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes _ ',' _ TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
-    / (TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes _ ',' _ FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
+    = (FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes _ "," _ TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
+    / (TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes _ "," _ FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
     / (FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
     / (TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
 
@@ -1811,8 +1814,8 @@ DropTransformStmt
     = (DROP _ TRANSFORM _ OptIfExists _ FOR _ Typename _ LANGUAGE _ Name _ OptDropBehavior)
 
 ReindexStmt
-    = (REINDEX _ '(' _ ReindexOptionList _ ')' _ ReindexTargetType _ QualifiedName)
-    / (REINDEX _ '(' _ ReindexOptionList _ ')' _ ReindexTargetMultitable _ Name)
+    = (REINDEX _ "(" _ ReindexOptionList _ ")" _ ReindexTargetType _ QualifiedName)
+    / (REINDEX _ "(" _ ReindexOptionList _ ")" _ ReindexTargetMultitable _ Name)
     / (REINDEX _ ReindexTargetType _ QualifiedName)
     / (REINDEX _ ReindexTargetMultitable _ Name)
 
@@ -1826,7 +1829,7 @@ ReindexTargetMultitable
     / DATABASE
 
 ReindexOptionList
-    = ReindexOptionElem (_ ',' _ ReindexOptionElem)*
+    = ReindexOptionElem (_ "," _ ReindexOptionElem)*
 
 ReindexOptionElem
     = VERBOSE
@@ -1934,14 +1937,14 @@ AlterObjectSchemaStmt
     / (ALTER _ TYPE _ AnyName _ SET _ SCHEMA _ Name)
 
 AlterOperatorStmt
-    = (ALTER _ OPERATOR _ OperatorWithArgtypes _ SET _ '(' _ OperatorDefList _ ')')
+    = (ALTER _ OPERATOR _ OperatorWithArgtypes _ SET _ "(" _ OperatorDefList _ ")")
 
 OperatorDefList
-    = OperatorDefElem (_ ',' _ OperatorDefElem)*
+    = OperatorDefElem (_ "," _ OperatorDefElem)*
 
 OperatorDefElem
-    = (ColLabel _ '=' _ NONE)
-    / (ColLabel _ '=' _ OperatorDefArg)
+    = (ColLabel _ "=" _ NONE)
+    / (ColLabel _ "=" _ OperatorDefArg)
 
 OperatorDefArg
     = FuncType
@@ -1996,7 +1999,7 @@ CreateSubscriptionStmt
     = (CREATE _ SUBSCRIPTION _ Name _ CONNECTION _ Sconst _ PUBLICATION _ PublicationNameList _ OptDefinition)
 
 PublicationNameList
-    = PublicationNameItem (_ ',' _ PublicationNameItem)*
+    = PublicationNameItem (_ "," _ PublicationNameItem)*
 
 PublicationNameItem
     = ColLabel
@@ -2017,12 +2020,12 @@ RuleStmt
     = (CREATE _ OptOrReplace _ RULE _ Name _ AS _ ON _ Event _ TO _ QualifiedName _ WhereClause _ DO _ OptInstead _ RuleActionList)
 
 RuleActionList
-    = ('(' _ RuleActionMulti _ ')')
+    = ("(" _ RuleActionMulti _ ")")
     / NOTHING
     / RuleActionStmt
 
 RuleActionMulti
-    = RuleActionStmtOrEmpty (_ ';' _ RuleActionStmtOrEmpty)*
+    = RuleActionStmtOrEmpty (_ ";" _ RuleActionStmtOrEmpty)*
 
 RuleActionStmt
     = SelectStmt
@@ -2048,14 +2051,14 @@ NotifyStmt
     = (NOTIFY _ ColId _ NotifyPayload)
 
 NotifyPayload
-    = (',' _ Sconst)?
+    = ("," _ Sconst)?
 
 ListenStmt
     = (LISTEN _ ColId)
 
 UnlistenStmt
     = (UNLISTEN _ ColId)
-    / (UNLISTEN _ '*')
+    / (UNLISTEN _ "*")
 
 TransactionStmt
     = (ROLLBACK _ OptTransaction _ TO _ SAVEPOINT _ ColId)
@@ -2085,14 +2088,14 @@ TransactionModeItem
     / DEFERRABLE
 
 TransactionModeList
-    = TransactionModeItem ((_ ',' _ TransactionModeItem) / (_ TransactionModeItem))*
+    = TransactionModeItem ((_ "," _ TransactionModeItem) / (_ TransactionModeItem))*
 
 TransactionModeListOrEmpty
     = TransactionModeList?
 
 ViewStmt
-    = (CREATE _ OR _ REPLACE _ OptTemp _ RECURSIVE _ VIEW _ QualifiedName _ '(' _ ColumnList _ ')' _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
-    / (CREATE _ OptTemp _ RECURSIVE _ VIEW _ QualifiedName _ '(' _ ColumnList _ ')' _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
+    = (CREATE _ OR _ REPLACE _ OptTemp _ RECURSIVE _ VIEW _ QualifiedName _ "(" _ ColumnList _ ")" _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
+    / (CREATE _ OptTemp _ RECURSIVE _ VIEW _ QualifiedName _ "(" _ ColumnList _ ")" _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
     / (CREATE _ OR _ REPLACE _ OptTemp _ VIEW _ QualifiedName _ OptColumnList _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
     / (CREATE _ OptTemp _ VIEW _ QualifiedName _ OptColumnList _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
 
@@ -2128,7 +2131,7 @@ CreatedbOptName
     / TEMPLATE
 
 OptEqual
-    = '='?
+    = "="?
 
 AlterDatabaseStmt
     = (ALTER _ DATABASE _ DatabaseName _ SET _ TABLESPACE _ Name)
@@ -2191,10 +2194,10 @@ ClusterIndexSpecification
 
 VacuumStmt
     = (VACUUM _ OptFull _ OptFreeze _ OptVerbose _ OptAnalyze _ OptVacuumRelationList)
-    / (VACUUM _ '(' _ VacuumOptionList _ ')' _ OptVacuumRelationList)
+    / (VACUUM _ "(" _ VacuumOptionList _ ")" _ OptVacuumRelationList)
 
 VacuumOptionList
-    = VacuumOptionElem (_ ',' _ VacuumOptionElem)*
+    = VacuumOptionElem (_ "," _ VacuumOptionElem)*
 
 VacuumOptionElem
     = AnalyzeKeyword
@@ -2204,11 +2207,11 @@ VacuumOptionElem
     / IDENT
 
 AnalyzeStmt
-    = (AnalyzeKeyword _ '(' _ AnalyzeOptionList _ ')' _ OptVacuumRelationList)
+    = (AnalyzeKeyword _ "(" _ AnalyzeOptionList _ ")" _ OptVacuumRelationList)
     / (AnalyzeKeyword _ OptVerbose _ OptVacuumRelationList)
 
 AnalyzeOptionList
-    = AnalyzeOptionElem (_ ',' _ AnalyzeOptionElem)*
+    = AnalyzeOptionElem (_ "," _ AnalyzeOptionElem)*
 
 AnalyzeOptionElem
     = VERBOSE
@@ -2230,19 +2233,19 @@ OptFreeze
     = FREEZE?
 
 OptNameList
-    = ('(' _ NameList _ ')')?
+    = ("(" _ NameList _ ")")?
 
 VacuumRelation
     = (QualifiedName _ OptNameList)
 
 VacuumRelationList
-    = VacuumRelation (_ ',' _ VacuumRelation)*
+    = VacuumRelation (_ "," _ VacuumRelation)*
 
 OptVacuumRelationList
     = VacuumRelationList?
 
 ExplainStmt
-    = (EXPLAIN _ '(' _ ExplainOptionList _ ')' _ ExplainableStmt)
+    = (EXPLAIN _ "(" _ ExplainOptionList _ ")" _ ExplainableStmt)
     / (EXPLAIN _ AnalyzeKeyword _ OptVerbose _ ExplainableStmt)
     / (EXPLAIN _ VERBOSE _ ExplainableStmt)
     / (EXPLAIN _ ExplainableStmt)
@@ -2259,7 +2262,7 @@ ExplainableStmt
     / ExecuteStmt
 
 ExplainOptionList
-    = ExplainOptionElem (_ ',' _ ExplainOptionElem)*
+    = ExplainOptionElem (_ "," _ ExplainOptionElem)*
 
 ExplainOptionElem
     = (ExplainOptionName _ ExplainOptionArg)
@@ -2276,7 +2279,7 @@ PrepareStmt
     = (PREPARE _ Name _ PrepTypeClause _ AS _ PreparableStmt)
 
 PrepTypeClause
-    = ('(' _ TypeList _ ')')?
+    = ("(" _ TypeList _ ")")?
 
 PreparableStmt
     = SelectStmt
@@ -2289,7 +2292,7 @@ ExecuteStmt
     / (EXECUTE _ Name _ ExecuteParamClause)
 
 ExecuteParamClause
-    = ('(' _ ExprList _ ')')?
+    = ("(" _ ExprList _ ")")?
 
 DeallocateStmt
     = (DEALLOCATE _ PREPARE _ Name)
@@ -2305,9 +2308,9 @@ InsertTarget
     / QualifiedName
 
 InsertRest
-    = ('(' _ InsertColumnList _ ')' _ OVERRIDING _ OverrideKind _ VALUE _ SelectStmt)
+    = ("(" _ InsertColumnList _ ")" _ OVERRIDING _ OverrideKind _ VALUE _ SelectStmt)
     / (OVERRIDING _ OverrideKind _ VALUE _ SelectStmt)
-    / ('(' _ InsertColumnList _ ')' _ SelectStmt)
+    / ("(" _ InsertColumnList _ ")" _ SelectStmt)
     / (DEFAULT _ VALUES)
     / SelectStmt
 
@@ -2316,7 +2319,7 @@ OverrideKind
     / SYSTEM
 
 InsertColumnList
-    = InsertColumnItem (_ ',' _ InsertColumnItem)*
+    = InsertColumnItem (_ "," _ InsertColumnItem)*
 
 InsertColumnItem
     = (ColId _ OptIndirection)
@@ -2326,7 +2329,7 @@ OptOnConflict
     / (ON _ CONFLICT _ OptConfExpr _ DO _ NOTHING))?
 
 OptConfExpr
-    = (('(' _ IndexParams _ ')' _ WhereClause)
+    = (("(" _ IndexParams _ ")" _ WhereClause)
     / (ON _ CONSTRAINT _ Name))?
 
 ReturningClause
@@ -2365,17 +2368,17 @@ UpdateStmt
     = (OptWithClause _ UPDATE _ RelationExprOptAlias _ SET _ SetClauseList _ FromClause _ WhereOrCurrentClause _ ReturningClause)
 
 SetClauseList
-    = SetClause (_ ',' _ SetClause)*
+    = SetClause (_ "," _ SetClause)*
 
 SetClause
-    = ('(' _ SetTargetList _ ')' _ '=' _ AExpr)
-    / (SetTarget _ '=' _ AExpr)
+    = ("(" _ SetTargetList _ ")" _ "=" _ AExpr)
+    / (SetTarget _ "=" _ AExpr)
 
 SetTarget
     = (ColId _ OptIndirection)
 
 SetTargetList
-    = SetTarget (_ ',' _ SetTarget)*
+    = SetTarget (_ "," _ SetTarget)*
 
 DeclareCursorStmt
     = (DECLARE _ CursorName _ CursorOptions _ CURSOR _ OptHold _ FOR _ SelectStmt)
@@ -2398,8 +2401,8 @@ SelectStmt
     / SelectWithParens
 
 SelectWithParens
-    = ('(' _ SelectNoParens _ ')')
-    / ('(' _ SelectWithParens _ ')')
+    = ("(" _ SelectNoParens _ ")")
+    / ("(" _ SelectWithParens _ ")")
 
 SelectNoParens
     = (WithClause _ SelectClause _ OptSortClause _ ForLockingClause _ OptSelectLimit)
@@ -2429,10 +2432,10 @@ WithClause
     / (WITH _ CteList)
 
 CteList
-    = CommonTableExpr (_ ',' _ CommonTableExpr)*
+    = CommonTableExpr (_ "," _ CommonTableExpr)*
 
 CommonTableExpr
-    = (Name _ OptNameList _ AS _ '(' _ PreparableStmt _ ')')
+    = (Name _ OptNameList _ AS _ "(" _ PreparableStmt _ ")")
 
 OptWithClause
     = WithClause?
@@ -2459,7 +2462,7 @@ AllOrDistinct
     / DISTINCT)?
 
 DistinctClause
-    = (DISTINCT _ ON _ '(' _ ExprList _ ')')
+    = (DISTINCT _ ON _ "(" _ ExprList _ ")")
     / DISTINCT
 
 OptAllClause
@@ -2472,7 +2475,7 @@ SortClause
     = (ORDER _ BY _ SortbyList)
 
 SortbyList
-    = Sortby (_ ',' _ Sortby)*
+    = Sortby (_ "," _ Sortby)*
 
 Sortby
     = (AExpr _ USING _ QualAllOp _ OptNullsOrder)
@@ -2489,7 +2492,7 @@ OptSelectLimit
 
 LimitClause
     = (FETCH _ FirstOrNext _ OptSelectFetchFirstValue _ RowOrRows _ ONLY)
-    / (LIMIT _ SelectLimitValue _ ',' _ SelectOffsetValue)
+    / (LIMIT _ SelectLimitValue _ "," _ SelectOffsetValue)
     / (LIMIT _ SelectLimitValue)
 
 OffsetClause
@@ -2504,7 +2507,7 @@ SelectOffsetValue
     = AExpr
 
 OptSelectFetchFirstValue
-    = (('(' _ AExpr _ ')')
+    = (("(" _ AExpr _ ")")
     / SignedIconst)?
 
 SelectOffsetValue2
@@ -2522,7 +2525,7 @@ GroupClause
     = (GROUP _ BY _ GroupByList)?
 
 GroupByList
-    = GroupByItem (_ ',' _ GroupByItem)*
+    = GroupByItem (_ "," _ GroupByItem)*
 
 GroupByItem
     = AExpr
@@ -2532,16 +2535,16 @@ GroupByItem
     / GroupingSetsClause
 
 EmptyGroupingSet
-    = ('(' _ ')')
+    = ("(" _ ")")
 
 RollupClause
-    = (ROLLUP _ '(' _ ExprList _ ')')
+    = (ROLLUP _ "(" _ ExprList _ ")")
 
 CubeClause
-    = (CUBE _ '(' _ ExprList _ ')')
+    = (CUBE _ "(" _ ExprList _ ")")
 
 GroupingSetsClause
-    = (GROUPING _ SETS _ '(' _ GroupByList _ ')')
+    = (GROUPING _ SETS _ "(" _ GroupByList _ ")")
 
 HavingClause
     = (HAVING _ AExpr)?
@@ -2569,16 +2572,16 @@ LockedRelsList
     = (OF _ QualifiedNameList)?
 
 ValuesClause
-    = VALUES _ '(' _ ExprList _ ')' (_ ',' _ '(' _ ExprList _ ')')*
+    = VALUES _ "(" _ ExprList _ ")" (_ "," _ "(" _ ExprList _ ")")*
 
 FromClause
     = (FROM _ FromList)?
 
 FromList
-    = TableRef (_ ',' _ TableRef)*
+    = TableRef (_ "," _ TableRef)*
 
 TableRef
-    = ('(' _ JoinedTable _ ')' _ AliasClause)
+    = ("(" _ JoinedTable _ ")" _ AliasClause)
     / (RelationExpr _ OptAliasClause _ TablesampleClause)
     / (LATERAL _ Xmltable _ OptAliasClause)
     / (LATERAL _ SelectWithParens _ OptAliasClause)
@@ -2595,11 +2598,11 @@ JoinedTable
     / (TableRef _ CROSS _ JOIN _ TableRef)
     / (TableRef _ JOIN _ TableRef _ JoinQual)
     / (TableRef _ NATURAL _ JOIN _ TableRef)
-    / ('(' _ JoinedTable _ ')')
+    / ("(" _ JoinedTable _ ")")
 
 AliasClause
-    = (AS _ ColId _ '(' _ NameList _ ')')
-    / (ColId _ '(' _ NameList _ ')')
+    = (AS _ ColId _ "(" _ NameList _ ")")
+    / (ColId _ "(" _ NameList _ ")")
     / (AS _ ColId)
     / ColId
 
@@ -2607,9 +2610,9 @@ OptAliasClause
     = AliasClause?
 
 FuncAliasClause
-    = ((AS _ ColId _ '(' _ TableFuncElementList _ ')')
-    / (AS _ '(' _ TableFuncElementList _ ')')
-    / (ColId _ '(' _ TableFuncElementList _ ')')
+    = ((AS _ ColId _ "(" _ TableFuncElementList _ ")")
+    / (AS _ "(" _ TableFuncElementList _ ")")
+    / (ColId _ "(" _ TableFuncElementList _ ")")
     / AliasClause)?
 
 JoinType
@@ -2622,17 +2625,17 @@ JoinOuter
     = OUTER?
 
 JoinQual
-    = (USING _ '(' _ NameList _ ')')
+    = (USING _ "(" _ NameList _ ")")
     / (ON _ AExpr)
 
 RelationExpr
-    = (ONLY _ '(' _ QualifiedName _ ')')
-    / (QualifiedName _ '*')
+    = (ONLY _ "(" _ QualifiedName _ ")")
+    / (QualifiedName _ "*")
     / (ONLY _ QualifiedName)
     / QualifiedName
 
 RelationExprList
-    = RelationExpr (_ ',' _ RelationExpr)*
+    = RelationExpr (_ "," _ RelationExpr)*
 
 RelationExprOptAlias
     = (RelationExpr _ AS _ ColId)
@@ -2640,23 +2643,23 @@ RelationExprOptAlias
     / RelationExpr
 
 TablesampleClause
-    = (TABLESAMPLE _ FuncName _ '(' _ ExprList _ ')' _ OptRepeatableClause)
+    = (TABLESAMPLE _ FuncName _ "(" _ ExprList _ ")" _ OptRepeatableClause)
 
 OptRepeatableClause
-    = (REPEATABLE _ '(' _ AExpr _ ')')?
+    = (REPEATABLE _ "(" _ AExpr _ ")")?
 
 FuncTable
-    = (ROWS _ FROM _ '(' _ RowsfromList _ ')' _ OptOrdinality)
+    = (ROWS _ FROM _ "(" _ RowsfromList _ ")" _ OptOrdinality)
     / (FuncExprWindowless _ OptOrdinality)
 
 RowsfromItem
     = (FuncExprWindowless _ OptColDefList)
 
 RowsfromList
-    = RowsfromItem (_ ',' _ RowsfromItem)*
+    = RowsfromItem (_ "," _ RowsfromItem)*
 
 OptColDefList
-    = (AS _ '(' _ TableFuncElementList _ ')')?
+    = (AS _ "(" _ TableFuncElementList _ ")")?
 
 OptOrdinality
     = (WITH _ ORDINALITY)?
@@ -2672,17 +2675,17 @@ OptTableFuncElementList
     = TableFuncElementList?
 
 TableFuncElementList
-    = TableFuncElement (_ ',' _ TableFuncElement)*
+    = TableFuncElement (_ "," _ TableFuncElement)*
 
 TableFuncElement
     = (ColId _ Typename _ OptCollateClause)
 
 Xmltable
-    = (XMLTABLE _ '(' _ XMLNAMESPACES _ '(' _ XmlNamespaceList _ ')' _ ',' _ CExpr _ XmlexistsArgument _ COLUMNS _ XmltableColumnList _ ')')
-    / (XMLTABLE _ '(' _ CExpr _ XmlexistsArgument _ COLUMNS _ XmltableColumnList _ ')')
+    = (XMLTABLE _ "(" _ XMLNAMESPACES _ "(" _ XmlNamespaceList _ ")" _ "," _ CExpr _ XmlexistsArgument _ COLUMNS _ XmltableColumnList _ ")")
+    / (XMLTABLE _ "(" _ CExpr _ XmlexistsArgument _ COLUMNS _ XmltableColumnList _ ")")
 
 XmltableColumnList
-    = XmltableColumnEl (_ ',' _ XmltableColumnEl)*
+    = XmltableColumnEl (_ "," _ XmltableColumnEl)*
 
 XmltableColumnEl
     = (ColId _ Typename _ XmltableColumnOptionList)
@@ -2699,26 +2702,26 @@ XmltableColumnOptionEl
     / NULL
 
 XmlNamespaceList
-    = XmlNamespaceEl (_ ',' _ XmlNamespaceEl)*
+    = XmlNamespaceEl (_ "," _ XmlNamespaceEl)*
 
 XmlNamespaceEl
     = (BExpr _ AS _ ColLabel)
     / (DEFAULT _ BExpr)
 
 Typename
-    = (SETOF _ SimpleTypename _ ARRAY _ '[' _ Iconst _ ']')
-    / (SimpleTypename _ ARRAY _ '[' _ Iconst _ ']')
+    = (SETOF _ SimpleTypename _ ARRAY _ "[" _ Iconst _ "]")
+    / (SimpleTypename _ ARRAY _ "[" _ Iconst _ "]")
     / (SETOF _ SimpleTypename _ OptArrayBounds)
     / (SETOF _ SimpleTypename _ ARRAY)
     / (SimpleTypename _ OptArrayBounds)
     / (SimpleTypename _ ARRAY)
 
 OptArrayBounds
-    = ((_ '[' _ Iconst _ ']')
-    / (_ '[' _ ']'))*
+    = ((_ "[" _ Iconst _ "]")
+    / (_ "[" _ "]"))*
 
 SimpleTypename
-    = (ConstInterval _ '(' _ Iconst _ ')')
+    = (ConstInterval _ "(" _ Iconst _ ")")
     / (ConstInterval _ OptInterval)
     / Numeric
     / Bit
@@ -2737,7 +2740,7 @@ GenericType
     / (TypeFunctionName _ OptTypeModifiers)
 
 OptTypeModifiers
-    = ('(' _ ExprList _ ')')?
+    = ("(" _ ExprList _ ")")?
 
 Numeric
     = (DOUBLE _ PRECISION)
@@ -2753,7 +2756,7 @@ Numeric
     / BOOLEAN
 
 OptFloat
-    = ('(' _ Iconst _ ')')?
+    = ("(" _ Iconst _ ")")?
 
 Bit
     = BitWithLength
@@ -2764,7 +2767,7 @@ ConstBit
     / BitWithoutLength
 
 BitWithLength
-    = (BIT _ OptVarying _ '(' _ ExprList _ ')')
+    = (BIT _ OptVarying _ "(" _ ExprList _ ")")
 
 BitWithoutLength
     = (BIT _ OptVarying)
@@ -2778,7 +2781,7 @@ ConstCharacter
     / CharacterWithoutLength
 
 CharacterWithLength
-    = (Character1 _ '(' _ Iconst _ ')')
+    = (Character1 _ "(" _ Iconst _ ")")
 
 CharacterWithoutLength
     = Character1
@@ -2795,8 +2798,8 @@ OptVarying
     = VARYING?
 
 ConstDatetime
-    = (TIMESTAMP _ '(' _ Iconst _ ')' _ OptTimezone)
-    / (TIME _ '(' _ Iconst _ ')' _ OptTimezone)
+    = (TIMESTAMP _ "(" _ Iconst _ ")" _ OptTimezone)
+    / (TIME _ "(" _ Iconst _ ")" _ OptTimezone)
     / (TIMESTAMP _ OptTimezone)
     / (TIME _ OptTimezone)
 
@@ -2823,22 +2826,22 @@ OptInterval
     / YEAR)?
 
 IntervalSecond
-    = (SECOND _ '(' _ Iconst _ ')')
+    = (SECOND _ "(" _ Iconst _ ")")
     / SECOND
 
 AExpr
     = (AExpr1 _ NOT _ BETWEEN _ SYMMETRIC _ BExpr _ AND _ AExpr1)
-    / (AExpr1 _ IS _ NOT _ OF _ '(' _ TypeList _ ')')
+    / (AExpr1 _ IS _ NOT _ OF _ "(" _ TypeList _ ")")
     / (AExpr1 _ NOT _ BETWEEN _ OptAsymmetric _ BExpr _ AND _ AExpr1)
     / (AExpr1 _ NOT _ SIMILAR _ TO _ AExpr1 _ ESCAPE _ AExpr1)
     / (AExpr1 _ IS _ NOT _ DISTINCT _ FROM _ AExpr1)
     / (AExpr1 _ SIMILAR _ TO _ AExpr1 _ ESCAPE _ AExpr1)
-    / (AExpr1 _ SubqueryOp _ SubType _ '(' _ AExpr1 _ ')')
+    / (AExpr1 _ SubqueryOp _ SubType _ "(" _ AExpr1 _ ")")
     / (AExpr1 _ BETWEEN _ SYMMETRIC _ BExpr _ AND _ AExpr1)
     / (AExpr1 _ NOT _ ILIKE _ AExpr1 _ ESCAPE _ AExpr1)
     / (AExpr1 _ BETWEEN _ OptAsymmetric _ BExpr _ AND _ AExpr1)
     / (AExpr1 _ NOT _ LIKE _ AExpr1 _ ESCAPE _ AExpr1)
-    / (AExpr1 _ IS _ OF _ '(' _ TypeList _ ')')
+    / (AExpr1 _ IS _ OF _ "(" _ TypeList _ ")")
     / (AExpr1 _ ILIKE _ AExpr1 _ ESCAPE _ AExpr1)
     / (AExpr1 _ AT _ TIME _ ZONE _ AExpr1)
     / (AExpr1 _ LIKE _ AExpr1 _ ESCAPE _ AExpr1)
@@ -2861,24 +2864,24 @@ AExpr
     / (AExpr1 _ IS _ NULL)
     / (AExpr1 _ COLLATE _ AnyName)
     / (AExpr1 _ IS _ DOCUMENT)
-    / (AExpr1 _ '+' _ AExpr1)
+    / (AExpr1 _ "+" _ AExpr1)
     / (AExpr1 _ IS _ TRUE)
     / (AExpr1 _ QualOp _ AExpr1)
     / (AExpr1 _ IS _ FALSE)
-    / (AExpr1 _ NOT_EQUALS _ AExpr1)
+    / (AExpr1 _ NOTEQUALS _ AExpr1)
     / (AExpr1 _ IS _ UNKNOWN)
-    / (AExpr1 _ GREATER_EQUALS _ AExpr1)
+    / (AExpr1 _ GREATEREQUALS _ AExpr1)
     / (AExpr1 _ ILIKE _ AExpr1)
-    / (AExpr1 _ LESS_EQUALS _ AExpr1)
-    / (AExpr1 _ '=' _ AExpr1)
-    / (AExpr1 _ '>' _ AExpr1)
-    / (AExpr1 _ '<' _ AExpr1)
-    / (AExpr1 _ '^' _ AExpr1)
-    / (AExpr1 _ '%' _ AExpr1)
-    / (AExpr1 _ '/' _ AExpr1)
+    / (AExpr1 _ LESSEQUALS _ AExpr1)
+    / (AExpr1 _ "=" _ AExpr1)
+    / (AExpr1 _ ">" _ AExpr1)
+    / (AExpr1 _ "<" _ AExpr1)
+    / (AExpr1 _ "^" _ AExpr1)
+    / (AExpr1 _ "%" _ AExpr1)
+    / (AExpr1 _ "/" _ AExpr1)
     / (AExpr1 _ IN _ InExpr)
-    / (AExpr1 _ '*' _ AExpr1)
-    / (AExpr1 _ '-' _ AExpr1)
+    / (AExpr1 _ "*" _ AExpr1)
+    / (AExpr1 _ "-" _ AExpr1)
     / (AExpr1 _ NOTNULL)
     / (AExpr1 _ QualOp)
     / (AExpr1 _ ISNULL)
@@ -2887,46 +2890,46 @@ AExpr
 AExpr1
     = (Row _ OVERLAPS _ Row)
     / (UNIQUE _ SelectWithParens)
-    / ('+' _ AExpr)
-    / ('-' _ AExpr)
+    / ("+" _ AExpr)
+    / ("-" _ AExpr)
     / (QualOp _ AExpr)
     / (NOT _ AExpr)
     / CExpr
     / DEFAULT
 
 BExpr
-    = (BExpr1 _ IS _ NOT _ OF _ '(' _ TypeList _ ')')
-    / (BExpr1 _ IS _ OF _ '(' _ TypeList _ ')')
+    = (BExpr1 _ IS _ NOT _ OF _ "(" _ TypeList _ ")")
+    / (BExpr1 _ IS _ OF _ "(" _ TypeList _ ")")
     / (BExpr1 _ IS _ NOT _ DISTINCT _ FROM _ BExpr1)
     / (BExpr1 _ IS _ DISTINCT _ FROM _ BExpr1)
     / (BExpr1 _ IS _ NOT _ DOCUMENT)
     / (BExpr1 _ TYPECAST _ Typename)
-    / (BExpr1 _ '^' _ BExpr1)
-    / (BExpr1 _ '<' _ BExpr1)
-    / (BExpr1 _ '>' _ BExpr1)
-    / (BExpr1 _ '=' _ BExpr1)
-    / (BExpr1 _ LESS_EQUALS _ BExpr1)
-    / (BExpr1 _ GREATER_EQUALS _ BExpr1)
-    / (BExpr1 _ NOT_EQUALS _ BExpr1)
+    / (BExpr1 _ "^" _ BExpr1)
+    / (BExpr1 _ "<" _ BExpr1)
+    / (BExpr1 _ ">" _ BExpr1)
+    / (BExpr1 _ "=" _ BExpr1)
+    / (BExpr1 _ LESSEQUALS _ BExpr1)
+    / (BExpr1 _ GREATEREQUALS _ BExpr1)
+    / (BExpr1 _ NOTEQUALS _ BExpr1)
     / (BExpr1 _ QualOp _ BExpr1)
-    / (BExpr1 _ '%' _ BExpr1)
-    / (BExpr1 _ '/' _ BExpr1)
-    / (BExpr1 _ '*' _ BExpr1)
-    / (BExpr1 _ '-' _ BExpr1)
-    / (BExpr1 _ '+' _ BExpr1)
+    / (BExpr1 _ "%" _ BExpr1)
+    / (BExpr1 _ "/" _ BExpr1)
+    / (BExpr1 _ "*" _ BExpr1)
+    / (BExpr1 _ "-" _ BExpr1)
+    / (BExpr1 _ "+" _ BExpr1)
     / (BExpr1 _ IS _ DOCUMENT)
     / (BExpr1 _ QualOp)
     / BExpr1
 
 BExpr1
-    = ('+' _ BExpr)
-    / ('-' _ BExpr)
+    = ("+" _ BExpr)
+    / ("-" _ BExpr)
     / (QualOp _ BExpr)
     / CExpr
 
 CExpr
-    = (GROUPING _ '(' _ ExprList _ ')')
-    / ('(' _ AExpr _ ')' _ OptIndirection)
+    = (GROUPING _ "(" _ ExprList _ ")")
+    / ("(" _ AExpr _ ")" _ OptIndirection)
     / (ARRAY _ ArrayExpr)
     / (PARAM _ OptIndirection)
     / (ARRAY _ SelectWithParens)
@@ -2941,13 +2944,13 @@ CExpr
     / Columnref
 
 FuncApplication
-    = (FuncName _ '(' _ FuncArgList _ ',' _ VARIADIC _ FuncArgExpr _ OptSortClause _ ')')
-    / (FuncName _ '(' _ VARIADIC _ FuncArgExpr _ OptSortClause _ ')')
-    / (FuncName _ '(' _ ALL _ FuncArgList _ OptSortClause _ ')')
-    / (FuncName _ '(' _ DISTINCT _ FuncArgList _ OptSortClause _ ')')
-    / (FuncName _ '(' _ FuncArgList _ OptSortClause _ ')')
-    / (FuncName _ '(' _ '*' _ ')')
-    / (FuncName _ '(' _ ')')
+    = (FuncName _ "(" _ FuncArgList _ "," _ VARIADIC _ FuncArgExpr _ OptSortClause _ ")")
+    / (FuncName _ "(" _ VARIADIC _ FuncArgExpr _ OptSortClause _ ")")
+    / (FuncName _ "(" _ ALL _ FuncArgList _ OptSortClause _ ")")
+    / (FuncName _ "(" _ DISTINCT _ FuncArgList _ OptSortClause _ ")")
+    / (FuncName _ "(" _ FuncArgList _ OptSortClause _ ")")
+    / (FuncName _ "(" _ "*" _ ")")
+    / (FuncName _ "(" _ ")")
 
 FuncExpr
     = (FuncApplication _ WithinGroupClause _ FilterClause _ OverClause)
@@ -2958,63 +2961,63 @@ FuncExprWindowless
     / FuncExprCommonSubexpr
 
 FuncExprCommonSubexpr
-    = (XMLELEMENT _ '(' _ NAME _ ColLabel _ ',' _ XmlAttributes _ ',' _ ExprList _ ')')
-    / (XMLROOT _ '(' _ AExpr _ ',' _ XmlRootVersion _ OptXmlRootStandalone _ ')')
-    / (XMLPI _ '(' _ NAME _ ColLabel _ ',' _ AExpr _ ')')
-    / (XMLELEMENT _ '(' _ NAME _ ColLabel _ ',' _ XmlAttributes _ ')')
-    / (XMLSERIALIZE _ '(' _ DocumentOrContent _ AExpr _ AS _ SimpleTypename _ ')')
-    / (XMLELEMENT _ '(' _ NAME _ ColLabel _ ',' _ ExprList _ ')')
-    / (NULLIF _ '(' _ AExpr _ ',' _ AExpr _ ')')
-    / (XMLPARSE _ '(' _ DocumentOrContent _ AExpr _ XmlWhitespaceOption _ ')')
-    / (CAST _ '(' _ AExpr _ AS _ Typename _ ')')
-    / (TREAT _ '(' _ AExpr _ AS _ Typename _ ')')
-    / (COLLATION _ FOR _ '(' _ AExpr _ ')')
-    / (XMLPI _ '(' _ NAME _ ColLabel _ ')')
-    / (TRIM _ '(' _ TRAILING _ TrimList _ ')')
-    / (TRIM _ '(' _ LEADING _ TrimList _ ')')
-    / (TRIM _ '(' _ BOTH _ TrimList _ ')')
-    / (XMLEXISTS _ '(' _ CExpr _ XmlexistsArgument _ ')')
-    / (XMLELEMENT _ '(' _ NAME _ ColLabel _ ')')
-    / (LEAST _ '(' _ ExprList _ ')')
-    / (OVERLAY _ '(' _ OverlayList _ ')')
-    / (POSITION _ '(' _ PositionList _ ')')
-    / (SUBSTRING _ '(' _ SubstrList _ ')')
-    / (CURRENT_TIME _ '(' _ Iconst _ ')')
-    / (LOCALTIME _ '(' _ Iconst _ ')')
-    / (LOCALTIMESTAMP _ '(' _ Iconst _ ')')
-    / (XMLFOREST _ '(' _ XmlAttributeList _ ')')
-    / (TRIM _ '(' _ TrimList _ ')')
-    / (XMLCONCAT _ '(' _ ExprList _ ')')
-    / (COALESCE _ '(' _ ExprList _ ')')
-    / (GREATEST _ '(' _ ExprList _ ')')
-    / (EXTRACT _ '(' _ ExtractList _ ')')
-    / (CURRENT_TIMESTAMP _ '(' _ Iconst _ ')')
-    / CURRENT_USER
-    / SESSION_USER
-    / CURRENT_ROLE
+    = (XMLELEMENT _ "(" _ NAME _ ColLabel _ "," _ XmlAttributes _ "," _ ExprList _ ")")
+    / (XMLROOT _ "(" _ AExpr _ "," _ XmlRootVersion _ OptXmlRootStandalone _ ")")
+    / (XMLPI _ "(" _ NAME _ ColLabel _ "," _ AExpr _ ")")
+    / (XMLELEMENT _ "(" _ NAME _ ColLabel _ "," _ XmlAttributes _ ")")
+    / (XMLSERIALIZE _ "(" _ DocumentOrContent _ AExpr _ AS _ SimpleTypename _ ")")
+    / (XMLELEMENT _ "(" _ NAME _ ColLabel _ "," _ ExprList _ ")")
+    / (NULLIF _ "(" _ AExpr _ "," _ AExpr _ ")")
+    / (XMLPARSE _ "(" _ DocumentOrContent _ AExpr _ XmlWhitespaceOption _ ")")
+    / (CAST _ "(" _ AExpr _ AS _ Typename _ ")")
+    / (TREAT _ "(" _ AExpr _ AS _ Typename _ ")")
+    / (COLLATION _ FOR _ "(" _ AExpr _ ")")
+    / (XMLPI _ "(" _ NAME _ ColLabel _ ")")
+    / (TRIM _ "(" _ TRAILING _ TrimList _ ")")
+    / (TRIM _ "(" _ LEADING _ TrimList _ ")")
+    / (TRIM _ "(" _ BOTH _ TrimList _ ")")
+    / (XMLEXISTS _ "(" _ CExpr _ XmlexistsArgument _ ")")
+    / (XMLELEMENT _ "(" _ NAME _ ColLabel _ ")")
+    / (LEAST _ "(" _ ExprList _ ")")
+    / (OVERLAY _ "(" _ OverlayList _ ")")
+    / (POSITION _ "(" _ PositionList _ ")")
+    / (SUBSTRING _ "(" _ SubstrList _ ")")
+    / (CURRENTTIME _ "(" _ Iconst _ ")")
+    / (LOCALTIME _ "(" _ Iconst _ ")")
+    / (LOCALTIMESTAMP _ "(" _ Iconst _ ")")
+    / (XMLFOREST _ "(" _ XmlAttributeList _ ")")
+    / (TRIM _ "(" _ TrimList _ ")")
+    / (XMLCONCAT _ "(" _ ExprList _ ")")
+    / (COALESCE _ "(" _ ExprList _ ")")
+    / (GREATEST _ "(" _ ExprList _ ")")
+    / (EXTRACT _ "(" _ ExtractList _ ")")
+    / (CURRENTTIMESTAMP _ "(" _ Iconst _ ")")
+    / CURRENTUSER
+    / SESSIONUSER
+    / CURRENTROLE
     / USER
     / LOCALTIMESTAMP
     / LOCALTIME
-    / CURRENT_TIMESTAMP
-    / CURRENT_SCHEMA
-    / CURRENT_TIME
-    / CURRENT_DATE
-    / CURRENT_CATALOG
+    / CURRENTTIMESTAMP
+    / CURRENTSCHEMA
+    / CURRENTTIME
+    / CURRENTDATE
+    / CURRENTCATALOG
 
 XmlRootVersion
     = (VERSION _ NO _ VALUE)
     / (VERSION _ AExpr)
 
 OptXmlRootStandalone
-    = ((',' _ STANDALONE _ NO _ VALUE)
-    / (',' _ STANDALONE _ YES)
-    / (',' _ STANDALONE _ NO))?
+    = (("," _ STANDALONE _ NO _ VALUE)
+    / ("," _ STANDALONE _ YES)
+    / ("," _ STANDALONE _ NO))?
 
 XmlAttributes
-    = (XMLATTRIBUTES _ '(' _ XmlAttributeList _ ')')
+    = (XMLATTRIBUTES _ "(" _ XmlAttributeList _ ")")
 
 XmlAttributeList
-    = XmlAttributeEl (_ ',' _ XmlAttributeEl)*
+    = XmlAttributeEl (_ "," _ XmlAttributeEl)*
 
 XmlAttributeEl
     = (AExpr _ AS _ ColLabel)
@@ -3035,16 +3038,16 @@ XmlexistsArgument
     / (PASSING _ CExpr)
 
 WithinGroupClause
-    = (WITHIN _ GROUP _ '(' _ SortClause _ ')')?
+    = (WITHIN _ GROUP _ "(" _ SortClause _ ")")?
 
 FilterClause
-    = (FILTER _ '(' _ WHERE _ AExpr _ ')')?
+    = (FILTER _ "(" _ WHERE _ AExpr _ ")")?
 
 WindowClause
     = (WINDOW _ WindowDefinitionList)?
 
 WindowDefinitionList
-    = WindowDefinition (_ ',' _ WindowDefinition)*
+    = WindowDefinition (_ "," _ WindowDefinition)*
 
 WindowDefinition
     = (ColId _ AS _ WindowSpecification)
@@ -3054,7 +3057,7 @@ OverClause
     / (OVER _ ColId))?
 
 WindowSpecification
-    = ('(' _ OptExistingWindowName _ OptPartitionClause _ OptSortClause _ OptFrameClause _ ')')
+    = ("(" _ OptExistingWindowName _ OptPartitionClause _ OptSortClause _ OptFrameClause _ ")")
 
 OptExistingWindowName
     = ColId?
@@ -3085,16 +3088,16 @@ OptWindowExclusionClause
     / (EXCLUDE _ TIES))?
 
 Row
-    = ('(' _ ExprList _ ',' _ AExpr _ ')')
-    / (ROW _ '(' _ ExprList _ ')')
-    / (ROW _ '(' _ ')')
+    = ("(" _ ExprList _ "," _ AExpr _ ")")
+    / (ROW _ "(" _ ExprList _ ")")
+    / (ROW _ "(" _ ")")
 
 ExplicitRow
-    = (ROW _ '(' _ ExprList _ ')')
-    / (ROW _ '(' _ ')')
+    = (ROW _ "(" _ ExprList _ ")")
+    / (ROW _ "(" _ ")")
 
 ImplicitRow
-    = ('(' _ ExprList _ ',' _ AExpr _ ')')
+    = ("(" _ ExprList _ "," _ AExpr _ ")")
 
 SubType
     = ANY
@@ -3106,29 +3109,29 @@ AllOp
     / MathOp
 
 MathOp
-    = '+'
-    / '-'
-    / '*'
-    / '/'
-    / '%'
-    / '^'
-    / '<'
-    / '>'
-    / '='
-    / LESS_EQUALS
-    / GREATER_EQUALS
-    / NOT_EQUALS
+    = "+"
+    / "-"
+    / "*"
+    / "/"
+    / "%"
+    / "^"
+    / "<"
+    / ">"
+    / "="
+    / LESSEQUALS
+    / GREATEREQUALS
+    / NOTEQUALS
 
 QualOp
-    = (OPERATOR _ '(' _ AnyOperator _ ')')
+    = (OPERATOR _ "(" _ AnyOperator _ ")")
     / Op
 
 QualAllOp
-    = (OPERATOR _ '(' _ AnyOperator _ ')')
+    = (OPERATOR _ "(" _ AnyOperator _ ")")
     / AllOp
 
 SubqueryOp
-    = (OPERATOR _ '(' _ AnyOperator _ ')')
+    = (OPERATOR _ "(" _ AnyOperator _ ")")
     / (NOT _ LIKE)
     / (NOT _ ILIKE)
     / AllOp
@@ -3136,26 +3139,26 @@ SubqueryOp
     / ILIKE
 
 ExprList
-    = AExpr (_ ',' _ AExpr)*
+    = AExpr (_ "," _ AExpr)*
 
 FuncArgList
-    = FuncArgExpr (_ ',' _ FuncArgExpr)*
+    = FuncArgExpr (_ "," _ FuncArgExpr)*
 
 FuncArgExpr
-    = (ParamName _ COLON_EQUALS _ AExpr)
-    / (ParamName _ EQUALS_GREATER _ AExpr)
+    = (ParamName _ COLONEQUALS _ AExpr)
+    / (ParamName _ EQUALSGREATER _ AExpr)
     / AExpr
 
 TypeList
-    = Typename (_ ',' _ Typename)*
+    = Typename (_ "," _ Typename)*
 
 ArrayExpr
-    = ('[' _ ExprList _ ']')
-    / ('[' _ ArrayExprList _ ']')
-    / ('[' _ ']')
+    = ("[" _ ExprList _ "]")
+    / ("[" _ ArrayExprList _ "]")
+    / ("[" _ "]")
 
 ArrayExprList
-    = ArrayExpr (_ ',' _ ArrayExpr)*
+    = ArrayExpr (_ "," _ ArrayExpr)*
 
 ExtractList
     = (ExtractArg _ FROM _ AExpr)?
@@ -3199,7 +3202,7 @@ TrimList
     / ExprList
 
 InExpr
-    = ('(' _ ExprList _ ')')
+    = ("(" _ ExprList _ ")")
     / SelectWithParens
 
 CaseExpr
@@ -3222,10 +3225,10 @@ Columnref
     / ColId
 
 IndirectionEl
-    = ('[' _ OptSliceBound _ ':' _ OptSliceBound _ ']')
-    / ('[' _ AExpr _ ']')
-    / ('.' _ AttrName)
-    / ('.' _ '*')
+    = ("[" _ OptSliceBound _ ":" _ OptSliceBound _ "]")
+    / ("[" _ AExpr _ "]")
+    / ("." _ AttrName)
+    / ("." _ "*")
 
 OptSliceBound
     = AExpr?
@@ -3243,23 +3246,23 @@ OptTargetList
     = TargetList?
 
 TargetList
-    = TargetEl (_ ',' _ TargetEl)*
+    = TargetEl (_ "," _ TargetEl)*
 
 TargetEl
     = (AExpr _ AS _ ColLabel)
     / (AExpr _ IDENT)
     / AExpr
-    / '*'
+    / "*"
 
 QualifiedNameList
-    = QualifiedName (_ ',' _ QualifiedName)*
+    = QualifiedName (_ "," _ QualifiedName)*
 
 QualifiedName
     = (ColId _ Indirection)
     / ColId
 
 NameList
-    = Name (_ ',' _ Name)*
+    = Name (_ "," _ Name)*
 
 Name
     = ColId
@@ -3284,8 +3287,8 @@ FuncName
     / TypeFunctionName
 
 AexprConst
-    = (FuncName _ '(' _ FuncArgList _ OptSortClause _ ')' _ Sconst)
-    / (ConstInterval _ '(' _ Iconst _ ')' _ Sconst)
+    = (FuncName _ "(" _ FuncArgList _ OptSortClause _ ")" _ Sconst)
+    / (ConstInterval _ "(" _ Iconst _ ")" _ Sconst)
     / (ConstInterval _ Sconst _ OptInterval)
     / (FuncName _ Sconst)
     / (ConstTypename _ Sconst)
@@ -3305,8 +3308,8 @@ Sconst
     = SCONST
 
 SignedIconst
-    = ('+' _ Iconst)
-    / ('-' _ Iconst)
+    = ("+" _ Iconst)
+    / ("-" _ Iconst)
     / Iconst
 
 RoleId
@@ -3314,11 +3317,11 @@ RoleId
 
 RoleSpec
     = NonReservedWord
-    / CURRENT_USER
-    / SESSION_USER
+    / CURRENTUSER
+    / SESSIONUSER
 
 RoleList
-    = RoleSpec (_ ',' _ RoleSpec)*
+    = RoleSpec (_ "," _ RoleSpec)*
 
 ColId
     = IDENT
@@ -3693,7 +3696,7 @@ TypeFuncNameKeyword
     / COLLATION
     / CONCURRENTLY
     / CROSS
-    / CURRENT_SCHEMA
+    / CURRENTSCHEMA
     / FREEZE
     / FULL
     / ILIKE
@@ -3730,12 +3733,12 @@ ReservedKeyword
     / COLUMN
     / CONSTRAINT
     / CREATE
-    / CURRENT_CATALOG
-    / CURRENT_DATE
-    / CURRENT_ROLE
-    / CURRENT_TIME
-    / CURRENT_TIMESTAMP
-    / CURRENT_USER
+    / CURRENTCATALOG
+    / CURRENTDATE
+    / CURRENTROLE
+    / CURRENTTIME
+    / CURRENTTIMESTAMP
+    / CURRENTUSER
     / DEFAULT
     / DEFERRABLE
     / DESC
@@ -3773,7 +3776,7 @@ ReservedKeyword
     / REFERENCES
     / RETURNING
     / SELECT
-    / SESSION_USER
+    / SESSIONUSER
     / SOME
     / SYMMETRIC
     / TABLE
@@ -3790,4 +3793,1442 @@ ReservedKeyword
     / WHERE
     / WINDOW
     / WITH
+
+ABORT
+    = "ABORT"i
+
+ABSOLUTE
+    = "ABSOLUTE"i
+
+ACCESS
+    = "ACCESS"i
+
+ACTION
+    = "ACTION"i
+
+ADD
+    = "ADD"i
+
+ADMIN
+    = "ADMIN"i
+
+AFTER
+    = "AFTER"i
+
+AGGREGATE
+    = "AGGREGATE"i
+
+ALL
+    = "ALL"i
+
+ALSO
+    = "ALSO"i
+
+ALTER
+    = "ALTER"i
+
+ALWAYS
+    = "ALWAYS"i
+
+ANALYSE
+    = "ANALYSE"i
+
+ANALYZE
+    = "ANALYZE"i
+
+AND
+    = "AND"i
+
+ANY
+    = "ANY"i
+
+ARRAY
+    = "ARRAY"i
+
+AS
+    = "AS"i
+
+ASC
+    = "ASC"i
+
+ASSERTION
+    = "ASSERTION"i
+
+ASSIGNMENT
+    = "ASSIGNMENT"i
+
+ASYMMETRIC
+    = "ASYMMETRIC"i
+
+AT
+    = "AT"i
+
+ATTACH
+    = "ATTACH"i
+
+ATTRIBUTE
+    = "ATTRIBUTE"i
+
+AUTHORIZATION
+    = "AUTHORIZATION"i
+
+BACKWARD
+    = "BACKWARD"i
+
+BEFORE
+    = "BEFORE"i
+
+BEGIN
+    = "BEGIN"i
+
+BETWEEN
+    = "BETWEEN"i
+
+BIGINT
+    = "BIGINT"i
+
+BINARY
+    = "BINARY"i
+
+BIT
+    = "BIT"i
+
+BOOLEAN
+    = "BOOLEAN"i
+
+BOTH
+    = "BOTH"i
+
+BY
+    = "BY"i
+
+CACHE
+    = "CACHE"i
+
+CALL
+    = "CALL"i
+
+CALLED
+    = "CALLED"i
+
+CASCADE
+    = "CASCADE"i
+
+CASCADED
+    = "CASCADED"i
+
+CASE
+    = "CASE"i
+
+CAST
+    = "CAST"i
+
+CATALOG
+    = "CATALOG"i
+
+CHAIN
+    = "CHAIN"i
+
+CHAR
+    = "CHAR"i
+
+CHARACTER
+    = "CHARACTER"i
+
+CHARACTERISTICS
+    = "CHARACTERISTICS"i
+
+CHECK
+    = "CHECK"i
+
+CHECKPOINT
+    = "CHECKPOINT"i
+
+CLASS
+    = "CLASS"i
+
+CLOSE
+    = "CLOSE"i
+
+CLUSTER
+    = "CLUSTER"i
+
+COALESCE
+    = "COALESCE"i
+
+COLLATE
+    = "COLLATE"i
+
+COLLATION
+    = "COLLATION"i
+
+COLUMN
+    = "COLUMN"i
+
+COLUMNS
+    = "COLUMNS"i
+
+COMMENT
+    = "COMMENT"i
+
+COMMENTS
+    = "COMMENTS"i
+
+COMMIT
+    = "COMMIT"i
+
+COMMITTED
+    = "COMMITTED"i
+
+CONCURRENTLY
+    = "CONCURRENTLY"i
+
+CONFIGURATION
+    = "CONFIGURATION"i
+
+CONFLICT
+    = "CONFLICT"i
+
+CONNECTION
+    = "CONNECTION"i
+
+CONSTRAINT
+    = "CONSTRAINT"i
+
+CONSTRAINTS
+    = "CONSTRAINTS"i
+
+CONTENT
+    = "CONTENT"i
+
+CONTINUE
+    = "CONTINUE"i
+
+CONVERSION
+    = "CONVERSION"i
+
+COPY
+    = "COPY"i
+
+COST
+    = "COST"i
+
+CREATE
+    = "CREATE"i
+
+CROSS
+    = "CROSS"i
+
+CSV
+    = "CSV"i
+
+CUBE
+    = "CUBE"i
+
+CURRENT
+    = "CURRENT"i
+
+CURRENTCATALOG
+    = "CURRENT_CATALOG"i
+
+CURRENTDATE
+    = "CURRENT_DATE"i
+
+CURRENTROLE
+    = "CURRENT_ROLE"i
+
+CURRENTSCHEMA
+    = "CURRENT_SCHEMA"i
+
+CURRENTTIME
+    = "CURRENT_TIME"i
+
+CURRENTTIMESTAMP
+    = "CURRENT_TIMESTAMP"i
+
+CURRENTUSER
+    = "CURRENT_USER"i
+
+CURSOR
+    = "CURSOR"i
+
+CYCLE
+    = "CYCLE"i
+
+DATA
+    = "DATA"i
+
+DATABASE
+    = "DATABASE"i
+
+DAY
+    = "DAY"i
+
+DEALLOCATE
+    = "DEALLOCATE"i
+
+DEC
+    = "DEC"i
+
+DECIMAL
+    = "DECIMAL"i
+
+DECLARE
+    = "DECLARE"i
+
+DEFAULT
+    = "DEFAULT"i
+
+DEFAULTS
+    = "DEFAULTS"i
+
+DEFERRABLE
+    = "DEFERRABLE"i
+
+DEFERRED
+    = "DEFERRED"i
+
+DEFINER
+    = "DEFINER"i
+
+DELETE
+    = "DELETE"i
+
+DELIMITER
+    = "DELIMITER"i
+
+DELIMITERS
+    = "DELIMITERS"i
+
+DEPENDS
+    = "DEPENDS"i
+
+DESC
+    = "DESC"i
+
+DETACH
+    = "DETACH"i
+
+DICTIONARY
+    = "DICTIONARY"i
+
+DISABLE
+    = "DISABLE"i
+
+DISCARD
+    = "DISCARD"i
+
+DISTINCT
+    = "DISTINCT"i
+
+DO
+    = "DO"i
+
+DOCUMENT
+    = "DOCUMENT"i
+
+DOMAIN
+    = "DOMAIN"i
+
+DOUBLE
+    = "DOUBLE"i
+
+DROP
+    = "DROP"i
+
+EACH
+    = "EACH"i
+
+ELSE
+    = "ELSE"i
+
+ENABLE
+    = "ENABLE"i
+
+ENCODING
+    = "ENCODING"i
+
+ENCRYPTED
+    = "ENCRYPTED"i
+
+END
+    = "END"i
+
+ENUM
+    = "ENUM"i
+
+ESCAPE
+    = "ESCAPE"i
+
+EVENT
+    = "EVENT"i
+
+EXCEPT
+    = "EXCEPT"i
+
+EXCLUDE
+    = "EXCLUDE"i
+
+EXCLUDING
+    = "EXCLUDING"i
+
+EXCLUSIVE
+    = "EXCLUSIVE"i
+
+EXECUTE
+    = "EXECUTE"i
+
+EXISTS
+    = "EXISTS"i
+
+EXPLAIN
+    = "EXPLAIN"i
+
+EXTENSION
+    = "EXTENSION"i
+
+EXTERNAL
+    = "EXTERNAL"i
+
+EXTRACT
+    = "EXTRACT"i
+
+FALSE
+    = "FALSE"i
+
+FAMILY
+    = "FAMILY"i
+
+FETCH
+    = "FETCH"i
+
+FILTER
+    = "FILTER"i
+
+FIRST
+    = "FIRST"i
+
+FLOAT
+    = "FLOAT"i
+
+FOLLOWING
+    = "FOLLOWING"i
+
+FOR
+    = "FOR"i
+
+FORCE
+    = "FORCE"i
+
+FOREIGN
+    = "FOREIGN"i
+
+FORWARD
+    = "FORWARD"i
+
+FREEZE
+    = "FREEZE"i
+
+FROM
+    = "FROM"i
+
+FULL
+    = "FULL"i
+
+FUNCTION
+    = "FUNCTION"i
+
+FUNCTIONS
+    = "FUNCTIONS"i
+
+GENERATED
+    = "GENERATED"i
+
+GLOBAL
+    = "GLOBAL"i
+
+GRANT
+    = "GRANT"i
+
+GRANTED
+    = "GRANTED"i
+
+GREATEST
+    = "GREATEST"i
+
+GROUP
+    = "GROUP"i
+
+GROUPING
+    = "GROUPING"i
+
+GROUPS
+    = "GROUPS"i
+
+HANDLER
+    = "HANDLER"i
+
+HAVING
+    = "HAVING"i
+
+HEADER
+    = "HEADER"i
+
+HOLD
+    = "HOLD"i
+
+HOUR
+    = "HOUR"i
+
+IDENTITY
+    = "IDENTITY"i
+
+IF
+    = "IF"i
+
+ILIKE
+    = "ILIKE"i
+
+IMMEDIATE
+    = "IMMEDIATE"i
+
+IMMUTABLE
+    = "IMMUTABLE"i
+
+IMPLICIT
+    = "IMPLICIT"i
+
+IMPORT
+    = "IMPORT"i
+
+IN
+    = "IN"i
+
+INCLUDE
+    = "INCLUDE"i
+
+INCLUDING
+    = "INCLUDING"i
+
+INCREMENT
+    = "INCREMENT"i
+
+INDEX
+    = "INDEX"i
+
+INDEXES
+    = "INDEXES"i
+
+INHERIT
+    = "INHERIT"i
+
+INHERITS
+    = "INHERITS"i
+
+INITIALLY
+    = "INITIALLY"i
+
+INLINE
+    = "INLINE"i
+
+INNER
+    = "INNER"i
+
+INOUT
+    = "INOUT"i
+
+INPUT
+    = "INPUT"i
+
+INSENSITIVE
+    = "INSENSITIVE"i
+
+INSERT
+    = "INSERT"i
+
+INSTEAD
+    = "INSTEAD"i
+
+INT
+    = "INT"i
+
+INTEGER
+    = "INTEGER"i
+
+INTERSECT
+    = "INTERSECT"i
+
+INTERVAL
+    = "INTERVAL"i
+
+INTO
+    = "INTO"i
+
+INVOKER
+    = "INVOKER"i
+
+IS
+    = "IS"i
+
+ISNULL
+    = "ISNULL"i
+
+ISOLATION
+    = "ISOLATION"i
+
+JOIN
+    = "JOIN"i
+
+KEY
+    = "KEY"i
+
+LABEL
+    = "LABEL"i
+
+LANGUAGE
+    = "LANGUAGE"i
+
+LARGE
+    = "LARGE"i
+
+LAST
+    = "LAST"i
+
+LATERAL
+    = "LATERAL"i
+
+LEADING
+    = "LEADING"i
+
+LEAKPROOF
+    = "LEAKPROOF"i
+
+LEAST
+    = "LEAST"i
+
+LEFT
+    = "LEFT"i
+
+LEVEL
+    = "LEVEL"i
+
+LIKE
+    = "LIKE"i
+
+LIMIT
+    = "LIMIT"i
+
+LISTEN
+    = "LISTEN"i
+
+LOAD
+    = "LOAD"i
+
+LOCAL
+    = "LOCAL"i
+
+LOCALTIME
+    = "LOCALTIME"i
+
+LOCALTIMESTAMP
+    = "LOCALTIMESTAMP"i
+
+LOCATION
+    = "LOCATION"i
+
+LOCK
+    = "LOCK"i
+
+LOCKED
+    = "LOCKED"i
+
+LOGGED
+    = "LOGGED"i
+
+MAPPING
+    = "MAPPING"i
+
+MATCH
+    = "MATCH"i
+
+MATERIALIZED
+    = "MATERIALIZED"i
+
+MAXVALUE
+    = "MAXVALUE"i
+
+METHOD
+    = "METHOD"i
+
+MINUTE
+    = "MINUTE"i
+
+MINVALUE
+    = "MINVALUE"i
+
+MODE
+    = "MODE"i
+
+MONTH
+    = "MONTH"i
+
+MOVE
+    = "MOVE"i
+
+NAME
+    = "NAME"i
+
+NAMES
+    = "NAMES"i
+
+NATIONAL
+    = "NATIONAL"i
+
+NATURAL
+    = "NATURAL"i
+
+NCHAR
+    = "NCHAR"i
+
+NEW
+    = "NEW"i
+
+NEXT
+    = "NEXT"i
+
+NO
+    = "NO"i
+
+NONE
+    = "NONE"i
+
+NOT
+    = "NOT"i
+
+NOTHING
+    = "NOTHING"i
+
+NOTIFY
+    = "NOTIFY"i
+
+NOTNULL
+    = "NOTNULL"i
+
+NOWAIT
+    = "NOWAIT"i
+
+NULL
+    = "NULL"i
+
+NULLIF
+    = "NULLIF"i
+
+NULLS
+    = "NULLS"i
+
+NUMERIC
+    = "NUMERIC"i
+
+OBJECT
+    = "OBJECT"i
+
+OF
+    = "OF"i
+
+OFF
+    = "OFF"i
+
+OFFSET
+    = "OFFSET"i
+
+OIDS
+    = "OIDS"i
+
+OLD
+    = "OLD"i
+
+ON
+    = "ON"i
+
+ONLY
+    = "ONLY"i
+
+OPERATOR
+    = "OPERATOR"i
+
+OPTION
+    = "OPTION"i
+
+OPTIONS
+    = "OPTIONS"i
+
+OR
+    = "OR"i
+
+ORDER
+    = "ORDER"i
+
+ORDINALITY
+    = "ORDINALITY"i
+
+OTHERS
+    = "OTHERS"i
+
+OUT
+    = "OUT"i
+
+OUTER
+    = "OUTER"i
+
+OVER
+    = "OVER"i
+
+OVERLAPS
+    = "OVERLAPS"i
+
+OVERLAY
+    = "OVERLAY"i
+
+OVERRIDING
+    = "OVERRIDING"i
+
+OWNED
+    = "OWNED"i
+
+OWNER
+    = "OWNER"i
+
+PARALLEL
+    = "PARALLEL"i
+
+PARSER
+    = "PARSER"i
+
+PARTIAL
+    = "PARTIAL"i
+
+PARTITION
+    = "PARTITION"i
+
+PASSING
+    = "PASSING"i
+
+PASSWORD
+    = "PASSWORD"i
+
+PLACING
+    = "PLACING"i
+
+PLANS
+    = "PLANS"i
+
+POLICY
+    = "POLICY"i
+
+POSITION
+    = "POSITION"i
+
+PRECEDING
+    = "PRECEDING"i
+
+PRECISION
+    = "PRECISION"i
+
+PRESERVE
+    = "PRESERVE"i
+
+PREPARE
+    = "PREPARE"i
+
+PREPARED
+    = "PREPARED"i
+
+PRIMARY
+    = "PRIMARY"i
+
+PRIOR
+    = "PRIOR"i
+
+PRIVILEGES
+    = "PRIVILEGES"i
+
+PROCEDURAL
+    = "PROCEDURAL"i
+
+PROCEDURE
+    = "PROCEDURE"i
+
+PROCEDURES
+    = "PROCEDURES"i
+
+PROGRAM
+    = "PROGRAM"i
+
+PUBLICATION
+    = "PUBLICATION"i
+
+QUOTE
+    = "QUOTE"i
+
+RANGE
+    = "RANGE"i
+
+READ
+    = "READ"i
+
+REAL
+    = "REAL"i
+
+REASSIGN
+    = "REASSIGN"i
+
+RECHECK
+    = "RECHECK"i
+
+RECURSIVE
+    = "RECURSIVE"i
+
+REF
+    = "REF"i
+
+REFERENCES
+    = "REFERENCES"i
+
+REFERENCING
+    = "REFERENCING"i
+
+REFRESH
+    = "REFRESH"i
+
+REINDEX
+    = "REINDEX"i
+
+RELATIVE
+    = "RELATIVE"i
+
+RELEASE
+    = "RELEASE"i
+
+RENAME
+    = "RENAME"i
+
+REPEATABLE
+    = "REPEATABLE"i
+
+REPLACE
+    = "REPLACE"i
+
+REPLICA
+    = "REPLICA"i
+
+RESET
+    = "RESET"i
+
+RESTART
+    = "RESTART"i
+
+RESTRICT
+    = "RESTRICT"i
+
+RETURNING
+    = "RETURNING"i
+
+RETURNS
+    = "RETURNS"i
+
+REVOKE
+    = "REVOKE"i
+
+RIGHT
+    = "RIGHT"i
+
+ROLE
+    = "ROLE"i
+
+ROLLBACK
+    = "ROLLBACK"i
+
+ROLLUP
+    = "ROLLUP"i
+
+ROUTINE
+    = "ROUTINE"i
+
+ROUTINES
+    = "ROUTINES"i
+
+ROW
+    = "ROW"i
+
+ROWS
+    = "ROWS"i
+
+RULE
+    = "RULE"i
+
+SAVEPOINT
+    = "SAVEPOINT"i
+
+SCHEMA
+    = "SCHEMA"i
+
+SCHEMAS
+    = "SCHEMAS"i
+
+SCROLL
+    = "SCROLL"i
+
+SEARCH
+    = "SEARCH"i
+
+SECOND
+    = "SECOND"i
+
+SECURITY
+    = "SECURITY"i
+
+SELECT
+    = "SELECT"i
+
+SEQUENCE
+    = "SEQUENCE"i
+
+SEQUENCES
+    = "SEQUENCES"i
+
+SERIALIZABLE
+    = "SERIALIZABLE"i
+
+SERVER
+    = "SERVER"i
+
+SESSION
+    = "SESSION"i
+
+SESSIONUSER
+    = "SESSION_USER"i
+
+SET
+    = "SET"i
+
+SETS
+    = "SETS"i
+
+SETOF
+    = "SETOF"i
+
+SHARE
+    = "SHARE"i
+
+SHOW
+    = "SHOW"i
+
+SIMILAR
+    = "SIMILAR"i
+
+SIMPLE
+    = "SIMPLE"i
+
+SKIP
+    = "SKIP"i
+
+SMALLINT
+    = "SMALLINT"i
+
+SNAPSHOT
+    = "SNAPSHOT"i
+
+SOME
+    = "SOME"i
+
+SQL
+    = "SQL"i
+
+STABLE
+    = "STABLE"i
+
+STANDALONE
+    = "STANDALONE"i
+
+START
+    = "START"i
+
+STATEMENT
+    = "STATEMENT"i
+
+STATISTICS
+    = "STATISTICS"i
+
+STDIN
+    = "STDIN"i
+
+STDOUT
+    = "STDOUT"i
+
+STORAGE
+    = "STORAGE"i
+
+STRICT
+    = "STRICT"i
+
+STRIP
+    = "STRIP"i
+
+SUBSCRIPTION
+    = "SUBSCRIPTION"i
+
+SUBSTRING
+    = "SUBSTRING"i
+
+SYMMETRIC
+    = "SYMMETRIC"i
+
+SYSID
+    = "SYSID"i
+
+SYSTEM
+    = "SYSTEM"i
+
+TABLE
+    = "TABLE"i
+
+TABLES
+    = "TABLES"i
+
+TABLESAMPLE
+    = "TABLESAMPLE"i
+
+TABLESPACE
+    = "TABLESPACE"i
+
+TEMP
+    = "TEMP"i
+
+TEMPLATE
+    = "TEMPLATE"i
+
+TEMPORARY
+    = "TEMPORARY"i
+
+TEXT
+    = "TEXT"i
+
+THEN
+    = "THEN"i
+
+TIES
+    = "TIES"i
+
+TIME
+    = "TIME"i
+
+TIMESTAMP
+    = "TIMESTAMP"i
+
+TO
+    = "TO"i
+
+TRAILING
+    = "TRAILING"i
+
+TRANSACTION
+    = "TRANSACTION"i
+
+TRANSFORM
+    = "TRANSFORM"i
+
+TREAT
+    = "TREAT"i
+
+TRIGGER
+    = "TRIGGER"i
+
+TRIM
+    = "TRIM"i
+
+TRUE
+    = "TRUE"i
+
+TRUNCATE
+    = "TRUNCATE"i
+
+TRUSTED
+    = "TRUSTED"i
+
+TYPE
+    = "TYPE"i
+
+TYPES
+    = "TYPES"i
+
+UNBOUNDED
+    = "UNBOUNDED"i
+
+UNCOMMITTED
+    = "UNCOMMITTED"i
+
+UNENCRYPTED
+    = "UNENCRYPTED"i
+
+UNION
+    = "UNION"i
+
+UNIQUE
+    = "UNIQUE"i
+
+UNKNOWN
+    = "UNKNOWN"i
+
+UNLISTEN
+    = "UNLISTEN"i
+
+UNLOGGED
+    = "UNLOGGED"i
+
+UNTIL
+    = "UNTIL"i
+
+UPDATE
+    = "UPDATE"i
+
+USER
+    = "USER"i
+
+USING
+    = "USING"i
+
+VACUUM
+    = "VACUUM"i
+
+VALID
+    = "VALID"i
+
+VALIDATE
+    = "VALIDATE"i
+
+VALIDATOR
+    = "VALIDATOR"i
+
+VALUE
+    = "VALUE"i
+
+VALUES
+    = "VALUES"i
+
+VARCHAR
+    = "VARCHAR"i
+
+VARIADIC
+    = "VARIADIC"i
+
+VARYING
+    = "VARYING"i
+
+VERBOSE
+    = "VERBOSE"i
+
+VERSION
+    = "VERSION"i
+
+VIEW
+    = "VIEW"i
+
+VIEWS
+    = "VIEWS"i
+
+VOLATILE
+    = "VOLATILE"i
+
+WHEN
+    = "WHEN"i
+
+WHERE
+    = "WHERE"i
+
+WHITESPACE
+    = "WHITESPACE"i
+
+WINDOW
+    = "WINDOW"i
+
+WITH
+    = "WITH"i
+
+WITHIN
+    = "WITHIN"i
+
+WITHOUT
+    = "WITHOUT"i
+
+WORK
+    = "WORK"i
+
+WRAPPER
+    = "WRAPPER"i
+
+WRITE
+    = "WRITE"i
+
+XML
+    = "XML"i
+
+XMLATTRIBUTES
+    = "XMLATTRIBUTES"i
+
+XMLCONCAT
+    = "XMLCONCAT"i
+
+XMLELEMENT
+    = "XMLELEMENT"i
+
+XMLEXISTS
+    = "XMLEXISTS"i
+
+XMLFOREST
+    = "XMLFOREST"i
+
+XMLNAMESPACES
+    = "XMLNAMESPACES"i
+
+XMLPARSE
+    = "XMLPARSE"i
+
+XMLPI
+    = "XMLPI"i
+
+XMLROOT
+    = "XMLROOT"i
+
+XMLSERIALIZE
+    = "XMLSERIALIZE"i
+
+XMLTABLE
+    = "XMLTABLE"i
+
+YEAR
+    = "YEAR"i
+
+YES
+    = "YES"i
+
+ZONE
+    = "ZONE"i
+
+ICONST
+    = [0-9]+
+
+Decimal
+    = ([0-9]* "." [0-9]+)
+    / ([0-9]+ "." [0-9]*)
+
+Real
+    = (Decimal / ICONST) "E"i [+-]? [0-9]+
+
+FCONST
+    = Real
+    / Decimal
+
+LESSEQUALS
+    = "<="
+
+COLONEQUALS
+    = ":="
+
+GREATEREQUALS
+    = ">="
+
+EQUALSGREATER
+    = "=>"
+
+NOTEQUALS
+    = "<>"
+    / "!="
+
+Space
+    = [ \t\n\r\f]
+
+NonNewLine
+    = [^\n\r]
+
+NewLine
+    = [\n\r]
+
+HorizSpace
+    = [ \t\f]
+
+SpecialWhiteSpace
+    = Space+
+    / (Comment NewLine)
+
+HorizWhitespace
+    = HorizSpace+
+    / Comment
+
+WhitespaceWithNewline
+    = HorizWhitespace* NewLine SpecialWhiteSpace*
+
+Comment
+    = "--" NonNewLine*
+
+_
+    = (Space+
+    / Comment)*
+
+PARAM
+    = "$" ICONST
+
+Identifier
+    = [A-Za-z\pL_] [A-Za-z\pL_0-9\$]*
+
+DblQuoIdentifier
+    = "\"" ("\"\"" / [^"])+ "\""
+
+QuoUniIdentifier
+    = "U"i "&\"" ("\"\"" / [^"])+ "\"" (_ "UESCAPE"i _ "'" [^'] "'")?
+
+IDENT
+    = Identifier
+    / DblQuoIdentifier
+    / QuoUniIdentifier
+
+BCONST
+    = "B"i "'" (QuoteContinue / [^'])* "'"
+
+QuoteContinue
+    = "'" WhitespaceWithNewline "'"
+
+HexEscape
+    = "\\x" [0-9A-Fa-f] [0-9A-Fa-f]?
+
+OctalEscape
+    = "\\" [0-7] ([0-7] [0-7]?)?
+
+GenericEscape
+    = "\\" [^0-7]
+
+UnicodeEscape
+    = "\\" (("u" [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f]) / ("U" [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f]))
+
+QuoEscString
+    = "E"i "'" (UnicodeEscape / HexEscape / OctalEscape / GenericEscape / QuoteContinue / "''" / [^'])+ "'"
+
+QuoUniString
+    = "U"i "&'" (QuoteContinue / "''" / [^'])+ "'" (_ "UESCAPE"i _ "'" [^'] "'")?
+
+QuoString
+    = "'" (QuoteContinue / "''" / [^'])+ "'"
+
+SCONST
+    = QuoUniString
+    / QuoEscString
+    / QuoString
+
+TYPECAST
+    = "::"
+
+Op
+    = [~!@#^&|`?\+\-\*/%<>=]+
+
+XCONST
+    = "X"i "'" (QuoteContinue / [^'])* "'"
 

@@ -6374,7 +6374,7 @@ attrs:      '.' attr_name
 type_name_list:
             Typename                                { $$ = list_make1($1); }
             | type_name_list ',' Typename           { $$ = lappend($1, $3); }
-
+            ;
 /*****************************************************************************
  *
  *      QUERY:

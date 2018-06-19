@@ -24,13 +24,14 @@ type TokenPointer interface {
 	GetRepeat() RepeatCharacteristic
 }
 
-type SimpleToken struct {
+type ReferToken struct {
 	Name   string
 	Repeat RepeatCharacteristic
 }
 
 var namemap = map[string]string{}
 var seenRepr = []string{}
+var rulenames = []string{}
 
 func indexOfString(slice []string, find string) int {
 	for ind, val := range slice {
@@ -42,6 +43,9 @@ func indexOfString(slice []string, find string) int {
 }
 
 func newRepr(name string) string {
+	if name == "_" {
+		return name
+	}
 	repr := strcase.ToCamel(name)
 	if indexOfString(seenRepr, repr) == -1 {
 		seenRepr = append(seenRepr, repr)
@@ -59,7 +63,7 @@ func newRepr(name string) string {
 	return altrepr
 }
 
-func (token *SimpleToken) WritePegTo(buffer *bytes.Buffer) {
+func (token *ReferToken) WritePegTo(buffer *bytes.Buffer) {
 	buffer.WriteString(namemap[token.Name])
 	switch token.Repeat {
 	case OneOrMany:
@@ -71,28 +75,42 @@ func (token *SimpleToken) WritePegTo(buffer *bytes.Buffer) {
 	}
 }
 
-func (token *SimpleToken) SetRepeat(repeat RepeatCharacteristic) {
+func (token *ReferToken) SetRepeat(repeat RepeatCharacteristic) {
 	token.Repeat = repeat
 }
 
-func (token *SimpleToken) GetRepeat() RepeatCharacteristic {
+func (token *ReferToken) GetRepeat() RepeatCharacteristic {
 	return token.Repeat
 }
 
-func (token *SimpleToken) MarkAsRuleName() {
+func (token *ReferToken) MarkAsRuleName() {
 	namemap[token.Name] = newRepr(token.Name)
+	rulenames = append(rulenames, token.Name)
 }
 
-func (token *SimpleToken) String() string {
-	return namemap[token.Name]
+func (token *ReferToken) String() string {
+	var buffer bytes.Buffer
+	token.WritePegTo(&buffer)
+	return buffer.String()
 }
 
-func MakeSimpleToken(name string) *SimpleToken {
+func MakeSimpleToken(name string) TokenPointer {
+	if name[0] == '\'' && name[len(name)-1] == '\'' {
+		return MakeStringToken(name[1:len(name)-1], false)
+	}
+	return MakeReferToken(name, false, 0)
+}
+
+func MakeReferToken(name string, root bool, repeat RepeatCharacteristic) *ReferToken {
 	if _, ok := namemap[name]; !ok {
 		namemap[name] = name
 	}
-	token := SimpleToken{
-		Name: name,
+	token := ReferToken{
+		Name:   name,
+		Repeat: repeat,
+	}
+	if root {
+		token.MarkAsRuleName()
 	}
 	return &token
 }
