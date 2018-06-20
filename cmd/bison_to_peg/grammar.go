@@ -74,7 +74,7 @@ func MakeFromBison(bytes []byte) Grammar {
 			rule.FixSelfRefAtBeginOnly(true)
 			rules = append(rules, rule)
 		} else if rule.SelfRefAtBegin {
-			replacingRules := rule.SplitSelfRef()
+			replacingRules := rule.SplitSelfRef(nil)
 			rules = append(rules, replacingRules...)
 		} else {
 			rules = append(rules, rule)

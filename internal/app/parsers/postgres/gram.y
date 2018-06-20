@@ -11210,6 +11210,18 @@ select_with_parens:
  */
 select_no_parens:
             simple_select                       { $$ = $1; }
+            | select_clause UNION all_or_distinct select_clause
+                {
+                    $$ = makeSetOp(SETOP_UNION, $3, $1, $4);
+                }
+            | select_clause INTERSECT all_or_distinct select_clause
+                {
+                    $$ = makeSetOp(SETOP_INTERSECT, $3, $1, $4);
+                }
+            | select_clause EXCEPT all_or_distinct select_clause
+                {
+                    $$ = makeSetOp(SETOP_EXCEPT, $3, $1, $4);
+                }
             | select_clause sort_clause
                 {
                     insertSelectOptions((SelectStmt *) $1, $2, NIL,
@@ -11268,8 +11280,20 @@ select_no_parens:
         ;
 
 select_clause:
-            simple_select                           { $$ = $1; }
-            | select_with_parens                    { $$ = $1; }
+            select_with_parens                      { $$ = $1; }
+            | select_clause UNION all_or_distinct select_clause
+                {
+                    $$ = makeSetOp(SETOP_UNION, $3, $1, $4);
+                }
+            | select_clause INTERSECT all_or_distinct select_clause
+                {
+                    $$ = makeSetOp(SETOP_INTERSECT, $3, $1, $4);
+                }
+            | select_clause EXCEPT all_or_distinct select_clause
+                {
+                    $$ = makeSetOp(SETOP_EXCEPT, $3, $1, $4);
+                }
+            | simple_select                         { $$ = $1; }
         ;
 
 /*
@@ -11345,20 +11369,12 @@ simple_select:
                     n->fromClause = list_make1($2);
                     $$ = (Node *)n;
                 }
-            | select_clause UNION all_or_distinct select_clause
-                {
-                    $$ = makeSetOp(SETOP_UNION, $3, $1, $4);
-                }
-            | select_clause INTERSECT all_or_distinct select_clause
-                {
-                    $$ = makeSetOp(SETOP_INTERSECT, $3, $1, $4);
-                }
-            | select_clause EXCEPT all_or_distinct select_clause
-                {
-                    $$ = makeSetOp(SETOP_EXCEPT, $3, $1, $4);
-                }
         ;
 
+
+select_clausee:
+            select_with_parens                      { $$ = $1; }
+        ;
 /*
  * SQL standard WITH clause looks like:
  *
@@ -11885,9 +11901,71 @@ table_ref:  relation_expr opt_alias_clause
                     }
                     $$ = (Node *) n;
                 }
-            | joined_table
+            | '(' joined_table ')'
                 {
-                    $$ = (Node *) $1;
+                    $$ = $2;
+                }
+            | table_ref CROSS JOIN table_ref
+                {
+                    /* CROSS JOIN is same as unqualified inner join */
+                    JoinExpr *n = makeNode(JoinExpr);
+                    n->jointype = JOIN_INNER;
+                    n->isNatural = false;
+                    n->larg = $1;
+                    n->rarg = $4;
+                    n->usingClause = NIL;
+                    n->quals = NULL;
+                    $$ = n;
+                }
+            | table_ref join_type JOIN table_ref join_qual
+                {
+                    JoinExpr *n = makeNode(JoinExpr);
+                    n->jointype = $2;
+                    n->isNatural = false;
+                    n->larg = $1;
+                    n->rarg = $4;
+                    if ($5 != NULL && IsA($5, List))
+                        n->usingClause = (List *) $5; /* USING clause */
+                    else
+                        n->quals = $5; /* ON clause */
+                    $$ = n;
+                }
+            | table_ref JOIN table_ref join_qual
+                {
+                    /* letting join_type reduce to empty doesn't work */
+                    JoinExpr *n = makeNode(JoinExpr);
+                    n->jointype = JOIN_INNER;
+                    n->isNatural = false;
+                    n->larg = $1;
+                    n->rarg = $3;
+                    if ($4 != NULL && IsA($4, List))
+                        n->usingClause = (List *) $4; /* USING clause */
+                    else
+                        n->quals = $4; /* ON clause */
+                    $$ = n;
+                }
+            | table_ref NATURAL join_type JOIN table_ref
+                {
+                    JoinExpr *n = makeNode(JoinExpr);
+                    n->jointype = $3;
+                    n->isNatural = true;
+                    n->larg = $1;
+                    n->rarg = $5;
+                    n->usingClause = NIL; /* figure out which columns later... */
+                    n->quals = NULL; /* fill later */
+                    $$ = n;
+                }
+            | table_ref NATURAL JOIN table_ref
+                {
+                    /* letting join_type reduce to empty doesn't work */
+                    JoinExpr *n = makeNode(JoinExpr);
+                    n->jointype = JOIN_INNER;
+                    n->isNatural = true;
+                    n->larg = $1;
+                    n->rarg = $4;
+                    n->usingClause = NIL; /* figure out which columns later... */
+                    n->quals = NULL; /* fill later */
+                    $$ = n;
                 }
             | '(' joined_table ')' alias_clause
                 {
@@ -11895,7 +11973,6 @@ table_ref:  relation_expr opt_alias_clause
                     $$ = (Node *) $2;
                 }
         ;
-
 
 /*
  * It may seem silly to separate joined_table from table_ref, but there is

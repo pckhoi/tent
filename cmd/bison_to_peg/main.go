@@ -45,15 +45,6 @@ func main() {
 		if cont {
 			continue
 		}
-		// for _, keyword := range keywords {
-		// 	if keyword == k {
-		// 		cont = true
-		// 		break
-		// 	}
-		// }
-		// if cont {
-		// 	continue
-		// }
-		log.Println(k)
+		log.Println("Rule missing:", k)
 	}
 }

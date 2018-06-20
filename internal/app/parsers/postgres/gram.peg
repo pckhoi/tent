@@ -140,10 +140,10 @@ OptWith
     = WITH?
 
 OptRoleList
-    = (OptRoleList _ CreateOptRoleElem)?
+    = (_ CreateOptRoleElem)*
 
 AlterOptRoleList
-    = (AlterOptRoleList _ AlterOptRoleElem)?
+    = (_ AlterOptRoleElem)*
 
 AlterOptRoleElem
     = (VALID _ UNTIL _ Sconst)
@@ -208,7 +208,7 @@ OptSchemaName
     = ColId?
 
 OptSchemaEltList
-    = (OptSchemaEltList _ SchemaStmt)?
+    = (_ SchemaStmt)*
 
 SchemaStmt
     = CreateStmt
@@ -536,7 +536,7 @@ CopyOptions
     / CopyOptList
 
 CopyOptList
-    = (CopyOptList _ CopyOptItem)?
+    = (_ CopyOptItem)*
 
 CopyOptItem
     = (FORCE _ NOT _ NULL _ ColumnList)
@@ -630,7 +630,7 @@ ColumnOptions
     / (ColId _ ColQualList)
 
 ColQualList
-    = (ColQualList _ ColConstraint)?
+    = (_ ColConstraint)*
 
 ColConstraint
     = (CONSTRAINT _ Name _ ColConstraintElem)
@@ -893,7 +893,7 @@ CreateExtensionStmt
     / (CREATE _ EXTENSION _ Name _ OptWith _ CreateExtensionOptList)
 
 CreateExtensionOptList
-    = (CreateExtensionOptList _ CreateExtensionOptItem)?
+    = (_ CreateExtensionOptItem)*
 
 CreateExtensionOptItem
     = (SCHEMA _ Name)
@@ -905,7 +905,7 @@ AlterExtensionStmt
     = (ALTER _ EXTENSION _ Name _ UPDATE _ AlterExtensionOptList)
 
 AlterExtensionOptList
-    = (AlterExtensionOptList _ AlterExtensionOptItem)?
+    = (_ AlterExtensionOptItem)*
 
 AlterExtensionOptItem
     = (TO _ NonReservedWordOrSconst)
@@ -1139,7 +1139,7 @@ OptConstrFromTable
     = (FROM _ QualifiedName)?
 
 ConstraintAttributeSpec
-    = (ConstraintAttributeSpec _ ConstraintAttributeElem)?
+    = (_ ConstraintAttributeElem)*
 
 ConstraintAttributeElem
     = (NOT _ DEFERRABLE)
@@ -1546,7 +1546,7 @@ AlterDefaultPrivilegesStmt
     = (ALTER _ DEFAULT _ PRIVILEGES _ DefACLOptionList _ DefACLAction)
 
 DefACLOptionList
-    = (DefACLOptionList _ DefACLOption)?
+    = (_ DefACLOption)*
 
 DefACLOption
     = (IN _ SCHEMA _ NameList)
@@ -2407,25 +2407,34 @@ SelectWithParens
 SelectNoParens
     = (WithClause _ SelectClause _ OptSortClause _ ForLockingClause _ OptSelectLimit)
     / (WithClause _ SelectClause _ OptSortClause _ SelectLimit _ OptForLockingClause)
-    / (SelectClause _ OptSortClause _ ForLockingClause _ OptSelectLimit)
     / (SelectClause _ OptSortClause _ SelectLimit _ OptForLockingClause)
+    / (SelectClause _ UNION _ AllOrDistinct _ SelectClause)
+    / (SelectClause _ INTERSECT _ AllOrDistinct _ SelectClause)
+    / (SelectClause _ OptSortClause _ ForLockingClause _ OptSelectLimit)
+    / (SelectClause _ EXCEPT _ AllOrDistinct _ SelectClause)
     / (WithClause _ SelectClause _ SortClause)
     / (WithClause _ SelectClause)
     / (SelectClause _ SortClause)
     / SimpleSelect
 
 SelectClause
-    = SimpleSelect
-    / SelectWithParens
+    = (SelectClause1 _ UNION _ AllOrDistinct _ SelectClause1)
+    / (SelectClause1 _ INTERSECT _ AllOrDistinct _ SelectClause1)
+    / (SelectClause1 _ EXCEPT _ AllOrDistinct _ SelectClause1)
+    / SelectClause1
+
+SelectClause1
+    = SelectWithParens
+    / SimpleSelect
 
 SimpleSelect
     = (SELECT _ OptAllClause _ OptTargetList _ IntoClause _ FromClause _ WhereClause _ GroupClause _ HavingClause _ WindowClause)
     / (SELECT _ DistinctClause _ TargetList _ IntoClause _ FromClause _ WhereClause _ GroupClause _ HavingClause _ WindowClause)
-    / (SelectClause _ UNION _ AllOrDistinct _ SelectClause)
-    / (SelectClause _ INTERSECT _ AllOrDistinct _ SelectClause)
-    / (SelectClause _ EXCEPT _ AllOrDistinct _ SelectClause)
     / (TABLE _ RelationExpr)
     / ValuesClause
+
+SelectClausee
+    = SelectWithParens
 
 WithClause
     = (WITH _ RECURSIVE _ CteList)
@@ -2581,16 +2590,24 @@ FromList
     = TableRef (_ "," _ TableRef)*
 
 TableRef
+    = (TableRef1 _ JoinType _ JOIN _ TableRef1 _ JoinQual)
+    / (TableRef1 _ NATURAL _ JoinType _ JOIN _ TableRef1)
+    / (TableRef1 _ CROSS _ JOIN _ TableRef1)
+    / (TableRef1 _ JOIN _ TableRef1 _ JoinQual)
+    / (TableRef1 _ NATURAL _ JOIN _ TableRef1)
+    / TableRef1
+
+TableRef1
     = ("(" _ JoinedTable _ ")" _ AliasClause)
     / (RelationExpr _ OptAliasClause _ TablesampleClause)
+    / ("(" _ JoinedTable _ ")")
     / (LATERAL _ Xmltable _ OptAliasClause)
     / (LATERAL _ SelectWithParens _ OptAliasClause)
     / (LATERAL _ FuncTable _ FuncAliasClause)
     / (RelationExpr _ OptAliasClause)
-    / (FuncTable _ FuncAliasClause)
     / (Xmltable _ OptAliasClause)
     / (SelectWithParens _ OptAliasClause)
-    / JoinedTable
+    / (FuncTable _ FuncAliasClause)
 
 JoinedTable
     = (TableRef _ JoinType _ JOIN _ TableRef _ JoinQual)
@@ -3237,7 +3254,7 @@ Indirection
     = IndirectionEl (_ IndirectionEl)*
 
 OptIndirection
-    = (OptIndirection _ IndirectionEl)?
+    = (_ IndirectionEl)*
 
 OptAsymmetric
     = ASYMMETRIC?

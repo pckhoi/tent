@@ -51,23 +51,26 @@ func (r *Rule) ReorderSubrules() {
 	}
 }
 
-func (r Rule) SplitSelfRef() []Rule {
+func (r Rule) SplitSelfRef(nameToken *ReferToken) []Rule {
 	tokenGroup, ok := r.Expression.(*TokenGroup)
-	if !ok {
+	if !ok || tokenGroup.Type != Choice {
 		return []Rule{r}
 	}
 	var normalGroups []TokenPointer
 	var selfRefGroups []TokenPointer
-	newRuleName := MakeReferToken(r.Name.Name+"1", true, 0)
+	if nameToken == nil {
+		nameToken = &r.Name
+	}
+	newRuleName := MakeReferToken(nameToken.Name+"1", true, 0)
 	for _, token := range tokenGroup.Tokens {
 		group, ok := token.(*TokenGroup)
 		if !ok {
 			normalGroups = append(normalGroups, token)
 			continue
 		}
-		ind := group.IndexOfToken(r.Name)
+		ind := group.IndexOfToken(*nameToken)
 		if ind == 0 {
-			group.ReplaceToken(r.Name, *newRuleName)
+			group.ReplaceToken(*nameToken, *newRuleName)
 			selfRefGroups = append(selfRefGroups, group)
 		} else {
 			normalGroups = append(normalGroups, token)

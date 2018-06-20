@@ -139,28 +139,51 @@ func (group *TokenGroup) DetectSelfReferencing(name ReferToken) (bool, bool, boo
 	selfRefAtBeginOnly := false
 	selfRefAtEndOnly := false
 	selfRefGroups := []*TokenGroup{}
-	gen := group.GetTokenGroups()
-	for _, val := gen(); val != nil; _, val = gen() {
-		inds := val.AllIndexOfToken(name)
+
+	if group.Type == Sequence {
+		inds := group.AllIndexOfToken(name)
 		if len(inds) >= 1 {
 			selfRef = true
 			if inds[0] == 0 {
 				selfRefAtBegin = true
 			}
-			selfRefGroups = append(selfRefGroups, val)
-		}
-	}
-	if selfRef && (len(group.Tokens)-len(selfRefGroups)) <= 1 {
-		selfRefAtBeginOnly = true
-		selfRefAtEndOnly = true
+			selfRefGroups = append(selfRefGroups, group)
 
-		for _, group := range selfRefGroups {
+			selfRefAtBeginOnly = true
+			selfRefAtEndOnly = true
 			for _, ind := range group.AllIndexOfToken(name) {
 				if ind > 0 {
 					selfRefAtBeginOnly = false
 				}
 				if ind < len(group.Tokens)-1 {
 					selfRefAtEndOnly = false
+				}
+			}
+		}
+	} else {
+		gen := group.GetTokenGroups()
+		for _, val := gen(); val != nil; _, val = gen() {
+			inds := val.AllIndexOfToken(name)
+			if len(inds) >= 1 {
+				selfRef = true
+				if inds[0] == 0 {
+					selfRefAtBegin = true
+				}
+				selfRefGroups = append(selfRefGroups, val)
+			}
+		}
+		if selfRef && (len(group.Tokens)-len(selfRefGroups)) <= 1 {
+			selfRefAtBeginOnly = true
+			selfRefAtEndOnly = true
+
+			for _, group := range selfRefGroups {
+				for _, ind := range group.AllIndexOfToken(name) {
+					if ind > 0 {
+						selfRefAtBeginOnly = false
+					}
+					if ind < len(group.Tokens)-1 {
+						selfRefAtEndOnly = false
+					}
 				}
 			}
 		}
@@ -171,22 +194,30 @@ func (group *TokenGroup) DetectSelfReferencing(name ReferToken) (bool, bool, boo
 func (group *TokenGroup) FixSelfRefAtBeginOnly(name ReferToken, reversed bool) {
 	beginTokens := []TokenPointer{}
 	var beginToken TokenPointer
-	for _, token := range group.Tokens {
-		if val, ok := token.(*TokenGroup); ok {
-			if val.IndexOfToken(name) == -1 {
-				beginTokens = val.Tokens[:]
+	if group.Type == Choice {
+		for _, token := range group.Tokens {
+			if val, ok := token.(*TokenGroup); ok {
+				if val.IndexOfToken(name) == -1 {
+					beginTokens = val.Tokens[:]
+					beginToken = val
+					break
+				}
+			} else if val, ok := token.(*ReferToken); ok {
+				beginTokens = []TokenPointer{val}
 				beginToken = val
 				break
 			}
-		} else if val, ok := token.(*ReferToken); ok {
-			beginTokens = []TokenPointer{val}
-			beginToken = val
-			break
 		}
 	}
 	normalTokens := []TokenPointer{}
 	processedTokens := []TokenPointer{}
-	for _, token := range group.Tokens {
+	var tokens []TokenPointer
+	if group.Type == Choice {
+		tokens = group.Tokens
+	} else {
+		tokens = []TokenPointer{group}
+	}
+	for _, token := range tokens {
 		if token == beginToken {
 			continue
 		}
@@ -228,11 +259,15 @@ func (group *TokenGroup) FixSelfRefAtBeginOnly(name ReferToken, reversed bool) {
 	if reversed {
 		newTokens = append([]TokenPointer{anyToken}, beginTokens...)
 	}
-	newTokenGroup := TokenGroup{
-		Tokens: newTokens,
-		Type:   Sequence,
+	if group.Type == Choice {
+		newTokenGroup := TokenGroup{
+			Tokens: newTokens,
+			Type:   Sequence,
+		}
+		group.Tokens = append([]TokenPointer{&newTokenGroup}, normalTokens...)
+	} else {
+		group.Tokens = newTokens
 	}
-	group.Tokens = append([]TokenPointer{&newTokenGroup}, normalTokens...)
 }
 
 func (group *TokenGroup) ReorderTokens() {
