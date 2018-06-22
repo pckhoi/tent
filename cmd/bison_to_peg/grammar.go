@@ -93,6 +93,8 @@ func MakeFromBison(bytes []byte) Grammar {
 }
 
 func (g Grammar) WritePegTo(buffer *bytes.Buffer) {
+	buffer.WriteString("{\n    package postgres\n}\n\n")
+
 	for _, rule := range g.Rules {
 		rule.WritePegTo(buffer)
 		buffer.WriteString("\n\n")

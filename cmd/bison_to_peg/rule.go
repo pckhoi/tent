@@ -11,6 +11,8 @@ import (
 type Rule struct {
 	Name               ReferToken
 	Expression         TokenPointer
+	ReturnsNil         bool
+	ReturnsString      bool
 	SelfReferencing    bool
 	SelfRefAtBegin     bool
 	SelfRefAtBeginOnly bool
@@ -21,6 +23,11 @@ func (r Rule) WritePegTo(buffer *bytes.Buffer) {
 	buffer.WriteString(r.Name.String())
 	buffer.WriteString("\n    = ")
 	r.Expression.WritePegTo(buffer)
+	if r.ReturnsNil {
+		buffer.WriteString(" {\n        return nil, nil\n    }")
+	} else if r.ReturnsString {
+		buffer.WriteString(" {\n        return string(c.text), nil\n    }")
+	}
 }
 
 func (r Rule) String() string {

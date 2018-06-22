@@ -16,3 +16,8 @@ gen_peg: bison_to_peg
 	docker run --rm -v $(go_path):/go golang /bin/bash -c "bison_to_peg \
 	$(postgres_dir)/gram.y > \
 	$(postgres_dir)/gram.peg"
+
+postgresparser:
+	docker run --rm -v $(go_path):/go golang /bin/bash -c "pigeon \
+	$(postgres_dir)/gram.peg > \
+	$(postgres_dir)/postgres.go"

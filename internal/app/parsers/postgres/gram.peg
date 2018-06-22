@@ -1,3 +1,7 @@
+{
+    package postgres
+}
+
 Stmtblock
     = Stmtmulti
 
@@ -3343,7 +3347,9 @@ RoleList
 ColId
     = IDENT
     / UnreservedKeyword
-    / ColNameKeyword
+    / ColNameKeyword {
+        return string(c.text), nil
+    }
 
 TypeFunctionName
     = IDENT
@@ -5189,13 +5195,15 @@ Comment
 
 _
     = (Space+
-    / Comment)*
+    / Comment)* {
+        return nil, nil
+    }
 
 PARAM
     = "$" ICONST
 
 Identifier
-    = [A-Za-z\pL_] [A-Za-z\pL_0-9\$]*
+    = [A-Za-z\pL_] [A-Za-z\pL_0-9$]*
 
 DblQuoIdentifier
     = "\"" ("\"\"" / [^"])+ "\""
@@ -5206,7 +5214,9 @@ QuoUniIdentifier
 IDENT
     = Identifier
     / DblQuoIdentifier
-    / QuoUniIdentifier
+    / QuoUniIdentifier {
+        return string(c.text), nil
+    }
 
 BCONST
     = "B"i "'" (QuoteContinue / [^'])* "'"
@@ -5244,7 +5254,7 @@ TYPECAST
     = "::"
 
 Op
-    = [~!@#^&|`?\+\-\*/%<>=]+
+    = [~!@#^&|`?+-*/%<>=]+
 
 XCONST
     = "X"i "'" (QuoteContinue / [^'])* "'"

@@ -215,6 +215,7 @@ func miscellaneousRules() []Rule {
 				Type:   Choice,
 				Repeat: Any,
 			},
+			ReturnsNil: true,
 		},
 		Rule{
 			Name: *MakeReferToken("PARAM", true, 0),
@@ -237,7 +238,7 @@ func miscellaneousRules() []Rule {
 						Literal: `[A-Za-z\pL_]`,
 					},
 					&LiteralToken{
-						Literal: `[A-Za-z\pL_0-9\$]`,
+						Literal: `[A-Za-z\pL_0-9$]`,
 						Repeat:  Any,
 					},
 				},
@@ -335,6 +336,7 @@ func miscellaneousRules() []Rule {
 				IsRoot: true,
 				Type:   Choice,
 			},
+			ReturnsString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("BCONST", true, 0),
@@ -647,7 +649,7 @@ func miscellaneousRules() []Rule {
 		Rule{
 			Name: *MakeReferToken("Op", true, 0),
 			Expression: &LiteralToken{
-				Literal: "[~!@#^&|`?\\+\\-\\*/%<>=]",
+				Literal: "[~!@#^&|`?+-*/%<>=]",
 				Repeat:  OneOrMany,
 			},
 		},
