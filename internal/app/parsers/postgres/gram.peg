@@ -150,47 +150,119 @@ AlterOptRoleList
     = (_ AlterOptRoleElem)*
 
 AlterOptRoleElem
-    = (VALID _ UNTIL _ Sconst)
-    / (ENCRYPTED _ PASSWORD _ Sconst)
-    / (UNENCRYPTED _ PASSWORD _ Sconst)
-    / (CONNECTION _ LIMIT _ SignedIconst)
-    / (PASSWORD _ NULL)
-    / (PASSWORD _ Sconst)
-    / (USER _ RoleList)
+    = AlterOptRoleElemOption1
+    / AlterOptRoleElemOption2
+    / AlterOptRoleElemOption3
+    / AlterOptRoleElemOption4
     / INHERIT
+    / AlterOptRoleElemOption6
+    / AlterOptRoleElemOption7
+    / AlterOptRoleElemOption8
     / IDENT
 
+AlterOptRoleElemOption1
+    = PASSWORD _ Sconst
+
+AlterOptRoleElemOption2
+    = PASSWORD _ NULL
+
+AlterOptRoleElemOption3
+    = ENCRYPTED _ PASSWORD _ Sconst
+
+AlterOptRoleElemOption4
+    = UNENCRYPTED _ PASSWORD _ Sconst
+
+AlterOptRoleElemOption6
+    = CONNECTION _ LIMIT _ SignedIconst
+
+AlterOptRoleElemOption7
+    = VALID _ UNTIL _ Sconst
+
+AlterOptRoleElemOption8
+    = USER _ RoleList
+
 CreateOptRoleElem
-    = (IN _ ROLE _ RoleList)
-    / (IN _ GROUP _ RoleList)
-    / (SYSID _ Iconst)
-    / (ADMIN _ RoleList)
-    / (ROLE _ RoleList)
-    / AlterOptRoleElem
+    = AlterOptRoleElem
+    / CreateOptRoleElemOption2
+    / CreateOptRoleElemOption3
+    / CreateOptRoleElemOption4
+    / CreateOptRoleElemOption5
+    / CreateOptRoleElemOption6
+
+CreateOptRoleElemOption2
+    = SYSID _ Iconst
+
+CreateOptRoleElemOption3
+    = ADMIN _ RoleList
+
+CreateOptRoleElemOption4
+    = ROLE _ RoleList
+
+CreateOptRoleElemOption5
+    = IN _ ROLE _ RoleList
+
+CreateOptRoleElemOption6
+    = IN _ GROUP _ RoleList
 
 CreateUserStmt
     = (CREATE _ USER _ RoleId _ OptWith _ OptRoleList)
 
 AlterRoleStmt
-    = (ALTER _ ROLE _ RoleSpec _ OptWith _ AlterOptRoleList)
-    / (ALTER _ USER _ RoleSpec _ OptWith _ AlterOptRoleList)
+    = AlterRoleStmtOption1
+    / AlterRoleStmtOption2
+
+AlterRoleStmtOption1
+    = ALTER _ ROLE _ RoleSpec _ OptWith _ AlterOptRoleList
+
+AlterRoleStmtOption2
+    = ALTER _ USER _ RoleSpec _ OptWith _ AlterOptRoleList
 
 OptInDatabase
     = (IN _ DATABASE _ DatabaseName)?
 
 AlterRoleSetStmt
-    = (ALTER _ ROLE _ RoleSpec _ OptInDatabase _ SetResetClause)
-    / (ALTER _ ROLE _ ALL _ OptInDatabase _ SetResetClause)
-    / (ALTER _ USER _ RoleSpec _ OptInDatabase _ SetResetClause)
-    / (ALTER _ USER _ ALL _ OptInDatabase _ SetResetClause)
+    = AlterRoleSetStmtOption1
+    / AlterRoleSetStmtOption2
+    / AlterRoleSetStmtOption3
+    / AlterRoleSetStmtOption4
+
+AlterRoleSetStmtOption1
+    = ALTER _ ROLE _ RoleSpec _ OptInDatabase _ SetResetClause
+
+AlterRoleSetStmtOption2
+    = ALTER _ ROLE _ ALL _ OptInDatabase _ SetResetClause
+
+AlterRoleSetStmtOption3
+    = ALTER _ USER _ RoleSpec _ OptInDatabase _ SetResetClause
+
+AlterRoleSetStmtOption4
+    = ALTER _ USER _ ALL _ OptInDatabase _ SetResetClause
 
 DropRoleStmt
-    = (DROP _ ROLE _ IF _ EXISTS _ RoleList)
-    / (DROP _ USER _ IF _ EXISTS _ RoleList)
-    / (DROP _ GROUP _ IF _ EXISTS _ RoleList)
-    / (DROP _ ROLE _ RoleList)
-    / (DROP _ USER _ RoleList)
-    / (DROP _ GROUP _ RoleList)
+    = DropRoleStmtOption1
+    / DropRoleStmtOption2
+    / DropRoleStmtOption3
+    / DropRoleStmtOption4
+    / DropRoleStmtOption5
+    / DropRoleStmtOption6
+
+DropRoleStmtOption1
+    = DROP _ ROLE _ RoleList
+
+DropRoleStmtOption2
+    = DROP _ ROLE _ IF _ EXISTS _ RoleList
+
+DropRoleStmtOption3
+    = DROP _ USER _ RoleList
+
+DropRoleStmtOption4
+    = DROP _ USER _ IF _ EXISTS _ RoleList
+
+DropRoleStmtOption5
+    = DROP _ GROUP _ RoleList
+
+DropRoleStmtOption6
+    = DROP _ GROUP _ IF _ EXISTS _ RoleList
 
 CreateGroupStmt
     = (CREATE _ GROUP _ RoleId _ OptWith _ OptRoleList)
@@ -203,10 +275,22 @@ AddDrop
     / DROP
 
 CreateSchemaStmt
-    = (CREATE _ SCHEMA _ IF _ NOT _ EXISTS _ OptSchemaName _ AUTHORIZATION _ RoleSpec _ OptSchemaEltList)
-    / (CREATE _ SCHEMA _ IF _ NOT _ EXISTS _ ColId _ OptSchemaEltList)
-    / (CREATE _ SCHEMA _ OptSchemaName _ AUTHORIZATION _ RoleSpec _ OptSchemaEltList)
-    / (CREATE _ SCHEMA _ ColId _ OptSchemaEltList)
+    = CreateSchemaStmtOption1
+    / CreateSchemaStmtOption2
+    / CreateSchemaStmtOption3
+    / CreateSchemaStmtOption4
+
+CreateSchemaStmtOption1
+    = CREATE _ SCHEMA _ OptSchemaName _ AUTHORIZATION _ RoleSpec _ OptSchemaEltList
+
+CreateSchemaStmtOption2
+    = CREATE _ SCHEMA _ ColId _ OptSchemaEltList
+
+CreateSchemaStmtOption3
+    = CREATE _ SCHEMA _ IF _ NOT _ EXISTS _ OptSchemaName _ AUTHORIZATION _ RoleSpec _ OptSchemaEltList
+
+CreateSchemaStmtOption4
+    = CREATE _ SCHEMA _ IF _ NOT _ EXISTS _ ColId _ OptSchemaEltList
 
 OptSchemaName
     = ColId?
@@ -223,33 +307,90 @@ SchemaStmt
     / ViewStmt
 
 VariableSetStmt
-    = (SET _ LOCAL _ SetRest)
-    / (SET _ SESSION _ SetRest)
-    / (SET _ SetRest)
+    = VariableSetStmtOption1
+    / VariableSetStmtOption2
+    / VariableSetStmtOption3
+
+VariableSetStmtOption1
+    = SET _ SetRest
+
+VariableSetStmtOption2
+    = SET _ LOCAL _ SetRest
+
+VariableSetStmtOption3
+    = SET _ SESSION _ SetRest
 
 SetRest
-    = (SESSION _ CHARACTERISTICS _ AS _ TRANSACTION _ TransactionModeList)
-    / (TRANSACTION _ TransactionModeList)
+    = SetRestOption1
+    / SetRestOption2
     / SetRestMore
 
+SetRestOption1
+    = TRANSACTION _ TransactionModeList
+
+SetRestOption2
+    = SESSION _ CHARACTERISTICS _ AS _ TRANSACTION _ TransactionModeList
+
 GenericSet
-    = (VarName _ TO _ VarList)
-    / (VarName _ "=" _ VarList)
-    / (VarName _ TO _ DEFAULT)
-    / (VarName _ "=" _ DEFAULT)
+    = GenericSetOption1
+    / GenericSetOption2
+    / GenericSetOption3
+    / GenericSetOption4
+
+GenericSetOption1
+    = VarName _ TO _ VarList
+
+GenericSetOption2
+    = VarName _ "=" _ VarList
+
+GenericSetOption3
+    = VarName _ TO _ DEFAULT
+
+GenericSetOption4
+    = VarName _ "=" _ DEFAULT
 
 SetRestMore
-    = (VarName _ FROM _ CURRENT)
-    / (TIME _ ZONE _ ZoneValue)
-    / (XML _ OPTION _ DocumentOrContent)
-    / (TRANSACTION _ SNAPSHOT _ Sconst)
-    / (SESSION _ AUTHORIZATION _ NonReservedWordOrSconst)
-    / (SESSION _ AUTHORIZATION _ DEFAULT)
-    / (ROLE _ NonReservedWordOrSconst)
-    / (NAMES _ OptEncoding)
-    / (CATALOG _ Sconst)
-    / (SCHEMA _ Sconst)
-    / GenericSet
+    = GenericSet
+    / SetRestMoreOption2
+    / SetRestMoreOption3
+    / SetRestMoreOption4
+    / SetRestMoreOption5
+    / SetRestMoreOption6
+    / SetRestMoreOption7
+    / SetRestMoreOption8
+    / SetRestMoreOption9
+    / SetRestMoreOption10
+    / SetRestMoreOption11
+
+SetRestMoreOption2
+    = VarName _ FROM _ CURRENT
+
+SetRestMoreOption3
+    = TIME _ ZONE _ ZoneValue
+
+SetRestMoreOption4
+    = CATALOG _ Sconst
+
+SetRestMoreOption5
+    = SCHEMA _ Sconst
+
+SetRestMoreOption6
+    = NAMES _ OptEncoding
+
+SetRestMoreOption7
+    = ROLE _ NonReservedWordOrSconst
+
+SetRestMoreOption8
+    = SESSION _ AUTHORIZATION _ NonReservedWordOrSconst
+
+SetRestMoreOption9
+    = SESSION _ AUTHORIZATION _ DEFAULT
+
+SetRestMoreOption10
+    = XML _ OPTION _ DocumentOrContent
+
+SetRestMoreOption11
+    = TRANSACTION _ SNAPSHOT _ Sconst
 
 VarName
     = ColId (_ "." _ ColId)*
@@ -274,13 +415,19 @@ OptBooleanOrString
     / NonReservedWordOrSconst
 
 ZoneValue
-    = (ConstInterval _ "(" _ Iconst _ ")" _ Sconst)
-    / (ConstInterval _ Sconst _ OptInterval)
-    / Sconst
+    = Sconst
     / IDENT
+    / ZoneValueOption3
+    / ZoneValueOption4
     / NumericOnly
     / DEFAULT
     / LOCAL
+
+ZoneValueOption3
+    = ConstInterval _ Sconst _ OptInterval
+
+ZoneValueOption4
+    = ConstInterval _ "(" _ Iconst _ ")" _ Sconst
 
 OptEncoding
     = (Sconst
@@ -294,29 +441,50 @@ VariableResetStmt
     = (RESET _ ResetRest)
 
 ResetRest
-    = (TRANSACTION _ ISOLATION _ LEVEL)
+    = GenericReset
     / (TIME _ ZONE)
+    / (TRANSACTION _ ISOLATION _ LEVEL)
     / (SESSION _ AUTHORIZATION)
-    / GenericReset
 
 GenericReset
     = VarName
     / ALL
 
 SetResetClause
-    = (SET _ SetRest)
+    = SetResetClauseOption1
     / VariableResetStmt
+
+SetResetClauseOption1
+    = SET _ SetRest
 
 FunctionSetResetClause
-    = (SET _ SetRestMore)
+    = FunctionSetResetClauseOption1
     / VariableResetStmt
 
+FunctionSetResetClauseOption1
+    = SET _ SetRestMore
+
 VariableShowStmt
-    = (SHOW _ TRANSACTION _ ISOLATION _ LEVEL)
-    / (SHOW _ TIME _ ZONE)
-    / (SHOW _ SESSION _ AUTHORIZATION)
-    / (SHOW _ VarName)
-    / (SHOW _ ALL)
+    = VariableShowStmtOption1
+    / VariableShowStmtOption2
+    / VariableShowStmtOption3
+    / VariableShowStmtOption4
+    / VariableShowStmtOption5
+
+VariableShowStmtOption1
+    = SHOW _ VarName
+
+VariableShowStmtOption2
+    = SHOW _ TIME _ ZONE
+
+VariableShowStmtOption3
+    = SHOW _ TRANSACTION _ ISOLATION _ LEVEL
+
+VariableShowStmtOption4
+    = SHOW _ SESSION _ AUTHORIZATION
+
+VariableShowStmtOption5
+    = SHOW _ ALL
 
 ConstraintsSetStmt
     = (SET _ CONSTRAINTS _ ConstraintsSetList _ ConstraintsSetMode)
@@ -340,98 +508,335 @@ DiscardStmt
     / (DISCARD _ SEQUENCES)
 
 AlterTableStmt
-    = (ALTER _ MATERIALIZED _ VIEW _ ALL _ IN _ TABLESPACE _ Name _ OWNED _ BY _ RoleList _ SET _ TABLESPACE _ Name _ OptNowait)
-    / (ALTER _ TABLE _ ALL _ IN _ TABLESPACE _ Name _ OWNED _ BY _ RoleList _ SET _ TABLESPACE _ Name _ OptNowait)
-    / (ALTER _ INDEX _ ALL _ IN _ TABLESPACE _ Name _ OWNED _ BY _ RoleList _ SET _ TABLESPACE _ Name _ OptNowait)
-    / (ALTER _ MATERIALIZED _ VIEW _ ALL _ IN _ TABLESPACE _ Name _ SET _ TABLESPACE _ Name _ OptNowait)
-    / (ALTER _ TABLE _ ALL _ IN _ TABLESPACE _ Name _ SET _ TABLESPACE _ Name _ OptNowait)
-    / (ALTER _ INDEX _ ALL _ IN _ TABLESPACE _ Name _ SET _ TABLESPACE _ Name _ OptNowait)
-    / (ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ AlterTableCmds)
-    / (ALTER _ VIEW _ IF _ EXISTS _ QualifiedName _ AlterTableCmds)
-    / (ALTER _ INDEX _ IF _ EXISTS _ QualifiedName _ AlterTableCmds)
-    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ AlterTableCmds)
-    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ PartitionCmd)
-    / (ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ AlterTableCmds)
-    / (ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ AlterTableCmds)
-    / (ALTER _ INDEX _ QualifiedName _ AlterTableCmds)
-    / (ALTER _ VIEW _ QualifiedName _ AlterTableCmds)
-    / (ALTER _ SEQUENCE _ QualifiedName _ AlterTableCmds)
-    / (ALTER _ TABLE _ RelationExpr _ PartitionCmd)
-    / (ALTER _ INDEX _ QualifiedName _ IndexPartitionCmd)
-    / (ALTER _ TABLE _ RelationExpr _ AlterTableCmds)
+    = AlterTableStmtOption1
+    / AlterTableStmtOption2
+    / AlterTableStmtOption3
+    / AlterTableStmtOption4
+    / AlterTableStmtOption5
+    / AlterTableStmtOption6
+    / AlterTableStmtOption7
+    / AlterTableStmtOption8
+    / AlterTableStmtOption9
+    / AlterTableStmtOption10
+    / AlterTableStmtOption11
+    / AlterTableStmtOption12
+    / AlterTableStmtOption13
+    / AlterTableStmtOption14
+    / AlterTableStmtOption15
+    / AlterTableStmtOption16
+    / AlterTableStmtOption17
+    / AlterTableStmtOption18
+    / AlterTableStmtOption19
+
+AlterTableStmtOption1
+    = ALTER _ TABLE _ RelationExpr _ AlterTableCmds
+
+AlterTableStmtOption2
+    = ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ AlterTableCmds
+
+AlterTableStmtOption3
+    = ALTER _ TABLE _ RelationExpr _ PartitionCmd
+
+AlterTableStmtOption4
+    = ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ PartitionCmd
+
+AlterTableStmtOption5
+    = ALTER _ TABLE _ ALL _ IN _ TABLESPACE _ Name _ SET _ TABLESPACE _ Name _ OptNowait
+
+AlterTableStmtOption6
+    = ALTER _ TABLE _ ALL _ IN _ TABLESPACE _ Name _ OWNED _ BY _ RoleList _ SET _ TABLESPACE _ Name _ OptNowait
+
+AlterTableStmtOption7
+    = ALTER _ INDEX _ QualifiedName _ AlterTableCmds
+
+AlterTableStmtOption8
+    = ALTER _ INDEX _ IF _ EXISTS _ QualifiedName _ AlterTableCmds
+
+AlterTableStmtOption9
+    = ALTER _ INDEX _ QualifiedName _ IndexPartitionCmd
+
+AlterTableStmtOption10
+    = ALTER _ INDEX _ ALL _ IN _ TABLESPACE _ Name _ SET _ TABLESPACE _ Name _ OptNowait
+
+AlterTableStmtOption11
+    = ALTER _ INDEX _ ALL _ IN _ TABLESPACE _ Name _ OWNED _ BY _ RoleList _ SET _ TABLESPACE _ Name _ OptNowait
+
+AlterTableStmtOption12
+    = ALTER _ SEQUENCE _ QualifiedName _ AlterTableCmds
+
+AlterTableStmtOption13
+    = ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ AlterTableCmds
+
+AlterTableStmtOption14
+    = ALTER _ VIEW _ QualifiedName _ AlterTableCmds
+
+AlterTableStmtOption15
+    = ALTER _ VIEW _ IF _ EXISTS _ QualifiedName _ AlterTableCmds
+
+AlterTableStmtOption16
+    = ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ AlterTableCmds
+
+AlterTableStmtOption17
+    = ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ AlterTableCmds
+
+AlterTableStmtOption18
+    = ALTER _ MATERIALIZED _ VIEW _ ALL _ IN _ TABLESPACE _ Name _ SET _ TABLESPACE _ Name _ OptNowait
+
+AlterTableStmtOption19
+    = ALTER _ MATERIALIZED _ VIEW _ ALL _ IN _ TABLESPACE _ Name _ OWNED _ BY _ RoleList _ SET _ TABLESPACE _ Name _ OptNowait
 
 AlterTableCmds
     = AlterTableCmd (_ "," _ AlterTableCmd)*
 
 PartitionCmd
-    = (ATTACH _ PARTITION _ QualifiedName _ PartitionBoundSpec)
-    / (DETACH _ PARTITION _ QualifiedName)
+    = PartitionCmdOption1
+    / PartitionCmdOption2
+
+PartitionCmdOption1
+    = ATTACH _ PARTITION _ QualifiedName _ PartitionBoundSpec
+
+PartitionCmdOption2
+    = DETACH _ PARTITION _ QualifiedName
 
 IndexPartitionCmd
     = (ATTACH _ PARTITION _ QualifiedName)
 
 AlterTableCmd
-    = (ALTER _ OptColumn _ ColId _ ADD _ GENERATED _ GeneratedWhen _ AS _ IDENTITY _ OptParenthesizedSeqOptList)
-    / (ALTER _ OptColumn _ ColId _ OptSetData _ TYPE _ Typename _ OptCollateClause _ AlterUsing)
-    / (ALTER _ OptColumn _ ColId _ DROP _ IDENTITY _ IF _ EXISTS)
-    / (ALTER _ OptColumn _ ColId _ SET _ STATISTICS _ SignedIconst)
-    / (ADD _ COLUMN _ IF _ NOT _ EXISTS _ ColumnDef)
-    / (ALTER _ OptColumn _ ColId _ DROP _ NOT _ NULL)
-    / (ALTER _ OptColumn _ ColId _ SET _ NOT _ NULL)
-    / (DROP _ CONSTRAINT _ IF _ EXISTS _ Name _ OptDropBehavior)
-    / (ALTER _ OptColumn _ Iconst _ SET _ STATISTICS _ SignedIconst)
-    / (ALTER _ OptColumn _ ColId _ SET _ STORAGE _ ColId)
-    / (DROP _ OptColumn _ IF _ EXISTS _ ColId _ OptDropBehavior)
-    / (ALTER _ OptColumn _ ColId _ SET _ Reloptions)
-    / (ALTER _ OptColumn _ ColId _ RESET _ Reloptions)
-    / (ADD _ IF _ NOT _ EXISTS _ ColumnDef)
-    / (NO _ FORCE _ ROW _ LEVEL _ SECURITY)
-    / (ALTER _ OptColumn _ ColId _ DROP _ IDENTITY)
-    / (ALTER _ OptColumn _ ColId _ AlterIdentityColumnOptionList)
-    / (DROP _ OptColumn _ ColId _ OptDropBehavior)
-    / (ENABLE _ ALWAYS _ RULE _ Name)
-    / (ALTER _ OptColumn _ ColId _ AlterGenericOptions)
-    / (FORCE _ ROW _ LEVEL _ SECURITY)
-    / (ALTER _ CONSTRAINT _ Name _ ConstraintAttributeSpec)
-    / (ALTER _ OptColumn _ ColId _ AlterColumnDefault)
-    / (ENABLE _ REPLICA _ RULE _ Name)
-    / (DROP _ CONSTRAINT _ Name _ OptDropBehavior)
-    / (ENABLE _ REPLICA _ TRIGGER _ Name)
-    / (ENABLE _ ALWAYS _ TRIGGER _ Name)
-    / (ENABLE _ ROW _ LEVEL _ SECURITY)
-    / (DISABLE _ ROW _ LEVEL _ SECURITY)
-    / (VALIDATE _ CONSTRAINT _ Name)
-    / (CLUSTER _ ON _ Name)
-    / (ENABLE _ TRIGGER _ Name)
-    / (SET _ WITHOUT _ OIDS)
-    / (SET _ WITH _ OIDS)
-    / (ENABLE _ TRIGGER _ ALL)
-    / (ENABLE _ TRIGGER _ USER)
-    / (DISABLE _ TRIGGER _ Name)
-    / (DISABLE _ TRIGGER _ ALL)
-    / (DISABLE _ TRIGGER _ USER)
-    / (ENABLE _ RULE _ Name)
-    / (SET _ TABLESPACE _ Name)
-    / (ADD _ COLUMN _ ColumnDef)
-    / (REPLICA _ IDENTITY _ ReplicaIdentity)
-    / (DISABLE _ RULE _ Name)
-    / (NO _ INHERIT _ QualifiedName)
-    / (SET _ WITHOUT _ CLUSTER)
-    / (OWNER _ TO _ RoleSpec)
-    / (NOT _ OF)
-    / (OF _ AnyName)
-    / (INHERIT _ QualifiedName)
-    / (RESET _ Reloptions)
-    / (SET _ UNLOGGED)
-    / (SET _ LOGGED)
-    / (ADD _ TableConstraint)
-    / (ADD _ ColumnDef)
-    / (SET _ Reloptions)
+    = AlterTableCmdOption1
+    / AlterTableCmdOption2
+    / AlterTableCmdOption3
+    / AlterTableCmdOption4
+    / AlterTableCmdOption5
+    / AlterTableCmdOption6
+    / AlterTableCmdOption7
+    / AlterTableCmdOption8
+    / AlterTableCmdOption9
+    / AlterTableCmdOption10
+    / AlterTableCmdOption11
+    / AlterTableCmdOption12
+    / AlterTableCmdOption13
+    / AlterTableCmdOption14
+    / AlterTableCmdOption15
+    / AlterTableCmdOption16
+    / AlterTableCmdOption17
+    / AlterTableCmdOption18
+    / AlterTableCmdOption19
+    / AlterTableCmdOption20
+    / AlterTableCmdOption21
+    / AlterTableCmdOption22
+    / AlterTableCmdOption23
+    / AlterTableCmdOption24
+    / AlterTableCmdOption25
+    / AlterTableCmdOption26
+    / AlterTableCmdOption27
+    / AlterTableCmdOption28
+    / AlterTableCmdOption29
+    / AlterTableCmdOption30
+    / AlterTableCmdOption31
+    / AlterTableCmdOption32
+    / AlterTableCmdOption33
+    / AlterTableCmdOption34
+    / AlterTableCmdOption35
+    / AlterTableCmdOption36
+    / AlterTableCmdOption37
+    / AlterTableCmdOption38
+    / AlterTableCmdOption39
+    / AlterTableCmdOption40
+    / AlterTableCmdOption41
+    / AlterTableCmdOption42
+    / AlterTableCmdOption43
+    / AlterTableCmdOption44
+    / AlterTableCmdOption45
+    / AlterTableCmdOption46
+    / AlterTableCmdOption47
+    / AlterTableCmdOption48
+    / AlterTableCmdOption49
+    / AlterTableCmdOption50
+    / AlterTableCmdOption51
+    / AlterTableCmdOption52
+    / AlterTableCmdOption53
+    / AlterTableCmdOption54
+    / AlterTableCmdOption55
+    / AlterTableCmdOption56
     / AlterGenericOptions
 
+AlterTableCmdOption1
+    = ADD _ ColumnDef
+
+AlterTableCmdOption2
+    = ADD _ IF _ NOT _ EXISTS _ ColumnDef
+
+AlterTableCmdOption3
+    = ADD _ COLUMN _ ColumnDef
+
+AlterTableCmdOption4
+    = ADD _ COLUMN _ IF _ NOT _ EXISTS _ ColumnDef
+
+AlterTableCmdOption5
+    = ALTER _ OptColumn _ ColId _ AlterColumnDefault
+
+AlterTableCmdOption6
+    = ALTER _ OptColumn _ ColId _ DROP _ NOT _ NULL
+
+AlterTableCmdOption7
+    = ALTER _ OptColumn _ ColId _ SET _ NOT _ NULL
+
+AlterTableCmdOption8
+    = ALTER _ OptColumn _ ColId _ SET _ STATISTICS _ SignedIconst
+
+AlterTableCmdOption9
+    = ALTER _ OptColumn _ Iconst _ SET _ STATISTICS _ SignedIconst
+
+AlterTableCmdOption10
+    = ALTER _ OptColumn _ ColId _ SET _ Reloptions
+
+AlterTableCmdOption11
+    = ALTER _ OptColumn _ ColId _ RESET _ Reloptions
+
+AlterTableCmdOption12
+    = ALTER _ OptColumn _ ColId _ SET _ STORAGE _ ColId
+
+AlterTableCmdOption13
+    = ALTER _ OptColumn _ ColId _ ADD _ GENERATED _ GeneratedWhen _ AS _ IDENTITY _ OptParenthesizedSeqOptList
+
+AlterTableCmdOption14
+    = ALTER _ OptColumn _ ColId _ AlterIdentityColumnOptionList
+
+AlterTableCmdOption15
+    = ALTER _ OptColumn _ ColId _ DROP _ IDENTITY
+
+AlterTableCmdOption16
+    = ALTER _ OptColumn _ ColId _ DROP _ IDENTITY _ IF _ EXISTS
+
+AlterTableCmdOption17
+    = DROP _ OptColumn _ IF _ EXISTS _ ColId _ OptDropBehavior
+
+AlterTableCmdOption18
+    = DROP _ OptColumn _ ColId _ OptDropBehavior
+
+AlterTableCmdOption19
+    = ALTER _ OptColumn _ ColId _ OptSetData _ TYPE _ Typename _ OptCollateClause _ AlterUsing
+
+AlterTableCmdOption20
+    = ALTER _ OptColumn _ ColId _ AlterGenericOptions
+
+AlterTableCmdOption21
+    = ADD _ TableConstraint
+
+AlterTableCmdOption22
+    = ALTER _ CONSTRAINT _ Name _ ConstraintAttributeSpec
+
+AlterTableCmdOption23
+    = VALIDATE _ CONSTRAINT _ Name
+
+AlterTableCmdOption24
+    = DROP _ CONSTRAINT _ IF _ EXISTS _ Name _ OptDropBehavior
+
+AlterTableCmdOption25
+    = DROP _ CONSTRAINT _ Name _ OptDropBehavior
+
+AlterTableCmdOption26
+    = SET _ WITH _ OIDS
+
+AlterTableCmdOption27
+    = SET _ WITHOUT _ OIDS
+
+AlterTableCmdOption28
+    = CLUSTER _ ON _ Name
+
+AlterTableCmdOption29
+    = SET _ WITHOUT _ CLUSTER
+
+AlterTableCmdOption30
+    = SET _ LOGGED
+
+AlterTableCmdOption31
+    = SET _ UNLOGGED
+
+AlterTableCmdOption32
+    = ENABLE _ TRIGGER _ Name
+
+AlterTableCmdOption33
+    = ENABLE _ ALWAYS _ TRIGGER _ Name
+
+AlterTableCmdOption34
+    = ENABLE _ REPLICA _ TRIGGER _ Name
+
+AlterTableCmdOption35
+    = ENABLE _ TRIGGER _ ALL
+
+AlterTableCmdOption36
+    = ENABLE _ TRIGGER _ USER
+
+AlterTableCmdOption37
+    = DISABLE _ TRIGGER _ Name
+
+AlterTableCmdOption38
+    = DISABLE _ TRIGGER _ ALL
+
+AlterTableCmdOption39
+    = DISABLE _ TRIGGER _ USER
+
+AlterTableCmdOption40
+    = ENABLE _ RULE _ Name
+
+AlterTableCmdOption41
+    = ENABLE _ ALWAYS _ RULE _ Name
+
+AlterTableCmdOption42
+    = ENABLE _ REPLICA _ RULE _ Name
+
+AlterTableCmdOption43
+    = DISABLE _ RULE _ Name
+
+AlterTableCmdOption44
+    = INHERIT _ QualifiedName
+
+AlterTableCmdOption45
+    = NO _ INHERIT _ QualifiedName
+
+AlterTableCmdOption46
+    = OF _ AnyName
+
+AlterTableCmdOption47
+    = NOT _ OF
+
+AlterTableCmdOption48
+    = OWNER _ TO _ RoleSpec
+
+AlterTableCmdOption49
+    = SET _ TABLESPACE _ Name
+
+AlterTableCmdOption50
+    = SET _ Reloptions
+
+AlterTableCmdOption51
+    = RESET _ Reloptions
+
+AlterTableCmdOption52
+    = REPLICA _ IDENTITY _ ReplicaIdentity
+
+AlterTableCmdOption53
+    = ENABLE _ ROW _ LEVEL _ SECURITY
+
+AlterTableCmdOption54
+    = DISABLE _ ROW _ LEVEL _ SECURITY
+
+AlterTableCmdOption55
+    = FORCE _ ROW _ LEVEL _ SECURITY
+
+AlterTableCmdOption56
+    = NO _ FORCE _ ROW _ LEVEL _ SECURITY
+
 AlterColumnDefault
-    = (SET _ DEFAULT _ AExpr)
-    / (DROP _ DEFAULT)
+    = AlterColumnDefaultOption1
+    / AlterColumnDefaultOption2
+
+AlterColumnDefaultOption1
+    = SET _ DEFAULT _ AExpr
+
+AlterColumnDefaultOption2
+    = DROP _ DEFAULT
 
 OptDropBehavior
     = (CASCADE
@@ -444,10 +849,10 @@ AlterUsing
     = (USING _ AExpr)?
 
 ReplicaIdentity
-    = (USING _ INDEX _ Name)
-    / NOTHING
+    = NOTHING
     / FULL
     / DEFAULT
+    / (USING _ INDEX _ Name)
 
 Reloptions
     = ("(" _ ReloptionList _ ")")
@@ -459,25 +864,52 @@ ReloptionList
     = ReloptionElem (_ "," _ ReloptionElem)*
 
 ReloptionElem
-    = (ColLabel _ "." _ ColLabel _ "=" _ DefArg)
-    / (ColLabel _ "=" _ DefArg)
-    / (ColLabel _ "." _ ColLabel)
+    = ReloptionElemOption1
     / ColLabel
+    / ReloptionElemOption3
+    / ReloptionElemOption4
+
+ReloptionElemOption1
+    = ColLabel _ "=" _ DefArg
+
+ReloptionElemOption3
+    = ColLabel _ "." _ ColLabel _ "=" _ DefArg
+
+ReloptionElemOption4
+    = ColLabel _ "." _ ColLabel
 
 AlterIdentityColumnOptionList
     = AlterIdentityColumnOption (_ AlterIdentityColumnOption)*
 
 AlterIdentityColumnOption
-    = (RESTART _ OptWith _ NumericOnly)
-    / (SET _ GENERATED _ GeneratedWhen)
-    / (SET _ SeqOptElem)
-    / RESTART
+    = RESTART
+    / AlterIdentityColumnOptionOption2
+    / AlterIdentityColumnOptionOption3
+    / AlterIdentityColumnOptionOption4
+
+AlterIdentityColumnOptionOption2
+    = RESTART _ OptWith _ NumericOnly
+
+AlterIdentityColumnOptionOption3
+    = SET _ SeqOptElem
+
+AlterIdentityColumnOptionOption4
+    = SET _ GENERATED _ GeneratedWhen
 
 PartitionBoundSpec
-    = (FOR _ VALUES _ FROM _ "(" _ RangeDatumList _ ")" _ TO _ "(" _ RangeDatumList _ ")")
-    / (FOR _ VALUES _ WITH _ "(" _ HashPartbound _ ")")
-    / (FOR _ VALUES _ IN _ "(" _ PartboundDatumList _ ")")
+    = PartitionBoundSpecOption1
+    / PartitionBoundSpecOption2
+    / PartitionBoundSpecOption3
     / DEFAULT
+
+PartitionBoundSpecOption1
+    = FOR _ VALUES _ WITH _ "(" _ HashPartbound _ ")"
+
+PartitionBoundSpecOption2
+    = FOR _ VALUES _ IN _ "(" _ PartboundDatumList _ ")"
+
+PartitionBoundSpecOption3
+    = FOR _ VALUES _ FROM _ "(" _ RangeDatumList _ ")" _ TO _ "(" _ RangeDatumList _ ")"
 
 HashPartboundElem
     = (NonReservedWord _ Iconst)
@@ -510,18 +942,36 @@ AlterTypeCmds
     = AlterTypeCmd (_ "," _ AlterTypeCmd)*
 
 AlterTypeCmd
-    = (ALTER _ ATTRIBUTE _ ColId _ OptSetData _ TYPE _ Typename _ OptCollateClause _ OptDropBehavior)
-    / (DROP _ ATTRIBUTE _ IF _ EXISTS _ ColId _ OptDropBehavior)
-    / (ADD _ ATTRIBUTE _ TableFuncElement _ OptDropBehavior)
-    / (DROP _ ATTRIBUTE _ ColId _ OptDropBehavior)
+    = AlterTypeCmdOption1
+    / AlterTypeCmdOption2
+    / AlterTypeCmdOption3
+    / AlterTypeCmdOption4
+
+AlterTypeCmdOption1
+    = ADD _ ATTRIBUTE _ TableFuncElement _ OptDropBehavior
+
+AlterTypeCmdOption2
+    = DROP _ ATTRIBUTE _ IF _ EXISTS _ ColId _ OptDropBehavior
+
+AlterTypeCmdOption3
+    = DROP _ ATTRIBUTE _ ColId _ OptDropBehavior
+
+AlterTypeCmdOption4
+    = ALTER _ ATTRIBUTE _ ColId _ OptSetData _ TYPE _ Typename _ OptCollateClause _ OptDropBehavior
 
 ClosePortalStmt
     = (CLOSE _ CursorName)
     / (CLOSE _ ALL)
 
 CopyStmt
-    = (COPY _ OptBinary _ QualifiedName _ OptColumnList _ OptOids _ CopyFrom _ OptProgram _ CopyFileName _ CopyDelimiter _ OptWith _ CopyOptions)
-    / (COPY _ "(" _ PreparableStmt _ ")" _ TO _ OptProgram _ CopyFileName _ OptWith _ CopyOptions)
+    = CopyStmtOption1
+    / CopyStmtOption2
+
+CopyStmtOption1
+    = COPY _ OptBinary _ QualifiedName _ OptColumnList _ OptOids _ CopyFrom _ OptProgram _ CopyFileName _ CopyDelimiter _ OptWith _ CopyOptions
+
+CopyStmtOption2
+    = COPY _ "(" _ PreparableStmt _ ")" _ TO _ OptProgram _ CopyFileName _ OptWith _ CopyOptions
 
 CopyFrom
     = FROM
@@ -536,27 +986,57 @@ CopyFileName
     / STDOUT
 
 CopyOptions
-    = ("(" _ CopyGenericOptList _ ")")
-    / CopyOptList
+    = CopyOptList
+    / CopyOptionsOption2
+
+CopyOptionsOption2
+    = "(" _ CopyGenericOptList _ ")"
 
 CopyOptList
     = (_ CopyOptItem)*
 
 CopyOptItem
-    = (FORCE _ NOT _ NULL _ ColumnList)
-    / (ESCAPE _ OptAs _ Sconst)
-    / (FORCE _ NULL _ ColumnList)
-    / (DELIMITER _ OptAs _ Sconst)
-    / (NULL _ OptAs _ Sconst)
-    / (FORCE _ QUOTE _ "*")
-    / (FORCE _ QUOTE _ ColumnList)
-    / (QUOTE _ OptAs _ Sconst)
-    / (ENCODING _ Sconst)
-    / HEADER
-    / CSV
-    / FREEZE
+    = BINARY
     / OIDS
-    / BINARY
+    / FREEZE
+    / CopyOptItemOption4
+    / CopyOptItemOption5
+    / CSV
+    / HEADER
+    / CopyOptItemOption8
+    / CopyOptItemOption9
+    / CopyOptItemOption10
+    / CopyOptItemOption11
+    / CopyOptItemOption12
+    / CopyOptItemOption13
+    / CopyOptItemOption14
+
+CopyOptItemOption4
+    = DELIMITER _ OptAs _ Sconst
+
+CopyOptItemOption5
+    = NULL _ OptAs _ Sconst
+
+CopyOptItemOption8
+    = QUOTE _ OptAs _ Sconst
+
+CopyOptItemOption9
+    = ESCAPE _ OptAs _ Sconst
+
+CopyOptItemOption10
+    = FORCE _ QUOTE _ ColumnList
+
+CopyOptItemOption11
+    = FORCE _ QUOTE _ "*"
+
+CopyOptItemOption12
+    = FORCE _ NOT _ NULL _ ColumnList
+
+CopyOptItemOption13
+    = FORCE _ NULL _ ColumnList
+
+CopyOptItemOption14
+    = ENCODING _ Sconst
 
 OptBinary
     = BINARY?
@@ -577,10 +1057,13 @@ CopyGenericOptElem
     = (ColLabel _ CopyGenericOptArg)
 
 CopyGenericOptArg
-    = (("(" _ CopyGenericOptArgList _ ")")
-    / OptBooleanOrString
+    = (OptBooleanOrString
     / NumericOnly
-    / "*")?
+    / "*"
+    / CopyGenericOptArgOption4)?
+
+CopyGenericOptArgOption4
+    = "(" _ CopyGenericOptArgList _ ")"
 
 CopyGenericOptArgList
     = CopyGenericOptArgListItem (_ "," _ CopyGenericOptArgListItem)*
@@ -589,20 +1072,38 @@ CopyGenericOptArgListItem
     = OptBooleanOrString
 
 CreateStmt
-    = (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
-    / (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
-    / (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ OF _ AnyName _ OptTypedTableElementList _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
-    / (CREATE _ OptTemp _ TABLE _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
-    / (CREATE _ OptTemp _ TABLE _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
-    / (CREATE _ OptTemp _ TABLE _ QualifiedName _ OF _ AnyName _ OptTypedTableElementList _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace)
+    = CreateStmtOption1
+    / CreateStmtOption2
+    / CreateStmtOption3
+    / CreateStmtOption4
+    / CreateStmtOption5
+    / CreateStmtOption6
+
+CreateStmtOption1
+    = CREATE _ OptTemp _ TABLE _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace
+
+CreateStmtOption2
+    = CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace
+
+CreateStmtOption3
+    = CREATE _ OptTemp _ TABLE _ QualifiedName _ OF _ AnyName _ OptTypedTableElementList _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace
+
+CreateStmtOption4
+    = CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ OF _ AnyName _ OptTypedTableElementList _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace
+
+CreateStmtOption5
+    = CREATE _ OptTemp _ TABLE _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace
+
+CreateStmtOption6
+    = CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ OptPartitionSpec _ OptWith1 _ OnCommitOption _ OptTableSpace
 
 OptTemp
-    = ((LOCAL _ TEMPORARY)
+    = (TEMPORARY
+    / TEMP
+    / (LOCAL _ TEMPORARY)
     / (LOCAL _ TEMP)
     / (GLOBAL _ TEMPORARY)
     / (GLOBAL _ TEMP)
-    / TEMPORARY
-    / TEMP
     / UNLOGGED)?
 
 OptTableElementList
@@ -630,44 +1131,83 @@ ColumnDef
     = (ColId _ Typename _ CreateGenericOptions _ ColQualList)
 
 ColumnOptions
-    = (ColId _ WITH _ OPTIONS _ ColQualList)
-    / (ColId _ ColQualList)
+    = ColumnOptionsOption1
+    / ColumnOptionsOption2
+
+ColumnOptionsOption1
+    = ColId _ ColQualList
+
+ColumnOptionsOption2
+    = ColId _ WITH _ OPTIONS _ ColQualList
 
 ColQualList
     = (_ ColConstraint)*
 
 ColConstraint
-    = (CONSTRAINT _ Name _ ColConstraintElem)
-    / (COLLATE _ AnyName)
+    = ColConstraintOption1
     / ColConstraintElem
     / ConstraintAttr
+    / ColConstraintOption4
+
+ColConstraintOption1
+    = CONSTRAINT _ Name _ ColConstraintElem
+
+ColConstraintOption4
+    = COLLATE _ AnyName
 
 ColConstraintElem
-    = (GENERATED _ GeneratedWhen _ AS _ IDENTITY _ OptParenthesizedSeqOptList)
-    / (REFERENCES _ QualifiedName _ OptColumnList _ KeyMatch _ KeyActions)
-    / (CHECK _ "(" _ AExpr _ ")" _ OptNoInherit)
-    / (PRIMARY _ KEY _ OptDefinition _ OptConsTableSpace)
-    / (UNIQUE _ OptDefinition _ OptConsTableSpace)
-    / (DEFAULT _ BExpr)
-    / (NOT _ NULL)
+    = ColConstraintElemOption1
     / NULL
+    / ColConstraintElemOption3
+    / ColConstraintElemOption4
+    / ColConstraintElemOption5
+    / ColConstraintElemOption6
+    / ColConstraintElemOption7
+    / ColConstraintElemOption8
+
+ColConstraintElemOption1
+    = NOT _ NULL
+
+ColConstraintElemOption3
+    = UNIQUE _ OptDefinition _ OptConsTableSpace
+
+ColConstraintElemOption4
+    = PRIMARY _ KEY _ OptDefinition _ OptConsTableSpace
+
+ColConstraintElemOption5
+    = CHECK _ "(" _ AExpr _ ")" _ OptNoInherit
+
+ColConstraintElemOption6
+    = DEFAULT _ BExpr
+
+ColConstraintElemOption7
+    = GENERATED _ GeneratedWhen _ AS _ IDENTITY _ OptParenthesizedSeqOptList
+
+ColConstraintElemOption8
+    = REFERENCES _ QualifiedName _ OptColumnList _ KeyMatch _ KeyActions
 
 GeneratedWhen
-    = (BY _ DEFAULT)
-    / ALWAYS
+    = ALWAYS
+    / (BY _ DEFAULT)
 
 ConstraintAttr
-    = (NOT _ DEFERRABLE)
+    = DEFERRABLE
+    / (NOT _ DEFERRABLE)
     / (INITIALLY _ DEFERRED)
     / (INITIALLY _ IMMEDIATE)
-    / DEFERRABLE
 
 TableLikeClause
     = (LIKE _ QualifiedName _ TableLikeOptionList)
 
 TableLikeOptionList
-    = ((_ INCLUDING _ TableLikeOption)
-    / (_ EXCLUDING _ TableLikeOption))*
+    = (TableLikeOptionListOption1
+    / TableLikeOptionListOption2)*
+
+TableLikeOptionListOption1
+    = _ INCLUDING _ TableLikeOption
+
+TableLikeOptionListOption2
+    = _ EXCLUDING _ TableLikeOption
 
 TableLikeOption
     = COMMENTS
@@ -680,17 +1220,41 @@ TableLikeOption
     / ALL
 
 TableConstraint
-    = (CONSTRAINT _ Name _ ConstraintElem)
+    = TableConstraintOption1
     / ConstraintElem
 
+TableConstraintOption1
+    = CONSTRAINT _ Name _ ConstraintElem
+
 ConstraintElem
-    = (FOREIGN _ KEY _ "(" _ ColumnList _ ")" _ REFERENCES _ QualifiedName _ OptColumnList _ KeyMatch _ KeyActions _ ConstraintAttributeSpec)
-    / (EXCLUDE _ AccessMethodClause _ "(" _ ExclusionConstraintList _ ")" _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ExclusionWhereClause _ ConstraintAttributeSpec)
-    / (PRIMARY _ KEY _ "(" _ ColumnList _ ")" _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ConstraintAttributeSpec)
-    / (UNIQUE _ "(" _ ColumnList _ ")" _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ConstraintAttributeSpec)
-    / (CHECK _ "(" _ AExpr _ ")" _ ConstraintAttributeSpec)
-    / (PRIMARY _ KEY _ ExistingIndex _ ConstraintAttributeSpec)
-    / (UNIQUE _ ExistingIndex _ ConstraintAttributeSpec)
+    = ConstraintElemOption1
+    / ConstraintElemOption2
+    / ConstraintElemOption3
+    / ConstraintElemOption4
+    / ConstraintElemOption5
+    / ConstraintElemOption6
+    / ConstraintElemOption7
+
+ConstraintElemOption1
+    = CHECK _ "(" _ AExpr _ ")" _ ConstraintAttributeSpec
+
+ConstraintElemOption2
+    = UNIQUE _ "(" _ ColumnList _ ")" _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ConstraintAttributeSpec
+
+ConstraintElemOption3
+    = UNIQUE _ ExistingIndex _ ConstraintAttributeSpec
+
+ConstraintElemOption4
+    = PRIMARY _ KEY _ "(" _ ColumnList _ ")" _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ConstraintAttributeSpec
+
+ConstraintElemOption5
+    = PRIMARY _ KEY _ ExistingIndex _ ConstraintAttributeSpec
+
+ConstraintElemOption6
+    = EXCLUDE _ AccessMethodClause _ "(" _ ExclusionConstraintList _ ")" _ OptCInclude _ OptDefinition _ OptConsTableSpace _ ExclusionWhereClause _ ConstraintAttributeSpec
+
+ConstraintElemOption7
+    = FOREIGN _ KEY _ "(" _ ColumnList _ ")" _ REFERENCES _ QualifiedName _ OptColumnList _ KeyMatch _ KeyActions _ ConstraintAttributeSpec
 
 OptNoInherit
     = (NO _ INHERIT)?
@@ -716,17 +1280,29 @@ ExclusionConstraintList
     = ExclusionConstraintElem (_ "," _ ExclusionConstraintElem)*
 
 ExclusionConstraintElem
-    = (IndexElem _ WITH _ OPERATOR _ "(" _ AnyOperator _ ")")
-    / (IndexElem _ WITH _ AnyOperator)
+    = ExclusionConstraintElemOption1
+    / ExclusionConstraintElemOption2
+
+ExclusionConstraintElemOption1
+    = IndexElem _ WITH _ AnyOperator
+
+ExclusionConstraintElemOption2
+    = IndexElem _ WITH _ OPERATOR _ "(" _ AnyOperator _ ")"
 
 ExclusionWhereClause
     = (WHERE _ "(" _ AExpr _ ")")?
 
 KeyActions
-    = ((KeyUpdate _ KeyDelete)
-    / (KeyDelete _ KeyUpdate)
-    / KeyUpdate
-    / KeyDelete)?
+    = (KeyUpdate
+    / KeyDelete
+    / KeyActionsOption3
+    / KeyActionsOption4)?
+
+KeyActionsOption3
+    = KeyUpdate _ KeyDelete
+
+KeyActionsOption4
+    = KeyDelete _ KeyUpdate
 
 KeyUpdate
     = (ON _ UPDATE _ KeyAction)
@@ -736,10 +1312,10 @@ KeyDelete
 
 KeyAction
     = (NO _ ACTION)
-    / (SET _ NULL)
-    / (SET _ DEFAULT)
     / RESTRICT
     / CASCADE
+    / (SET _ NULL)
+    / (SET _ DEFAULT)
 
 OptInherit
     = (INHERITS _ "(" _ QualifiedNameList _ ")")?
@@ -758,19 +1334,37 @@ PartParams
     = PartElem (_ "," _ PartElem)*
 
 PartElem
-    = ("(" _ AExpr _ ")" _ OptCollate _ OptClass)
-    / (ColId _ OptCollate _ OptClass)
-    / (FuncExprWindowless _ OptCollate _ OptClass)
+    = PartElemOption1
+    / PartElemOption2
+    / PartElemOption3
+
+PartElemOption1
+    = ColId _ OptCollate _ OptClass
+
+PartElemOption2
+    = FuncExprWindowless _ OptCollate _ OptClass
+
+PartElemOption3
+    = "(" _ AExpr _ ")" _ OptCollate _ OptClass
 
 OptWith1
-    = ((WITH _ Reloptions)
-    / (WITH _ OIDS)
-    / (WITHOUT _ OIDS))?
+    = (OptWithOption1
+    / OptWithOption2
+    / OptWithOption3)?
+
+OptWithOption1
+    = WITH _ Reloptions
+
+OptWithOption2
+    = WITH _ OIDS
+
+OptWithOption3
+    = WITHOUT _ OIDS
 
 OnCommitOption
-    = ((ON _ COMMIT _ DELETE _ ROWS)
-    / (ON _ COMMIT _ PRESERVE _ ROWS)
-    / (ON _ COMMIT _ DROP))?
+    = ((ON _ COMMIT _ DROP)
+    / (ON _ COMMIT _ DELETE _ ROWS)
+    / (ON _ COMMIT _ PRESERVE _ ROWS))?
 
 OptTableSpace
     = (TABLESPACE _ Name)?
@@ -782,23 +1376,41 @@ ExistingIndex
     = (USING _ INDEX _ IndexName)
 
 CreateStatsStmt
-    = (CREATE _ STATISTICS _ IF _ NOT _ EXISTS _ AnyName _ OptNameList _ ON _ ExprList _ FROM _ FromList)
-    / (CREATE _ STATISTICS _ AnyName _ OptNameList _ ON _ ExprList _ FROM _ FromList)
+    = CreateStatsStmtOption1
+    / CreateStatsStmtOption2
+
+CreateStatsStmtOption1
+    = CREATE _ STATISTICS _ AnyName _ OptNameList _ ON _ ExprList _ FROM _ FromList
+
+CreateStatsStmtOption2
+    = CREATE _ STATISTICS _ IF _ NOT _ EXISTS _ AnyName _ OptNameList _ ON _ ExprList _ FROM _ FromList
 
 CreateAsStmt
-    = (CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ CreateAsTarget _ AS _ SelectStmt _ OptWithData)
-    / (CREATE _ OptTemp _ TABLE _ CreateAsTarget _ AS _ SelectStmt _ OptWithData)
+    = CreateAsStmtOption1
+    / CreateAsStmtOption2
+
+CreateAsStmtOption1
+    = CREATE _ OptTemp _ TABLE _ CreateAsTarget _ AS _ SelectStmt _ OptWithData
+
+CreateAsStmtOption2
+    = CREATE _ OptTemp _ TABLE _ IF _ NOT _ EXISTS _ CreateAsTarget _ AS _ SelectStmt _ OptWithData
 
 CreateAsTarget
     = (QualifiedName _ OptColumnList _ OptWith1 _ OnCommitOption _ OptTableSpace)
 
 OptWithData
-    = ((WITH _ NO _ DATA)
-    / (WITH _ DATA))?
+    = ((WITH _ DATA)
+    / (WITH _ NO _ DATA))?
 
 CreateMatViewStmt
-    = (CREATE _ OptNoLog _ MATERIALIZED _ VIEW _ IF _ NOT _ EXISTS _ CreateMvTarget _ AS _ SelectStmt _ OptWithData)
-    / (CREATE _ OptNoLog _ MATERIALIZED _ VIEW _ CreateMvTarget _ AS _ SelectStmt _ OptWithData)
+    = CreateMatViewStmtOption1
+    / CreateMatViewStmtOption2
+
+CreateMatViewStmtOption1
+    = CREATE _ OptNoLog _ MATERIALIZED _ VIEW _ CreateMvTarget _ AS _ SelectStmt _ OptWithData
+
+CreateMatViewStmtOption2
+    = CREATE _ OptNoLog _ MATERIALIZED _ VIEW _ IF _ NOT _ EXISTS _ CreateMvTarget _ AS _ SelectStmt _ OptWithData
 
 CreateMvTarget
     = (QualifiedName _ OptColumnList _ OptReloptions _ OptTableSpace)
@@ -810,12 +1422,24 @@ RefreshMatViewStmt
     = (REFRESH _ MATERIALIZED _ VIEW _ OptConcurrently _ QualifiedName _ OptWithData)
 
 CreateSeqStmt
-    = (CREATE _ OptTemp _ SEQUENCE _ IF _ NOT _ EXISTS _ QualifiedName _ OptSeqOptList)
-    / (CREATE _ OptTemp _ SEQUENCE _ QualifiedName _ OptSeqOptList)
+    = CreateSeqStmtOption1
+    / CreateSeqStmtOption2
+
+CreateSeqStmtOption1
+    = CREATE _ OptTemp _ SEQUENCE _ QualifiedName _ OptSeqOptList
+
+CreateSeqStmtOption2
+    = CREATE _ OptTemp _ SEQUENCE _ IF _ NOT _ EXISTS _ QualifiedName _ OptSeqOptList
 
 AlterSeqStmt
-    = (ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ SeqOptList)
-    / (ALTER _ SEQUENCE _ QualifiedName _ SeqOptList)
+    = AlterSeqStmtOption1
+    / AlterSeqStmtOption2
+
+AlterSeqStmtOption1
+    = ALTER _ SEQUENCE _ QualifiedName _ SeqOptList
+
+AlterSeqStmtOption2
+    = ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ SeqOptList
 
 OptSeqOptList
     = SeqOptList?
@@ -827,57 +1451,114 @@ SeqOptList
     = SeqOptElem (_ SeqOptElem)*
 
 SeqOptElem
-    = (RESTART _ OptWith _ NumericOnly)
-    / (SEQUENCE _ NAME _ AnyName)
-    / (START _ OptWith _ NumericOnly)
-    / (OWNED _ BY _ AnyName)
-    / (INCREMENT _ OptBy _ NumericOnly)
-    / (NO _ MAXVALUE)
-    / (MINVALUE _ NumericOnly)
-    / (MAXVALUE _ NumericOnly)
-    / (NO _ MINVALUE)
-    / (NO _ CYCLE)
-    / (CACHE _ NumericOnly)
-    / (AS _ SimpleTypename)
+    = SeqOptElemOption1
+    / SeqOptElemOption2
     / CYCLE
+    / SeqOptElemOption4
+    / SeqOptElemOption5
+    / SeqOptElemOption6
+    / SeqOptElemOption7
+    / SeqOptElemOption8
+    / SeqOptElemOption9
+    / SeqOptElemOption10
+    / SeqOptElemOption11
+    / SeqOptElemOption12
     / RESTART
+    / SeqOptElemOption14
+
+SeqOptElemOption1
+    = AS _ SimpleTypename
+
+SeqOptElemOption2
+    = CACHE _ NumericOnly
+
+SeqOptElemOption4
+    = NO _ CYCLE
+
+SeqOptElemOption5
+    = INCREMENT _ OptBy _ NumericOnly
+
+SeqOptElemOption6
+    = MAXVALUE _ NumericOnly
+
+SeqOptElemOption7
+    = MINVALUE _ NumericOnly
+
+SeqOptElemOption8
+    = NO _ MAXVALUE
+
+SeqOptElemOption9
+    = NO _ MINVALUE
+
+SeqOptElemOption10
+    = OWNED _ BY _ AnyName
+
+SeqOptElemOption11
+    = SEQUENCE _ NAME _ AnyName
+
+SeqOptElemOption12
+    = START _ OptWith _ NumericOnly
+
+SeqOptElemOption14
+    = RESTART _ OptWith _ NumericOnly
 
 OptBy
     = BY?
 
 NumericOnly
-    = ("+" _ FCONST)
+    = FCONST
+    / ("+" _ FCONST)
     / ("-" _ FCONST)
-    / FCONST
     / SignedIconst
 
 NumericOnlyList
     = NumericOnly (_ "," _ NumericOnly)*
 
 CreatePLangStmt
-    = (CREATE _ OptOrReplace _ OptTrusted _ OptProcedural _ LANGUAGE _ NonReservedWordOrSconst _ HANDLER _ HandlerName _ OptInlineHandler _ OptValidator)
-    / (CREATE _ OptOrReplace _ OptTrusted _ OptProcedural _ LANGUAGE _ NonReservedWordOrSconst)
+    = CreatePLangStmtOption1
+    / CreatePLangStmtOption2
+
+CreatePLangStmtOption1
+    = CREATE _ OptOrReplace _ OptTrusted _ OptProcedural _ LANGUAGE _ NonReservedWordOrSconst
+
+CreatePLangStmtOption2
+    = CREATE _ OptOrReplace _ OptTrusted _ OptProcedural _ LANGUAGE _ NonReservedWordOrSconst _ HANDLER _ HandlerName _ OptInlineHandler _ OptValidator
 
 OptTrusted
     = TRUSTED?
 
 HandlerName
-    = (Name _ Attrs)
-    / Name
+    = Name
+    / HandlerNameOption2
+
+HandlerNameOption2
+    = Name _ Attrs
 
 OptInlineHandler
     = (INLINE _ HandlerName)?
 
 ValidatorClause
-    = (VALIDATOR _ HandlerName)
-    / (NO _ VALIDATOR)
+    = ValidatorClauseOption1
+    / ValidatorClauseOption2
+
+ValidatorClauseOption1
+    = VALIDATOR _ HandlerName
+
+ValidatorClauseOption2
+    = NO _ VALIDATOR
 
 OptValidator
     = ValidatorClause?
 
 DropPLangStmt
-    = (DROP _ OptProcedural _ LANGUAGE _ IF _ EXISTS _ NonReservedWordOrSconst _ OptDropBehavior)
-    / (DROP _ OptProcedural _ LANGUAGE _ NonReservedWordOrSconst _ OptDropBehavior)
+    = DropPLangStmtOption1
+    / DropPLangStmtOption2
+
+DropPLangStmtOption1
+    = DROP _ OptProcedural _ LANGUAGE _ NonReservedWordOrSconst _ OptDropBehavior
+
+DropPLangStmtOption2
+    = DROP _ OptProcedural _ LANGUAGE _ IF _ EXISTS _ NonReservedWordOrSconst _ OptDropBehavior
 
 OptProcedural
     = PROCEDURAL?
@@ -889,21 +1570,36 @@ OptTableSpaceOwner
     = (OWNER _ RoleSpec)?
 
 DropTableSpaceStmt
-    = (DROP _ TABLESPACE _ IF _ EXISTS _ Name)
-    / (DROP _ TABLESPACE _ Name)
+    = (DROP _ TABLESPACE _ Name)
+    / (DROP _ TABLESPACE _ IF _ EXISTS _ Name)
 
 CreateExtensionStmt
-    = (CREATE _ EXTENSION _ IF _ NOT _ EXISTS _ Name _ OptWith _ CreateExtensionOptList)
-    / (CREATE _ EXTENSION _ Name _ OptWith _ CreateExtensionOptList)
+    = CreateExtensionStmtOption1
+    / CreateExtensionStmtOption2
+
+CreateExtensionStmtOption1
+    = CREATE _ EXTENSION _ Name _ OptWith _ CreateExtensionOptList
+
+CreateExtensionStmtOption2
+    = CREATE _ EXTENSION _ IF _ NOT _ EXISTS _ Name _ OptWith _ CreateExtensionOptList
 
 CreateExtensionOptList
     = (_ CreateExtensionOptItem)*
 
 CreateExtensionOptItem
-    = (SCHEMA _ Name)
-    / (VERSION _ NonReservedWordOrSconst)
-    / (FROM _ NonReservedWordOrSconst)
+    = CreateExtensionOptItemOption1
+    / CreateExtensionOptItemOption2
+    / CreateExtensionOptItemOption3
     / CASCADE
+
+CreateExtensionOptItemOption1
+    = SCHEMA _ Name
+
+CreateExtensionOptItemOption2
+    = VERSION _ NonReservedWordOrSconst
+
+CreateExtensionOptItemOption3
+    = FROM _ NonReservedWordOrSconst
 
 AlterExtensionStmt
     = (ALTER _ EXTENSION _ Name _ UPDATE _ AlterExtensionOptList)
@@ -915,43 +1611,139 @@ AlterExtensionOptItem
     = (TO _ NonReservedWordOrSconst)
 
 AlterExtensionContentsStmt
-    = (ALTER _ EXTENSION _ Name _ AddDrop _ CAST _ "(" _ Typename _ AS _ Typename _ ")")
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ PARSER _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ DICTIONARY _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ CONFIGURATION _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ FOREIGN _ DATA _ WRAPPER _ Name)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ TEMPLATE _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ OptProcedural _ LANGUAGE _ Name)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ MATERIALIZED _ VIEW _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ FOREIGN _ TABLE _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ EVENT _ TRIGGER _ Name)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ ACCESS _ METHOD _ Name)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ SCHEMA _ Name)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ TABLE _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ ROUTINE _ FunctionWithArgtypes)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ PROCEDURE _ FunctionWithArgtypes)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ OperatorWithArgtypes)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ FUNCTION _ FunctionWithArgtypes)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ SEQUENCE _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ VIEW _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ DOMAIN _ Typename)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ CONVERSION _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ COLLATION _ AnyName)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ SERVER _ Name)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ AGGREGATE _ AggregateWithArgtypes)
-    / (ALTER _ EXTENSION _ Name _ AddDrop _ TYPE _ Typename)
+    = AlterExtensionContentsStmtOption1
+    / AlterExtensionContentsStmtOption2
+    / AlterExtensionContentsStmtOption3
+    / AlterExtensionContentsStmtOption4
+    / AlterExtensionContentsStmtOption5
+    / AlterExtensionContentsStmtOption6
+    / AlterExtensionContentsStmtOption7
+    / AlterExtensionContentsStmtOption8
+    / AlterExtensionContentsStmtOption9
+    / AlterExtensionContentsStmtOption10
+    / AlterExtensionContentsStmtOption11
+    / AlterExtensionContentsStmtOption12
+    / AlterExtensionContentsStmtOption13
+    / AlterExtensionContentsStmtOption14
+    / AlterExtensionContentsStmtOption15
+    / AlterExtensionContentsStmtOption16
+    / AlterExtensionContentsStmtOption17
+    / AlterExtensionContentsStmtOption18
+    / AlterExtensionContentsStmtOption19
+    / AlterExtensionContentsStmtOption20
+    / AlterExtensionContentsStmtOption21
+    / AlterExtensionContentsStmtOption22
+    / AlterExtensionContentsStmtOption23
+    / AlterExtensionContentsStmtOption24
+    / AlterExtensionContentsStmtOption25
+    / AlterExtensionContentsStmtOption26
+    / AlterExtensionContentsStmtOption27
+    / AlterExtensionContentsStmtOption28
+
+AlterExtensionContentsStmtOption1
+    = ALTER _ EXTENSION _ Name _ AddDrop _ ACCESS _ METHOD _ Name
+
+AlterExtensionContentsStmtOption2
+    = ALTER _ EXTENSION _ Name _ AddDrop _ AGGREGATE _ AggregateWithArgtypes
+
+AlterExtensionContentsStmtOption3
+    = ALTER _ EXTENSION _ Name _ AddDrop _ CAST _ "(" _ Typename _ AS _ Typename _ ")"
+
+AlterExtensionContentsStmtOption4
+    = ALTER _ EXTENSION _ Name _ AddDrop _ COLLATION _ AnyName
+
+AlterExtensionContentsStmtOption5
+    = ALTER _ EXTENSION _ Name _ AddDrop _ CONVERSION _ AnyName
+
+AlterExtensionContentsStmtOption6
+    = ALTER _ EXTENSION _ Name _ AddDrop _ DOMAIN _ Typename
+
+AlterExtensionContentsStmtOption7
+    = ALTER _ EXTENSION _ Name _ AddDrop _ FUNCTION _ FunctionWithArgtypes
+
+AlterExtensionContentsStmtOption8
+    = ALTER _ EXTENSION _ Name _ AddDrop _ OptProcedural _ LANGUAGE _ Name
+
+AlterExtensionContentsStmtOption9
+    = ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ OperatorWithArgtypes
+
+AlterExtensionContentsStmtOption10
+    = ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod
+
+AlterExtensionContentsStmtOption11
+    = ALTER _ EXTENSION _ Name _ AddDrop _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod
+
+AlterExtensionContentsStmtOption12
+    = ALTER _ EXTENSION _ Name _ AddDrop _ PROCEDURE _ FunctionWithArgtypes
+
+AlterExtensionContentsStmtOption13
+    = ALTER _ EXTENSION _ Name _ AddDrop _ ROUTINE _ FunctionWithArgtypes
+
+AlterExtensionContentsStmtOption14
+    = ALTER _ EXTENSION _ Name _ AddDrop _ SCHEMA _ Name
+
+AlterExtensionContentsStmtOption15
+    = ALTER _ EXTENSION _ Name _ AddDrop _ EVENT _ TRIGGER _ Name
+
+AlterExtensionContentsStmtOption16
+    = ALTER _ EXTENSION _ Name _ AddDrop _ TABLE _ AnyName
+
+AlterExtensionContentsStmtOption17
+    = ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ PARSER _ AnyName
+
+AlterExtensionContentsStmtOption18
+    = ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ DICTIONARY _ AnyName
+
+AlterExtensionContentsStmtOption19
+    = ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ TEMPLATE _ AnyName
+
+AlterExtensionContentsStmtOption20
+    = ALTER _ EXTENSION _ Name _ AddDrop _ TEXT _ SEARCH _ CONFIGURATION _ AnyName
+
+AlterExtensionContentsStmtOption21
+    = ALTER _ EXTENSION _ Name _ AddDrop _ SEQUENCE _ AnyName
+
+AlterExtensionContentsStmtOption22
+    = ALTER _ EXTENSION _ Name _ AddDrop _ VIEW _ AnyName
+
+AlterExtensionContentsStmtOption23
+    = ALTER _ EXTENSION _ Name _ AddDrop _ MATERIALIZED _ VIEW _ AnyName
+
+AlterExtensionContentsStmtOption24
+    = ALTER _ EXTENSION _ Name _ AddDrop _ FOREIGN _ TABLE _ AnyName
+
+AlterExtensionContentsStmtOption25
+    = ALTER _ EXTENSION _ Name _ AddDrop _ FOREIGN _ DATA _ WRAPPER _ Name
+
+AlterExtensionContentsStmtOption26
+    = ALTER _ EXTENSION _ Name _ AddDrop _ SERVER _ Name
+
+AlterExtensionContentsStmtOption27
+    = ALTER _ EXTENSION _ Name _ AddDrop _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name
+
+AlterExtensionContentsStmtOption28
+    = ALTER _ EXTENSION _ Name _ AddDrop _ TYPE _ Typename
 
 CreateFdwStmt
     = (CREATE _ FOREIGN _ DATA _ WRAPPER _ Name _ OptFdwOptions _ CreateGenericOptions)
 
 FdwOption
-    = (HANDLER _ HandlerName)
-    / (NO _ HANDLER)
-    / (VALIDATOR _ HandlerName)
-    / (NO _ VALIDATOR)
+    = FdwOptionOption1
+    / FdwOptionOption2
+    / FdwOptionOption3
+    / FdwOptionOption4
+
+FdwOptionOption1
+    = HANDLER _ HandlerName
+
+FdwOptionOption2
+    = NO _ HANDLER
+
+FdwOptionOption3
+    = VALIDATOR _ HandlerName
+
+FdwOptionOption4
+    = NO _ VALIDATOR
 
 FdwOptions
     = FdwOption (_ FdwOption)*
@@ -960,8 +1752,14 @@ OptFdwOptions
     = FdwOptions?
 
 AlterFdwStmt
-    = (ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ OptFdwOptions _ AlterGenericOptions)
-    / (ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ FdwOptions)
+    = AlterFdwStmtOption1
+    / AlterFdwStmtOption2
+
+AlterFdwStmtOption1
+    = ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ OptFdwOptions _ AlterGenericOptions
+
+AlterFdwStmtOption2
+    = ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ FdwOptions
 
 CreateGenericOptions
     = (OPTIONS _ "(" _ GenericOptionList _ ")")?
@@ -976,10 +1774,19 @@ AlterGenericOptionList
     = AlterGenericOptionElem (_ "," _ AlterGenericOptionElem)*
 
 AlterGenericOptionElem
-    = (SET _ GenericOptionElem)
-    / (ADD _ GenericOptionElem)
-    / (DROP _ GenericOptionName)
-    / GenericOptionElem
+    = GenericOptionElem
+    / AlterGenericOptionElemOption2
+    / AlterGenericOptionElemOption3
+    / AlterGenericOptionElemOption4
+
+AlterGenericOptionElemOption2
+    = SET _ GenericOptionElem
+
+AlterGenericOptionElemOption3
+    = ADD _ GenericOptionElem
+
+AlterGenericOptionElemOption4
+    = DROP _ GenericOptionName
 
 GenericOptionElem
     = (GenericOptionName _ GenericOptionArg)
@@ -991,8 +1798,14 @@ GenericOptionArg
     = Sconst
 
 CreateForeignServerStmt
-    = (CREATE _ SERVER _ IF _ NOT _ EXISTS _ Name _ OptType _ OptForeignServerVersion _ FOREIGN _ DATA _ WRAPPER _ Name _ CreateGenericOptions)
-    / (CREATE _ SERVER _ Name _ OptType _ OptForeignServerVersion _ FOREIGN _ DATA _ WRAPPER _ Name _ CreateGenericOptions)
+    = CreateForeignServerStmtOption1
+    / CreateForeignServerStmtOption2
+
+CreateForeignServerStmtOption1
+    = CREATE _ SERVER _ Name _ OptType _ OptForeignServerVersion _ FOREIGN _ DATA _ WRAPPER _ Name _ CreateGenericOptions
+
+CreateForeignServerStmtOption2
+    = CREATE _ SERVER _ IF _ NOT _ EXISTS _ Name _ OptType _ OptForeignServerVersion _ FOREIGN _ DATA _ WRAPPER _ Name _ CreateGenericOptions
 
 OptType
     = (TYPE _ Sconst)?
@@ -1005,19 +1818,46 @@ OptForeignServerVersion
     = ForeignServerVersion?
 
 AlterForeignServerStmt
-    = (ALTER _ SERVER _ Name _ ForeignServerVersion _ AlterGenericOptions)
-    / (ALTER _ SERVER _ Name _ ForeignServerVersion)
-    / (ALTER _ SERVER _ Name _ AlterGenericOptions)
+    = AlterForeignServerStmtOption1
+    / AlterForeignServerStmtOption2
+    / AlterForeignServerStmtOption3
+
+AlterForeignServerStmtOption1
+    = ALTER _ SERVER _ Name _ ForeignServerVersion _ AlterGenericOptions
+
+AlterForeignServerStmtOption2
+    = ALTER _ SERVER _ Name _ ForeignServerVersion
+
+AlterForeignServerStmtOption3
+    = ALTER _ SERVER _ Name _ AlterGenericOptions
 
 CreateForeignTableStmt
-    = (CREATE _ FOREIGN _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ SERVER _ Name _ CreateGenericOptions)
-    / (CREATE _ FOREIGN _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ SERVER _ Name _ CreateGenericOptions)
-    / (CREATE _ FOREIGN _ TABLE _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ SERVER _ Name _ CreateGenericOptions)
-    / (CREATE _ FOREIGN _ TABLE _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ SERVER _ Name _ CreateGenericOptions)
+    = CreateForeignTableStmtOption1
+    / CreateForeignTableStmtOption2
+    / CreateForeignTableStmtOption3
+    / CreateForeignTableStmtOption4
+
+CreateForeignTableStmtOption1
+    = CREATE _ FOREIGN _ TABLE _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ SERVER _ Name _ CreateGenericOptions
+
+CreateForeignTableStmtOption2
+    = CREATE _ FOREIGN _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ "(" _ OptTableElementList _ ")" _ OptInherit _ SERVER _ Name _ CreateGenericOptions
+
+CreateForeignTableStmtOption3
+    = CREATE _ FOREIGN _ TABLE _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ SERVER _ Name _ CreateGenericOptions
+
+CreateForeignTableStmtOption4
+    = CREATE _ FOREIGN _ TABLE _ IF _ NOT _ EXISTS _ QualifiedName _ PARTITION _ OF _ QualifiedName _ OptTypedTableElementList _ PartitionBoundSpec _ SERVER _ Name _ CreateGenericOptions
 
 AlterForeignTableStmt
-    = (ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ AlterTableCmds)
-    / (ALTER _ FOREIGN _ TABLE _ RelationExpr _ AlterTableCmds)
+    = AlterForeignTableStmtOption1
+    / AlterForeignTableStmtOption2
+
+AlterForeignTableStmtOption1
+    = ALTER _ FOREIGN _ TABLE _ RelationExpr _ AlterTableCmds
+
+AlterForeignTableStmtOption2
+    = ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ AlterTableCmds
 
 ImportForeignSchemaStmt
     = (IMPORT _ FOREIGN _ SCHEMA _ Name _ ImportQualification _ FROM _ SERVER _ Name _ INTO _ Name _ CreateGenericOptions)
@@ -1030,16 +1870,28 @@ ImportQualification
     = (ImportQualificationType _ "(" _ RelationExprList _ ")")?
 
 CreateUserMappingStmt
-    = (CREATE _ USER _ MAPPING _ IF _ NOT _ EXISTS _ FOR _ AuthIdent _ SERVER _ Name _ CreateGenericOptions)
-    / (CREATE _ USER _ MAPPING _ FOR _ AuthIdent _ SERVER _ Name _ CreateGenericOptions)
+    = CreateUserMappingStmtOption1
+    / CreateUserMappingStmtOption2
+
+CreateUserMappingStmtOption1
+    = CREATE _ USER _ MAPPING _ FOR _ AuthIdent _ SERVER _ Name _ CreateGenericOptions
+
+CreateUserMappingStmtOption2
+    = CREATE _ USER _ MAPPING _ IF _ NOT _ EXISTS _ FOR _ AuthIdent _ SERVER _ Name _ CreateGenericOptions
 
 AuthIdent
     = RoleSpec
     / USER
 
 DropUserMappingStmt
-    = (DROP _ USER _ MAPPING _ IF _ EXISTS _ FOR _ AuthIdent _ SERVER _ Name)
-    / (DROP _ USER _ MAPPING _ FOR _ AuthIdent _ SERVER _ Name)
+    = DropUserMappingStmtOption1
+    / DropUserMappingStmtOption2
+
+DropUserMappingStmtOption1
+    = DROP _ USER _ MAPPING _ FOR _ AuthIdent _ SERVER _ Name
+
+DropUserMappingStmtOption2
+    = DROP _ USER _ MAPPING _ IF _ EXISTS _ FOR _ AuthIdent _ SERVER _ Name
 
 AlterUserMappingStmt
     = (ALTER _ USER _ MAPPING _ FOR _ AuthIdent _ SERVER _ Name _ AlterGenericOptions)
@@ -1079,23 +1931,32 @@ CreateAmStmt
     = (CREATE _ ACCESS _ METHOD _ Name _ TYPE _ INDEX _ HANDLER _ HandlerName)
 
 CreateTrigStmt
-    = (CREATE _ CONSTRAINT _ TRIGGER _ Name _ AFTER _ TriggerEvents _ ON _ QualifiedName _ OptConstrFromTable _ ConstraintAttributeSpec _ FOR _ EACH _ ROW _ TriggerWhen _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ TriggerFuncArgs _ ")")
-    / (CREATE _ TRIGGER _ Name _ TriggerActionTime _ TriggerEvents _ ON _ QualifiedName _ TriggerReferencing _ TriggerForSpec _ TriggerWhen _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ TriggerFuncArgs _ ")")
+    = CreateTrigStmtOption1
+    / CreateTrigStmtOption2
+
+CreateTrigStmtOption1
+    = CREATE _ TRIGGER _ Name _ TriggerActionTime _ TriggerEvents _ ON _ QualifiedName _ TriggerReferencing _ TriggerForSpec _ TriggerWhen _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ TriggerFuncArgs _ ")"
+
+CreateTrigStmtOption2
+    = CREATE _ CONSTRAINT _ TRIGGER _ Name _ AFTER _ TriggerEvents _ ON _ QualifiedName _ OptConstrFromTable _ ConstraintAttributeSpec _ FOR _ EACH _ ROW _ TriggerWhen _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ TriggerFuncArgs _ ")"
 
 TriggerActionTime
-    = (INSTEAD _ OF)
-    / BEFORE
+    = BEFORE
     / AFTER
+    / (INSTEAD _ OF)
 
 TriggerEvents
     = TriggerOneEvent (_ OR _ TriggerOneEvent)*
 
 TriggerOneEvent
-    = (UPDATE _ OF _ ColumnList)
-    / INSERT
+    = INSERT
     / DELETE
     / UPDATE
+    / TriggerOneEventOption4
     / TRUNCATE
+
+TriggerOneEventOption4
+    = UPDATE _ OF _ ColumnList
 
 TriggerReferencing
     = (REFERENCING _ TriggerTransitions)?
@@ -1147,15 +2008,21 @@ ConstraintAttributeSpec
 
 ConstraintAttributeElem
     = (NOT _ DEFERRABLE)
+    / DEFERRABLE
     / (INITIALLY _ IMMEDIATE)
     / (INITIALLY _ DEFERRED)
     / (NOT _ VALID)
     / (NO _ INHERIT)
-    / DEFERRABLE
 
 CreateEventTrigStmt
-    = (CREATE _ EVENT _ TRIGGER _ Name _ ON _ ColLabel _ WHEN _ EventTriggerWhenList _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ ")")
-    / (CREATE _ EVENT _ TRIGGER _ Name _ ON _ ColLabel _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ ")")
+    = CreateEventTrigStmtOption1
+    / CreateEventTrigStmtOption2
+
+CreateEventTrigStmtOption1
+    = CREATE _ EVENT _ TRIGGER _ Name _ ON _ ColLabel _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ ")"
+
+CreateEventTrigStmtOption2
+    = CREATE _ EVENT _ TRIGGER _ Name _ ON _ ColLabel _ WHEN _ EventTriggerWhenList _ EXECUTE _ PROCEDURE _ FuncName _ "(" _ ")"
 
 EventTriggerWhenList
     = EventTriggerWhenItem (_ AND _ EventTriggerWhenItem)*
@@ -1170,9 +2037,9 @@ AlterEventTrigStmt
     = (ALTER _ EVENT _ TRIGGER _ Name _ EnableTrigger)
 
 EnableTrigger
-    = (ENABLE _ REPLICA)
+    = ENABLE
+    / (ENABLE _ REPLICA)
     / (ENABLE _ ALWAYS)
-    / ENABLE
     / DISABLE
 
 CreateAssertStmt
@@ -1182,22 +2049,70 @@ DropAssertStmt
     = (DROP _ ASSERTION _ Name _ OptDropBehavior)
 
 DefineStmt
-    = (CREATE _ COLLATION _ IF _ NOT _ EXISTS _ AnyName _ FROM _ AnyName)
-    / (CREATE _ TYPE _ AnyName _ AS _ ENUM _ "(" _ OptEnumValList _ ")")
-    / (CREATE _ COLLATION _ IF _ NOT _ EXISTS _ AnyName _ Definition)
-    / (CREATE _ TYPE _ AnyName _ AS _ "(" _ OptTableFuncElementList _ ")")
-    / (CREATE _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ Definition)
-    / (CREATE _ TEXT _ SEARCH _ TEMPLATE _ AnyName _ Definition)
-    / (CREATE _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ Definition)
-    / (CREATE _ TYPE _ AnyName _ AS _ RANGE _ Definition)
-    / (CREATE _ TEXT _ SEARCH _ PARSER _ AnyName _ Definition)
-    / (CREATE _ AGGREGATE _ FuncName _ AggrArgs _ Definition)
-    / (CREATE _ COLLATION _ AnyName _ FROM _ AnyName)
-    / (CREATE _ TYPE _ AnyName _ Definition)
-    / (CREATE _ OPERATOR _ AnyOperator _ Definition)
-    / (CREATE _ COLLATION _ AnyName _ Definition)
-    / (CREATE _ AGGREGATE _ FuncName _ OldAggrDefinition)
-    / (CREATE _ TYPE _ AnyName)
+    = DefineStmtOption1
+    / DefineStmtOption2
+    / DefineStmtOption3
+    / DefineStmtOption4
+    / DefineStmtOption5
+    / DefineStmtOption6
+    / DefineStmtOption7
+    / DefineStmtOption8
+    / DefineStmtOption9
+    / DefineStmtOption10
+    / DefineStmtOption11
+    / DefineStmtOption12
+    / DefineStmtOption13
+    / DefineStmtOption14
+    / DefineStmtOption15
+    / DefineStmtOption16
+
+DefineStmtOption1
+    = CREATE _ AGGREGATE _ FuncName _ AggrArgs _ Definition
+
+DefineStmtOption2
+    = CREATE _ AGGREGATE _ FuncName _ OldAggrDefinition
+
+DefineStmtOption3
+    = CREATE _ OPERATOR _ AnyOperator _ Definition
+
+DefineStmtOption4
+    = CREATE _ TYPE _ AnyName _ Definition
+
+DefineStmtOption5
+    = CREATE _ TYPE _ AnyName
+
+DefineStmtOption6
+    = CREATE _ TYPE _ AnyName _ AS _ "(" _ OptTableFuncElementList _ ")"
+
+DefineStmtOption7
+    = CREATE _ TYPE _ AnyName _ AS _ ENUM _ "(" _ OptEnumValList _ ")"
+
+DefineStmtOption8
+    = CREATE _ TYPE _ AnyName _ AS _ RANGE _ Definition
+
+DefineStmtOption9
+    = CREATE _ TEXT _ SEARCH _ PARSER _ AnyName _ Definition
+
+DefineStmtOption10
+    = CREATE _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ Definition
+
+DefineStmtOption11
+    = CREATE _ TEXT _ SEARCH _ TEMPLATE _ AnyName _ Definition
+
+DefineStmtOption12
+    = CREATE _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ Definition
+
+DefineStmtOption13
+    = CREATE _ COLLATION _ AnyName _ Definition
+
+DefineStmtOption14
+    = CREATE _ COLLATION _ IF _ NOT _ EXISTS _ AnyName _ Definition
+
+DefineStmtOption15
+    = CREATE _ COLLATION _ AnyName _ FROM _ AnyName
+
+DefineStmtOption16
+    = CREATE _ COLLATION _ IF _ NOT _ EXISTS _ AnyName _ FROM _ AnyName
 
 Definition
     = ("(" _ DefList _ ")")
@@ -1206,8 +2121,11 @@ DefList
     = DefElem (_ "," _ DefElem)*
 
 DefElem
-    = (ColLabel _ "=" _ DefArg)
+    = DefElemOption1
     / ColLabel
+
+DefElemOption1
+    = ColLabel _ "=" _ DefArg
 
 DefArg
     = FuncType
@@ -1233,10 +2151,22 @@ EnumValList
     = Sconst (_ "," _ Sconst)*
 
 AlterEnumStmt
-    = (ALTER _ TYPE _ AnyName _ ADD _ VALUE _ OptIfNotExists _ Sconst _ BEFORE _ Sconst)
-    / (ALTER _ TYPE _ AnyName _ ADD _ VALUE _ OptIfNotExists _ Sconst _ AFTER _ Sconst)
-    / (ALTER _ TYPE _ AnyName _ RENAME _ VALUE _ Sconst _ TO _ Sconst)
-    / (ALTER _ TYPE _ AnyName _ ADD _ VALUE _ OptIfNotExists _ Sconst)
+    = AlterEnumStmtOption1
+    / AlterEnumStmtOption2
+    / AlterEnumStmtOption3
+    / AlterEnumStmtOption4
+
+AlterEnumStmtOption1
+    = ALTER _ TYPE _ AnyName _ ADD _ VALUE _ OptIfNotExists _ Sconst
+
+AlterEnumStmtOption2
+    = ALTER _ TYPE _ AnyName _ ADD _ VALUE _ OptIfNotExists _ Sconst _ BEFORE _ Sconst
+
+AlterEnumStmtOption3
+    = ALTER _ TYPE _ AnyName _ ADD _ VALUE _ OptIfNotExists _ Sconst _ AFTER _ Sconst
+
+AlterEnumStmtOption4
+    = ALTER _ TYPE _ AnyName _ RENAME _ VALUE _ Sconst _ TO _ Sconst
 
 OptIfNotExists
     = (IF _ NOT _ EXISTS)?
@@ -1248,11 +2178,26 @@ OpclassItemList
     = OpclassItem (_ "," _ OpclassItem)*
 
 OpclassItem
-    = (FUNCTION _ Iconst _ "(" _ TypeList _ ")" _ FunctionWithArgtypes)
-    / (OPERATOR _ Iconst _ AnyOperator _ OpclassPurpose _ OptRecheck)
-    / (OPERATOR _ Iconst _ OperatorWithArgtypes _ OpclassPurpose _ OptRecheck)
-    / (FUNCTION _ Iconst _ FunctionWithArgtypes)
-    / (STORAGE _ Typename)
+    = OpclassItemOption1
+    / OpclassItemOption2
+    / OpclassItemOption3
+    / OpclassItemOption4
+    / OpclassItemOption5
+
+OpclassItemOption1
+    = OPERATOR _ Iconst _ AnyOperator _ OpclassPurpose _ OptRecheck
+
+OpclassItemOption2
+    = OPERATOR _ Iconst _ OperatorWithArgtypes _ OpclassPurpose _ OptRecheck
+
+OpclassItemOption3
+    = FUNCTION _ Iconst _ FunctionWithArgtypes
+
+OpclassItemOption4
+    = FUNCTION _ Iconst _ "(" _ TypeList _ ")" _ FunctionWithArgtypes
+
+OpclassItemOption5
+    = STORAGE _ Typename
 
 OptDefault
     = DEFAULT?
@@ -1261,8 +2206,14 @@ OptOpfamily
     = (FAMILY _ AnyName)?
 
 OpclassPurpose
-    = ((FOR _ ORDER _ BY _ AnyName)
-    / (FOR _ SEARCH))?
+    = (OpclassPurposeOption1
+    / OpclassPurposeOption2)?
+
+OpclassPurposeOption1
+    = FOR _ SEARCH
+
+OpclassPurposeOption2
+    = FOR _ ORDER _ BY _ AnyName
 
 OptRecheck
     = RECHECK?
@@ -1271,23 +2222,47 @@ CreateOpFamilyStmt
     = (CREATE _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod)
 
 AlterOpFamilyStmt
-    = (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ ADD _ OpclassItemList)
-    / (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ DROP _ OpclassDropList)
+    = AlterOpFamilyStmtOption1
+    / AlterOpFamilyStmtOption2
+
+AlterOpFamilyStmtOption1
+    = ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ ADD _ OpclassItemList
+
+AlterOpFamilyStmtOption2
+    = ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ DROP _ OpclassDropList
 
 OpclassDropList
     = OpclassDrop (_ "," _ OpclassDrop)*
 
 OpclassDrop
-    = (OPERATOR _ Iconst _ "(" _ TypeList _ ")")
-    / (FUNCTION _ Iconst _ "(" _ TypeList _ ")")
+    = OpclassDropOption1
+    / OpclassDropOption2
+
+OpclassDropOption1
+    = OPERATOR _ Iconst _ "(" _ TypeList _ ")"
+
+OpclassDropOption2
+    = FUNCTION _ Iconst _ "(" _ TypeList _ ")"
 
 DropOpClassStmt
-    = (DROP _ OPERATOR _ CLASS _ IF _ EXISTS _ AnyName _ USING _ AccessMethod _ OptDropBehavior)
-    / (DROP _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ OptDropBehavior)
+    = DropOpClassStmtOption1
+    / DropOpClassStmtOption2
+
+DropOpClassStmtOption1
+    = DROP _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ OptDropBehavior
+
+DropOpClassStmtOption2
+    = DROP _ OPERATOR _ CLASS _ IF _ EXISTS _ AnyName _ USING _ AccessMethod _ OptDropBehavior
 
 DropOpFamilyStmt
-    = (DROP _ OPERATOR _ FAMILY _ IF _ EXISTS _ AnyName _ USING _ AccessMethod _ OptDropBehavior)
-    / (DROP _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ OptDropBehavior)
+    = DropOpFamilyStmtOption1
+    / DropOpFamilyStmtOption2
+
+DropOpFamilyStmtOption1
+    = DROP _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ OptDropBehavior
+
+DropOpFamilyStmtOption2
+    = DROP _ OPERATOR _ FAMILY _ IF _ EXISTS _ AnyName _ USING _ AccessMethod _ OptDropBehavior
 
 DropOwnedStmt
     = (DROP _ OWNED _ BY _ RoleList _ OptDropBehavior)
@@ -1296,39 +2271,75 @@ ReassignOwnedStmt
     = (REASSIGN _ OWNED _ BY _ RoleList _ TO _ RoleSpec)
 
 DropStmt
-    = (DROP _ DropTypeNameOnAnyName _ IF _ EXISTS _ Name _ ON _ AnyName _ OptDropBehavior)
-    / (DROP _ INDEX _ CONCURRENTLY _ IF _ EXISTS _ AnyNameList _ OptDropBehavior)
-    / (DROP _ DropTypeAnyName _ IF _ EXISTS _ AnyNameList _ OptDropBehavior)
-    / (DROP _ TYPE _ IF _ EXISTS _ TypeNameList _ OptDropBehavior)
-    / (DROP _ DropTypeName _ IF _ EXISTS _ NameList _ OptDropBehavior)
-    / (DROP _ DOMAIN _ IF _ EXISTS _ TypeNameList _ OptDropBehavior)
-    / (DROP _ DropTypeNameOnAnyName _ Name _ ON _ AnyName _ OptDropBehavior)
-    / (DROP _ INDEX _ CONCURRENTLY _ AnyNameList _ OptDropBehavior)
-    / (DROP _ TYPE _ TypeNameList _ OptDropBehavior)
-    / (DROP _ DropTypeAnyName _ AnyNameList _ OptDropBehavior)
-    / (DROP _ DOMAIN _ TypeNameList _ OptDropBehavior)
-    / (DROP _ DropTypeName _ NameList _ OptDropBehavior)
+    = DropStmtOption1
+    / DropStmtOption2
+    / DropStmtOption3
+    / DropStmtOption4
+    / DropStmtOption5
+    / DropStmtOption6
+    / DropStmtOption7
+    / DropStmtOption8
+    / DropStmtOption9
+    / DropStmtOption10
+    / DropStmtOption11
+    / DropStmtOption12
+
+DropStmtOption1
+    = DROP _ DropTypeAnyName _ IF _ EXISTS _ AnyNameList _ OptDropBehavior
+
+DropStmtOption2
+    = DROP _ DropTypeAnyName _ AnyNameList _ OptDropBehavior
+
+DropStmtOption3
+    = DROP _ DropTypeName _ IF _ EXISTS _ NameList _ OptDropBehavior
+
+DropStmtOption4
+    = DROP _ DropTypeName _ NameList _ OptDropBehavior
+
+DropStmtOption5
+    = DROP _ DropTypeNameOnAnyName _ Name _ ON _ AnyName _ OptDropBehavior
+
+DropStmtOption6
+    = DROP _ DropTypeNameOnAnyName _ IF _ EXISTS _ Name _ ON _ AnyName _ OptDropBehavior
+
+DropStmtOption7
+    = DROP _ TYPE _ TypeNameList _ OptDropBehavior
+
+DropStmtOption8
+    = DROP _ TYPE _ IF _ EXISTS _ TypeNameList _ OptDropBehavior
+
+DropStmtOption9
+    = DROP _ DOMAIN _ TypeNameList _ OptDropBehavior
+
+DropStmtOption10
+    = DROP _ DOMAIN _ IF _ EXISTS _ TypeNameList _ OptDropBehavior
+
+DropStmtOption11
+    = DROP _ INDEX _ CONCURRENTLY _ AnyNameList _ OptDropBehavior
+
+DropStmtOption12
+    = DROP _ INDEX _ CONCURRENTLY _ IF _ EXISTS _ AnyNameList _ OptDropBehavior
 
 DropTypeAnyName
-    = (TEXT _ SEARCH _ CONFIGURATION)
-    / (TEXT _ SEARCH _ TEMPLATE)
-    / (TEXT _ SEARCH _ DICTIONARY)
-    / (TEXT _ SEARCH _ PARSER)
+    = TABLE
+    / SEQUENCE
+    / VIEW
     / (MATERIALIZED _ VIEW)
+    / INDEX
     / (FOREIGN _ TABLE)
     / COLLATION
     / CONVERSION
     / STATISTICS
-    / INDEX
-    / VIEW
-    / SEQUENCE
-    / TABLE
+    / (TEXT _ SEARCH _ PARSER)
+    / (TEXT _ SEARCH _ DICTIONARY)
+    / (TEXT _ SEARCH _ TEMPLATE)
+    / (TEXT _ SEARCH _ CONFIGURATION)
 
 DropTypeName
-    = (FOREIGN _ DATA _ WRAPPER)
-    / (ACCESS _ METHOD)
+    = (ACCESS _ METHOD)
     / (EVENT _ TRIGGER)
     / EXTENSION
+    / (FOREIGN _ DATA _ WRAPPER)
     / PUBLICATION
     / SCHEMA
     / SERVER
@@ -1342,8 +2353,11 @@ AnyNameList
     = AnyName (_ "," _ AnyName)*
 
 AnyName
-    = (ColId _ Attrs)
-    / ColId
+    = ColId
+    / AnyNameOption2
+
+AnyNameOption2
+    = ColId _ Attrs
 
 Attrs
     = "." _ AttrName (_ "." _ AttrName)*
@@ -1359,49 +2373,106 @@ OptRestartSeqs
     / (RESTART _ IDENTITY))?
 
 CommentStmt
-    = (COMMENT _ ON _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ IS _ CommentText)
-    / (COMMENT _ ON _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ IS _ CommentText)
-    / (COMMENT _ ON _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ IS _ CommentText)
-    / (COMMENT _ ON _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name _ IS _ CommentText)
-    / (COMMENT _ ON _ CONSTRAINT _ Name _ ON _ DOMAIN _ AnyName _ IS _ CommentText)
-    / (COMMENT _ ON _ TRIGGER _ Name _ ON _ AnyName _ IS _ CommentText)
-    / (COMMENT _ ON _ RULE _ Name _ ON _ AnyName _ IS _ CommentText)
-    / (COMMENT _ ON _ CONSTRAINT _ Name _ ON _ AnyName _ IS _ CommentText)
-    / (COMMENT _ ON _ POLICY _ Name _ ON _ AnyName _ IS _ CommentText)
-    / (COMMENT _ ON _ LARGE _ OBJECT _ NumericOnly _ IS _ CommentText)
-    / (COMMENT _ ON _ OPERATOR _ OperatorWithArgtypes _ IS _ CommentText)
-    / (COMMENT _ ON _ PROCEDURE _ FunctionWithArgtypes _ IS _ CommentText)
-    / (COMMENT _ ON _ FUNCTION _ FunctionWithArgtypes _ IS _ CommentText)
-    / (COMMENT _ ON _ AGGREGATE _ AggregateWithArgtypes _ IS _ CommentText)
-    / (COMMENT _ ON _ DOMAIN _ Typename _ IS _ CommentText)
-    / (COMMENT _ ON _ TYPE _ Typename _ IS _ CommentText)
-    / (COMMENT _ ON _ CommentTypeName _ Name _ IS _ CommentText)
-    / (COMMENT _ ON _ ROUTINE _ FunctionWithArgtypes _ IS _ CommentText)
-    / (COMMENT _ ON _ CommentTypeAnyName _ AnyName _ IS _ CommentText)
+    = CommentStmtOption1
+    / CommentStmtOption2
+    / CommentStmtOption3
+    / CommentStmtOption4
+    / CommentStmtOption5
+    / CommentStmtOption6
+    / CommentStmtOption7
+    / CommentStmtOption8
+    / CommentStmtOption9
+    / CommentStmtOption10
+    / CommentStmtOption11
+    / CommentStmtOption12
+    / CommentStmtOption13
+    / CommentStmtOption14
+    / CommentStmtOption15
+    / CommentStmtOption16
+    / CommentStmtOption17
+    / CommentStmtOption18
+    / CommentStmtOption19
+
+CommentStmtOption1
+    = COMMENT _ ON _ CommentTypeAnyName _ AnyName _ IS _ CommentText
+
+CommentStmtOption2
+    = COMMENT _ ON _ CommentTypeName _ Name _ IS _ CommentText
+
+CommentStmtOption3
+    = COMMENT _ ON _ TYPE _ Typename _ IS _ CommentText
+
+CommentStmtOption4
+    = COMMENT _ ON _ DOMAIN _ Typename _ IS _ CommentText
+
+CommentStmtOption5
+    = COMMENT _ ON _ AGGREGATE _ AggregateWithArgtypes _ IS _ CommentText
+
+CommentStmtOption6
+    = COMMENT _ ON _ FUNCTION _ FunctionWithArgtypes _ IS _ CommentText
+
+CommentStmtOption7
+    = COMMENT _ ON _ OPERATOR _ OperatorWithArgtypes _ IS _ CommentText
+
+CommentStmtOption8
+    = COMMENT _ ON _ CONSTRAINT _ Name _ ON _ AnyName _ IS _ CommentText
+
+CommentStmtOption9
+    = COMMENT _ ON _ CONSTRAINT _ Name _ ON _ DOMAIN _ AnyName _ IS _ CommentText
+
+CommentStmtOption10
+    = COMMENT _ ON _ POLICY _ Name _ ON _ AnyName _ IS _ CommentText
+
+CommentStmtOption11
+    = COMMENT _ ON _ PROCEDURE _ FunctionWithArgtypes _ IS _ CommentText
+
+CommentStmtOption12
+    = COMMENT _ ON _ ROUTINE _ FunctionWithArgtypes _ IS _ CommentText
+
+CommentStmtOption13
+    = COMMENT _ ON _ RULE _ Name _ ON _ AnyName _ IS _ CommentText
+
+CommentStmtOption14
+    = COMMENT _ ON _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name _ IS _ CommentText
+
+CommentStmtOption15
+    = COMMENT _ ON _ TRIGGER _ Name _ ON _ AnyName _ IS _ CommentText
+
+CommentStmtOption16
+    = COMMENT _ ON _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ IS _ CommentText
+
+CommentStmtOption17
+    = COMMENT _ ON _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ IS _ CommentText
+
+CommentStmtOption18
+    = COMMENT _ ON _ LARGE _ OBJECT _ NumericOnly _ IS _ CommentText
+
+CommentStmtOption19
+    = COMMENT _ ON _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ IS _ CommentText
 
 CommentTypeAnyName
-    = (TEXT _ SEARCH _ PARSER)
-    / (TEXT _ SEARCH _ DICTIONARY)
-    / (TEXT _ SEARCH _ CONFIGURATION)
-    / (TEXT _ SEARCH _ TEMPLATE)
-    / (MATERIALIZED _ VIEW)
-    / (FOREIGN _ TABLE)
-    / COLLATION
-    / VIEW
-    / CONVERSION
-    / TABLE
-    / STATISTICS
-    / SEQUENCE
+    = COLUMN
     / INDEX
-    / COLUMN
+    / SEQUENCE
+    / STATISTICS
+    / TABLE
+    / VIEW
+    / (MATERIALIZED _ VIEW)
+    / COLLATION
+    / CONVERSION
+    / (FOREIGN _ TABLE)
+    / (TEXT _ SEARCH _ CONFIGURATION)
+    / (TEXT _ SEARCH _ DICTIONARY)
+    / (TEXT _ SEARCH _ PARSER)
+    / (TEXT _ SEARCH _ TEMPLATE)
 
 CommentTypeName
-    = (FOREIGN _ DATA _ WRAPPER)
-    / (ACCESS _ METHOD)
-    / (EVENT _ TRIGGER)
-    / (OptProcedural _ LANGUAGE)
+    = (ACCESS _ METHOD)
     / DATABASE
+    / (EVENT _ TRIGGER)
     / EXTENSION
+    / (FOREIGN _ DATA _ WRAPPER)
+    / (OptProcedural _ LANGUAGE)
     / PUBLICATION
     / ROLE
     / SCHEMA
@@ -1414,31 +2485,58 @@ CommentText
     / NULL
 
 SecLabelStmt
-    = (SECURITY _ LABEL _ OptProvider _ ON _ LARGE _ OBJECT _ NumericOnly _ IS _ SecurityLabel)
-    / (SECURITY _ LABEL _ OptProvider _ ON _ SecurityLabelTypeName _ Name _ IS _ SecurityLabel)
-    / (SECURITY _ LABEL _ OptProvider _ ON _ TYPE _ Typename _ IS _ SecurityLabel)
-    / (SECURITY _ LABEL _ OptProvider _ ON _ DOMAIN _ Typename _ IS _ SecurityLabel)
-    / (SECURITY _ LABEL _ OptProvider _ ON _ AGGREGATE _ AggregateWithArgtypes _ IS _ SecurityLabel)
-    / (SECURITY _ LABEL _ OptProvider _ ON _ FUNCTION _ FunctionWithArgtypes _ IS _ SecurityLabel)
-    / (SECURITY _ LABEL _ OptProvider _ ON _ SecurityLabelTypeAnyName _ AnyName _ IS _ SecurityLabel)
-    / (SECURITY _ LABEL _ OptProvider _ ON _ PROCEDURE _ FunctionWithArgtypes _ IS _ SecurityLabel)
-    / (SECURITY _ LABEL _ OptProvider _ ON _ ROUTINE _ FunctionWithArgtypes _ IS _ SecurityLabel)
+    = SecLabelStmtOption1
+    / SecLabelStmtOption2
+    / SecLabelStmtOption3
+    / SecLabelStmtOption4
+    / SecLabelStmtOption5
+    / SecLabelStmtOption6
+    / SecLabelStmtOption7
+    / SecLabelStmtOption8
+    / SecLabelStmtOption9
+
+SecLabelStmtOption1
+    = SECURITY _ LABEL _ OptProvider _ ON _ SecurityLabelTypeAnyName _ AnyName _ IS _ SecurityLabel
+
+SecLabelStmtOption2
+    = SECURITY _ LABEL _ OptProvider _ ON _ SecurityLabelTypeName _ Name _ IS _ SecurityLabel
+
+SecLabelStmtOption3
+    = SECURITY _ LABEL _ OptProvider _ ON _ TYPE _ Typename _ IS _ SecurityLabel
+
+SecLabelStmtOption4
+    = SECURITY _ LABEL _ OptProvider _ ON _ DOMAIN _ Typename _ IS _ SecurityLabel
+
+SecLabelStmtOption5
+    = SECURITY _ LABEL _ OptProvider _ ON _ AGGREGATE _ AggregateWithArgtypes _ IS _ SecurityLabel
+
+SecLabelStmtOption6
+    = SECURITY _ LABEL _ OptProvider _ ON _ FUNCTION _ FunctionWithArgtypes _ IS _ SecurityLabel
+
+SecLabelStmtOption7
+    = SECURITY _ LABEL _ OptProvider _ ON _ LARGE _ OBJECT _ NumericOnly _ IS _ SecurityLabel
+
+SecLabelStmtOption8
+    = SECURITY _ LABEL _ OptProvider _ ON _ PROCEDURE _ FunctionWithArgtypes _ IS _ SecurityLabel
+
+SecLabelStmtOption9
+    = SECURITY _ LABEL _ OptProvider _ ON _ ROUTINE _ FunctionWithArgtypes _ IS _ SecurityLabel
 
 OptProvider
     = (FOR _ NonReservedWordOrSconst)?
 
 SecurityLabelTypeAnyName
-    = (FOREIGN _ TABLE)
-    / (MATERIALIZED _ VIEW)
-    / COLUMN
+    = COLUMN
+    / (FOREIGN _ TABLE)
     / SEQUENCE
     / TABLE
     / VIEW
+    / (MATERIALIZED _ VIEW)
 
 SecurityLabelTypeName
-    = (EVENT _ TRIGGER)
+    = DATABASE
+    / (EVENT _ TRIGGER)
     / (OptProcedural _ LANGUAGE)
-    / DATABASE
     / PUBLICATION
     / ROLE
     / SCHEMA
@@ -1450,26 +2548,77 @@ SecurityLabel
     / NULL
 
 FetchStmt
-    = (FETCH _ FetchArgs)
-    / (MOVE _ FetchArgs)
+    = FetchStmtOption1
+    / FetchStmtOption2
+
+FetchStmtOption1
+    = FETCH _ FetchArgs
+
+FetchStmtOption2
+    = MOVE _ FetchArgs
 
 FetchArgs
-    = (ABSOLUTE _ SignedIconst _ OptFromIn _ CursorName)
-    / (BACKWARD _ SignedIconst _ OptFromIn _ CursorName)
-    / (FORWARD _ ALL _ OptFromIn _ CursorName)
-    / (FORWARD _ SignedIconst _ OptFromIn _ CursorName)
-    / (BACKWARD _ ALL _ OptFromIn _ CursorName)
-    / (RELATIVE _ SignedIconst _ OptFromIn _ CursorName)
-    / (SignedIconst _ OptFromIn _ CursorName)
-    / (LAST _ OptFromIn _ CursorName)
-    / (FIRST _ OptFromIn _ CursorName)
-    / (ALL _ OptFromIn _ CursorName)
-    / (FORWARD _ OptFromIn _ CursorName)
-    / (PRIOR _ OptFromIn _ CursorName)
-    / (NEXT _ OptFromIn _ CursorName)
-    / (BACKWARD _ OptFromIn _ CursorName)
-    / (FromIn _ CursorName)
-    / CursorName
+    = CursorName
+    / FetchArgsOption2
+    / FetchArgsOption3
+    / FetchArgsOption4
+    / FetchArgsOption5
+    / FetchArgsOption6
+    / FetchArgsOption7
+    / FetchArgsOption8
+    / FetchArgsOption9
+    / FetchArgsOption10
+    / FetchArgsOption11
+    / FetchArgsOption12
+    / FetchArgsOption13
+    / FetchArgsOption14
+    / FetchArgsOption15
+    / FetchArgsOption16
+
+FetchArgsOption2
+    = FromIn _ CursorName
+
+FetchArgsOption3
+    = NEXT _ OptFromIn _ CursorName
+
+FetchArgsOption4
+    = PRIOR _ OptFromIn _ CursorName
+
+FetchArgsOption5
+    = FIRST _ OptFromIn _ CursorName
+
+FetchArgsOption6
+    = LAST _ OptFromIn _ CursorName
+
+FetchArgsOption7
+    = ABSOLUTE _ SignedIconst _ OptFromIn _ CursorName
+
+FetchArgsOption8
+    = RELATIVE _ SignedIconst _ OptFromIn _ CursorName
+
+FetchArgsOption9
+    = SignedIconst _ OptFromIn _ CursorName
+
+FetchArgsOption10
+    = ALL _ OptFromIn _ CursorName
+
+FetchArgsOption11
+    = FORWARD _ OptFromIn _ CursorName
+
+FetchArgsOption12
+    = FORWARD _ SignedIconst _ OptFromIn _ CursorName
+
+FetchArgsOption13
+    = FORWARD _ ALL _ OptFromIn _ CursorName
+
+FetchArgsOption14
+    = BACKWARD _ OptFromIn _ CursorName
+
+FetchArgsOption15
+    = BACKWARD _ SignedIconst _ OptFromIn _ CursorName
+
+FetchArgsOption16
+    = BACKWARD _ ALL _ OptFromIn _ CursorName
 
 FromIn
     = FROM
@@ -1482,53 +2631,140 @@ GrantStmt
     = (GRANT _ Privileges _ ON _ PrivilegeTarget _ TO _ GranteeList _ OptGrantGrantOption)
 
 RevokeStmt
-    = (REVOKE _ GRANT _ OPTION _ FOR _ Privileges _ ON _ PrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior)
-    / (REVOKE _ Privileges _ ON _ PrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior)
+    = RevokeStmtOption1
+    / RevokeStmtOption2
+
+RevokeStmtOption1
+    = REVOKE _ Privileges _ ON _ PrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior
+
+RevokeStmtOption2
+    = REVOKE _ GRANT _ OPTION _ FOR _ Privileges _ ON _ PrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior
 
 Privileges
-    = (ALL _ PRIVILEGES _ "(" _ ColumnList _ ")")
-    / (ALL _ "(" _ ColumnList _ ")")
-    / (ALL _ PRIVILEGES)
-    / PrivilegeList
+    = PrivilegeList
     / ALL
+    / PrivilegesOption3
+    / PrivilegesOption4
+    / PrivilegesOption5
+
+PrivilegesOption3
+    = ALL _ PRIVILEGES
+
+PrivilegesOption4
+    = ALL _ "(" _ ColumnList _ ")"
+
+PrivilegesOption5
+    = ALL _ PRIVILEGES _ "(" _ ColumnList _ ")"
 
 PrivilegeList
     = Privilege (_ "," _ Privilege)*
 
 Privilege
-    = (SELECT _ OptColumnList)
-    / (REFERENCES _ OptColumnList)
-    / (CREATE _ OptColumnList)
-    / (ColId _ OptColumnList)
+    = PrivilegeOption1
+    / PrivilegeOption2
+    / PrivilegeOption3
+    / PrivilegeOption4
+
+PrivilegeOption1
+    = SELECT _ OptColumnList
+
+PrivilegeOption2
+    = REFERENCES _ OptColumnList
+
+PrivilegeOption3
+    = CREATE _ OptColumnList
+
+PrivilegeOption4
+    = ColId _ OptColumnList
 
 PrivilegeTarget
-    = (ALL _ ROUTINES _ IN _ SCHEMA _ NameList)
-    / (ALL _ PROCEDURES _ IN _ SCHEMA _ NameList)
-    / (ALL _ FUNCTIONS _ IN _ SCHEMA _ NameList)
-    / (ALL _ SEQUENCES _ IN _ SCHEMA _ NameList)
-    / (ALL _ TABLES _ IN _ SCHEMA _ NameList)
-    / (FOREIGN _ DATA _ WRAPPER _ NameList)
-    / (FOREIGN _ SERVER _ NameList)
-    / (LARGE _ OBJECT _ NumericOnlyList)
-    / (LANGUAGE _ NameList)
-    / (DOMAIN _ AnyNameList)
-    / (DATABASE _ NameList)
-    / (ROUTINE _ FunctionWithArgtypesList)
-    / (SCHEMA _ NameList)
-    / (TABLESPACE _ NameList)
-    / (TYPE _ AnyNameList)
-    / (PROCEDURE _ FunctionWithArgtypesList)
-    / (FUNCTION _ FunctionWithArgtypesList)
-    / (SEQUENCE _ QualifiedNameList)
-    / (TABLE _ QualifiedNameList)
-    / QualifiedNameList
+    = QualifiedNameList
+    / PrivilegeTargetOption2
+    / PrivilegeTargetOption3
+    / PrivilegeTargetOption4
+    / PrivilegeTargetOption5
+    / PrivilegeTargetOption6
+    / PrivilegeTargetOption7
+    / PrivilegeTargetOption8
+    / PrivilegeTargetOption9
+    / PrivilegeTargetOption10
+    / PrivilegeTargetOption11
+    / PrivilegeTargetOption12
+    / PrivilegeTargetOption13
+    / PrivilegeTargetOption14
+    / PrivilegeTargetOption15
+    / PrivilegeTargetOption16
+    / PrivilegeTargetOption17
+    / PrivilegeTargetOption18
+    / PrivilegeTargetOption19
+    / PrivilegeTargetOption20
+
+PrivilegeTargetOption2
+    = TABLE _ QualifiedNameList
+
+PrivilegeTargetOption3
+    = SEQUENCE _ QualifiedNameList
+
+PrivilegeTargetOption4
+    = FOREIGN _ DATA _ WRAPPER _ NameList
+
+PrivilegeTargetOption5
+    = FOREIGN _ SERVER _ NameList
+
+PrivilegeTargetOption6
+    = FUNCTION _ FunctionWithArgtypesList
+
+PrivilegeTargetOption7
+    = PROCEDURE _ FunctionWithArgtypesList
+
+PrivilegeTargetOption8
+    = ROUTINE _ FunctionWithArgtypesList
+
+PrivilegeTargetOption9
+    = DATABASE _ NameList
+
+PrivilegeTargetOption10
+    = DOMAIN _ AnyNameList
+
+PrivilegeTargetOption11
+    = LANGUAGE _ NameList
+
+PrivilegeTargetOption12
+    = LARGE _ OBJECT _ NumericOnlyList
+
+PrivilegeTargetOption13
+    = SCHEMA _ NameList
+
+PrivilegeTargetOption14
+    = TABLESPACE _ NameList
+
+PrivilegeTargetOption15
+    = TYPE _ AnyNameList
+
+PrivilegeTargetOption16
+    = ALL _ TABLES _ IN _ SCHEMA _ NameList
+
+PrivilegeTargetOption17
+    = ALL _ SEQUENCES _ IN _ SCHEMA _ NameList
+
+PrivilegeTargetOption18
+    = ALL _ FUNCTIONS _ IN _ SCHEMA _ NameList
+
+PrivilegeTargetOption19
+    = ALL _ PROCEDURES _ IN _ SCHEMA _ NameList
+
+PrivilegeTargetOption20
+    = ALL _ ROUTINES _ IN _ SCHEMA _ NameList
 
 GranteeList
     = Grantee (_ "," _ Grantee)*
 
 Grantee
-    = (GROUP _ RoleSpec)
-    / RoleSpec
+    = RoleSpec
+    / GranteeOption2
+
+GranteeOption2
+    = GROUP _ RoleSpec
 
 OptGrantGrantOption
     = (WITH _ GRANT _ OPTION)?
@@ -1537,8 +2773,14 @@ GrantRoleStmt
     = (GRANT _ PrivilegeList _ TO _ RoleList _ OptGrantAdminOption _ OptGrantedBy)
 
 RevokeRoleStmt
-    = (REVOKE _ ADMIN _ OPTION _ FOR _ PrivilegeList _ FROM _ RoleList _ OptGrantedBy _ OptDropBehavior)
-    / (REVOKE _ PrivilegeList _ FROM _ RoleList _ OptGrantedBy _ OptDropBehavior)
+    = RevokeRoleStmtOption1
+    / RevokeRoleStmtOption2
+
+RevokeRoleStmtOption1
+    = REVOKE _ PrivilegeList _ FROM _ RoleList _ OptGrantedBy _ OptDropBehavior
+
+RevokeRoleStmtOption2
+    = REVOKE _ ADMIN _ OPTION _ FOR _ PrivilegeList _ FROM _ RoleList _ OptGrantedBy _ OptDropBehavior
 
 OptGrantAdminOption
     = (WITH _ ADMIN _ OPTION)?
@@ -1553,14 +2795,32 @@ DefACLOptionList
     = (_ DefACLOption)*
 
 DefACLOption
-    = (IN _ SCHEMA _ NameList)
-    / (FOR _ ROLE _ RoleList)
-    / (FOR _ USER _ RoleList)
+    = DefACLOptionOption1
+    / DefACLOptionOption2
+    / DefACLOptionOption3
+
+DefACLOptionOption1
+    = IN _ SCHEMA _ NameList
+
+DefACLOptionOption2
+    = FOR _ ROLE _ RoleList
+
+DefACLOptionOption3
+    = FOR _ USER _ RoleList
 
 DefACLAction
-    = (REVOKE _ GRANT _ OPTION _ FOR _ Privileges _ ON _ DefaclPrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior)
-    / (GRANT _ Privileges _ ON _ DefaclPrivilegeTarget _ TO _ GranteeList _ OptGrantGrantOption)
-    / (REVOKE _ Privileges _ ON _ DefaclPrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior)
+    = DefACLActionOption1
+    / DefACLActionOption2
+    / DefACLActionOption3
+
+DefACLActionOption1
+    = GRANT _ Privileges _ ON _ DefaclPrivilegeTarget _ TO _ GranteeList _ OptGrantGrantOption
+
+DefACLActionOption2
+    = REVOKE _ Privileges _ ON _ DefaclPrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior
+
+DefACLActionOption3
+    = REVOKE _ GRANT _ OPTION _ FOR _ Privileges _ ON _ DefaclPrivilegeTarget _ FROM _ GranteeList _ OptDropBehavior
 
 DefaclPrivilegeTarget
     = TABLES
@@ -1571,8 +2831,14 @@ DefaclPrivilegeTarget
     / SCHEMAS
 
 IndexStmt
-    = (CREATE _ OptUnique _ INDEX _ OptConcurrently _ IF _ NOT _ EXISTS _ IndexName _ ON _ RelationExpr _ AccessMethodClause _ "(" _ IndexParams _ ")" _ OptInclude _ OptReloptions _ OptTableSpace _ WhereClause)
-    / (CREATE _ OptUnique _ INDEX _ OptConcurrently _ OptIndexName _ ON _ RelationExpr _ AccessMethodClause _ "(" _ IndexParams _ ")" _ OptInclude _ OptReloptions _ OptTableSpace _ WhereClause)
+    = IndexStmtOption1
+    / IndexStmtOption2
+
+IndexStmtOption1
+    = CREATE _ OptUnique _ INDEX _ OptConcurrently _ OptIndexName _ ON _ RelationExpr _ AccessMethodClause _ "(" _ IndexParams _ ")" _ OptInclude _ OptReloptions _ OptTableSpace _ WhereClause
+
+IndexStmtOption2
+    = CREATE _ OptUnique _ INDEX _ OptConcurrently _ IF _ NOT _ EXISTS _ IndexName _ ON _ RelationExpr _ AccessMethodClause _ "(" _ IndexParams _ ")" _ OptInclude _ OptReloptions _ OptTableSpace _ WhereClause
 
 OptUnique
     = UNIQUE?
@@ -1590,9 +2856,18 @@ IndexParams
     = IndexElem (_ "," _ IndexElem)*
 
 IndexElem
-    = ("(" _ AExpr _ ")" _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder)
-    / (ColId _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder)
-    / (FuncExprWindowless _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder)
+    = IndexElemOption1
+    / IndexElemOption2
+    / IndexElemOption3
+
+IndexElemOption1
+    = ColId _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder
+
+IndexElemOption2
+    = FuncExprWindowless _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder
+
+IndexElemOption3
+    = "(" _ AExpr _ ")" _ OptCollate _ OptClass _ OptAscDesc _ OptNullsOrder
 
 OptInclude
     = (INCLUDE _ "(" _ IndexIncludingParams _ ")")?
@@ -1615,17 +2890,35 @@ OptNullsOrder
     / (NULLS _ LAST))?
 
 CreateFunctionStmt
-    = (CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ RETURNS _ TABLE _ "(" _ TableFuncColumnList _ ")" _ CreatefuncOptList)
-    / (CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ RETURNS _ FuncReturn _ CreatefuncOptList)
-    / (CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ CreatefuncOptList)
-    / (CREATE _ OptOrReplace _ PROCEDURE _ FuncName _ FuncArgsWithDefaults _ CreatefuncOptList)
+    = CreateFunctionStmtOption1
+    / CreateFunctionStmtOption2
+    / CreateFunctionStmtOption3
+    / CreateFunctionStmtOption4
+
+CreateFunctionStmtOption1
+    = CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ RETURNS _ FuncReturn _ CreatefuncOptList
+
+CreateFunctionStmtOption2
+    = CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ RETURNS _ TABLE _ "(" _ TableFuncColumnList _ ")" _ CreatefuncOptList
+
+CreateFunctionStmtOption3
+    = CREATE _ OptOrReplace _ FUNCTION _ FuncName _ FuncArgsWithDefaults _ CreatefuncOptList
+
+CreateFunctionStmtOption4
+    = CREATE _ OptOrReplace _ PROCEDURE _ FuncName _ FuncArgsWithDefaults _ CreatefuncOptList
 
 OptOrReplace
     = (OR _ REPLACE)?
 
 FuncArgs
-    = ("(" _ FuncArgsList _ ")")
-    / ("(" _ ")")
+    = FuncArgsOption1
+    / FuncArgsOption2
+
+FuncArgsOption1
+    = "(" _ FuncArgsList _ ")"
+
+FuncArgsOption2
+    = "(" _ ")"
 
 FuncArgsList
     = FuncArg (_ "," _ FuncArg)*
@@ -1634,30 +2927,54 @@ FunctionWithArgtypesList
     = FunctionWithArgtypes (_ "," _ FunctionWithArgtypes)*
 
 FunctionWithArgtypes
-    = (FuncName _ FuncArgs)
-    / (ColId _ Indirection)
+    = FunctionWithArgtypesOption1
     / TypeFuncNameKeyword
     / ColId
+    / FunctionWithArgtypesOption4
+
+FunctionWithArgtypesOption1
+    = FuncName _ FuncArgs
+
+FunctionWithArgtypesOption4
+    = ColId _ Indirection
 
 FuncArgsWithDefaults
-    = ("(" _ FuncArgsWithDefaultsList _ ")")
-    / ("(" _ ")")
+    = FuncArgsWithDefaultsOption1
+    / FuncArgsWithDefaultsOption2
+
+FuncArgsWithDefaultsOption1
+    = "(" _ FuncArgsWithDefaultsList _ ")"
+
+FuncArgsWithDefaultsOption2
+    = "(" _ ")"
 
 FuncArgsWithDefaultsList
     = FuncArgWithDefault (_ "," _ FuncArgWithDefault)*
 
 FuncArg
-    = (ArgClass _ ParamName _ FuncType)
-    / (ParamName _ ArgClass _ FuncType)
-    / (ParamName _ FuncType)
-    / (ArgClass _ FuncType)
+    = FuncArgOption1
+    / FuncArgOption2
+    / FuncArgOption3
+    / FuncArgOption4
     / FuncType
 
+FuncArgOption1
+    = ArgClass _ ParamName _ FuncType
+
+FuncArgOption2
+    = ParamName _ ArgClass _ FuncType
+
+FuncArgOption3
+    = ParamName _ FuncType
+
+FuncArgOption4
+    = ArgClass _ FuncType
+
 ArgClass
-    = (IN _ OUT)
-    / IN
+    = IN
     / OUT
     / INOUT
+    / (IN _ OUT)
     / VARIADIC
 
 ParamName
@@ -1667,23 +2984,47 @@ FuncReturn
     = FuncType
 
 FuncType
-    = (SETOF _ TypeFunctionName _ Attrs _ "%" _ TYPE)
-    / (TypeFunctionName _ Attrs _ "%" _ TYPE)
-    / Typename
+    = Typename
+    / FuncTypeOption2
+    / FuncTypeOption3
+
+FuncTypeOption2
+    = TypeFunctionName _ Attrs _ "%" _ TYPE
+
+FuncTypeOption3
+    = SETOF _ TypeFunctionName _ Attrs _ "%" _ TYPE
 
 FuncArgWithDefault
-    = (FuncArg _ DEFAULT _ AExpr)
-    / (FuncArg _ "=" _ AExpr)
-    / FuncArg
+    = FuncArg
+    / FuncArgWithDefaultOption2
+    / FuncArgWithDefaultOption3
+
+FuncArgWithDefaultOption2
+    = FuncArg _ DEFAULT _ AExpr
+
+FuncArgWithDefaultOption3
+    = FuncArg _ "=" _ AExpr
 
 AggrArg
     = FuncArg
 
 AggrArgs
-    = ("(" _ AggrArgsList _ ORDER _ BY _ AggrArgsList _ ")")
-    / ("(" _ ORDER _ BY _ AggrArgsList _ ")")
-    / ("(" _ "*" _ ")")
-    / ("(" _ AggrArgsList _ ")")
+    = AggrArgsOption1
+    / AggrArgsOption2
+    / AggrArgsOption3
+    / AggrArgsOption4
+
+AggrArgsOption1
+    = "(" _ "*" _ ")"
+
+AggrArgsOption2
+    = "(" _ AggrArgsList _ ")"
+
+AggrArgsOption3
+    = "(" _ ORDER _ BY _ AggrArgsList _ ")"
+
+AggrArgsOption4
+    = "(" _ AggrArgsList _ ORDER _ BY _ AggrArgsList _ ")"
 
 AggrArgsList
     = AggrArg (_ "," _ AggrArg)*
@@ -1698,33 +3039,72 @@ CreatefuncOptList
     = CreatefuncOptItem (_ CreatefuncOptItem)*
 
 CommonFuncOptItem
-    = (RETURNS _ NULL _ ON _ NULL _ INPUT)
-    / (CALLED _ ON _ NULL _ INPUT)
-    / (EXTERNAL _ SECURITY _ DEFINER)
-    / (EXTERNAL _ SECURITY _ INVOKER)
-    / (ROWS _ NumericOnly)
-    / (COST _ NumericOnly)
-    / (NOT _ LEAKPROOF)
-    / (SECURITY _ INVOKER)
-    / (SECURITY _ DEFINER)
-    / (PARALLEL _ ColId)
-    / LEAKPROOF
-    / STABLE
-    / IMMUTABLE
+    = CommonFuncOptItemOption1
+    / CommonFuncOptItemOption2
     / STRICT
-    / FunctionSetResetClause
+    / IMMUTABLE
+    / STABLE
     / VOLATILE
+    / CommonFuncOptItemOption7
+    / CommonFuncOptItemOption8
+    / CommonFuncOptItemOption9
+    / CommonFuncOptItemOption10
+    / LEAKPROOF
+    / CommonFuncOptItemOption12
+    / CommonFuncOptItemOption13
+    / CommonFuncOptItemOption14
+    / FunctionSetResetClause
+    / CommonFuncOptItemOption16
+
+CommonFuncOptItemOption1
+    = CALLED _ ON _ NULL _ INPUT
+
+CommonFuncOptItemOption2
+    = RETURNS _ NULL _ ON _ NULL _ INPUT
+
+CommonFuncOptItemOption7
+    = EXTERNAL _ SECURITY _ DEFINER
+
+CommonFuncOptItemOption8
+    = EXTERNAL _ SECURITY _ INVOKER
+
+CommonFuncOptItemOption9
+    = SECURITY _ DEFINER
+
+CommonFuncOptItemOption10
+    = SECURITY _ INVOKER
+
+CommonFuncOptItemOption12
+    = NOT _ LEAKPROOF
+
+CommonFuncOptItemOption13
+    = COST _ NumericOnly
+
+CommonFuncOptItemOption14
+    = ROWS _ NumericOnly
+
+CommonFuncOptItemOption16
+    = PARALLEL _ ColId
 
 CreatefuncOptItem
-    = (AS _ FuncAs)
-    / (LANGUAGE _ NonReservedWordOrSconst)
-    / (TRANSFORM _ TransformTypeList)
+    = CreatefuncOptItemOption1
+    / CreatefuncOptItemOption2
+    / CreatefuncOptItemOption3
     / WINDOW
     / CommonFuncOptItem
 
+CreatefuncOptItemOption1
+    = AS _ FuncAs
+
+CreatefuncOptItemOption2
+    = LANGUAGE _ NonReservedWordOrSconst
+
+CreatefuncOptItemOption3
+    = TRANSFORM _ TransformTypeList
+
 FuncAs
-    = (Sconst _ "," _ Sconst)
-    / Sconst
+    = Sconst
+    / (Sconst _ "," _ Sconst)
 
 TransformTypeList
     = FOR _ TYPE _ Typename (_ "," _ FOR _ TYPE _ Typename)*
@@ -1739,9 +3119,18 @@ TableFuncColumnList
     = TableFuncColumn (_ "," _ TableFuncColumn)*
 
 AlterFunctionStmt
-    = (ALTER _ FUNCTION _ FunctionWithArgtypes _ AlterfuncOptList _ OptRestrict)
-    / (ALTER _ PROCEDURE _ FunctionWithArgtypes _ AlterfuncOptList _ OptRestrict)
-    / (ALTER _ ROUTINE _ FunctionWithArgtypes _ AlterfuncOptList _ OptRestrict)
+    = AlterFunctionStmtOption1
+    / AlterFunctionStmtOption2
+    / AlterFunctionStmtOption3
+
+AlterFunctionStmtOption1
+    = ALTER _ FUNCTION _ FunctionWithArgtypes _ AlterfuncOptList _ OptRestrict
+
+AlterFunctionStmtOption2
+    = ALTER _ PROCEDURE _ FunctionWithArgtypes _ AlterfuncOptList _ OptRestrict
+
+AlterFunctionStmtOption3
+    = ALTER _ ROUTINE _ FunctionWithArgtypes _ AlterfuncOptList _ OptRestrict
 
 AlterfuncOptList
     = CommonFuncOptItem (_ CommonFuncOptItem)*
@@ -1750,26 +3139,68 @@ OptRestrict
     = RESTRICT?
 
 RemoveFuncStmt
-    = (DROP _ FUNCTION _ IF _ EXISTS _ FunctionWithArgtypesList _ OptDropBehavior)
-    / (DROP _ PROCEDURE _ IF _ EXISTS _ FunctionWithArgtypesList _ OptDropBehavior)
-    / (DROP _ ROUTINE _ IF _ EXISTS _ FunctionWithArgtypesList _ OptDropBehavior)
-    / (DROP _ FUNCTION _ FunctionWithArgtypesList _ OptDropBehavior)
-    / (DROP _ PROCEDURE _ FunctionWithArgtypesList _ OptDropBehavior)
-    / (DROP _ ROUTINE _ FunctionWithArgtypesList _ OptDropBehavior)
+    = RemoveFuncStmtOption1
+    / RemoveFuncStmtOption2
+    / RemoveFuncStmtOption3
+    / RemoveFuncStmtOption4
+    / RemoveFuncStmtOption5
+    / RemoveFuncStmtOption6
+
+RemoveFuncStmtOption1
+    = DROP _ FUNCTION _ FunctionWithArgtypesList _ OptDropBehavior
+
+RemoveFuncStmtOption2
+    = DROP _ FUNCTION _ IF _ EXISTS _ FunctionWithArgtypesList _ OptDropBehavior
+
+RemoveFuncStmtOption3
+    = DROP _ PROCEDURE _ FunctionWithArgtypesList _ OptDropBehavior
+
+RemoveFuncStmtOption4
+    = DROP _ PROCEDURE _ IF _ EXISTS _ FunctionWithArgtypesList _ OptDropBehavior
+
+RemoveFuncStmtOption5
+    = DROP _ ROUTINE _ FunctionWithArgtypesList _ OptDropBehavior
+
+RemoveFuncStmtOption6
+    = DROP _ ROUTINE _ IF _ EXISTS _ FunctionWithArgtypesList _ OptDropBehavior
 
 RemoveAggrStmt
-    = (DROP _ AGGREGATE _ IF _ EXISTS _ AggregateWithArgtypesList _ OptDropBehavior)
-    / (DROP _ AGGREGATE _ AggregateWithArgtypesList _ OptDropBehavior)
+    = RemoveAggrStmtOption1
+    / RemoveAggrStmtOption2
+
+RemoveAggrStmtOption1
+    = DROP _ AGGREGATE _ AggregateWithArgtypesList _ OptDropBehavior
+
+RemoveAggrStmtOption2
+    = DROP _ AGGREGATE _ IF _ EXISTS _ AggregateWithArgtypesList _ OptDropBehavior
 
 RemoveOperStmt
-    = (DROP _ OPERATOR _ IF _ EXISTS _ OperatorWithArgtypesList _ OptDropBehavior)
-    / (DROP _ OPERATOR _ OperatorWithArgtypesList _ OptDropBehavior)
+    = RemoveOperStmtOption1
+    / RemoveOperStmtOption2
+
+RemoveOperStmtOption1
+    = DROP _ OPERATOR _ OperatorWithArgtypesList _ OptDropBehavior
+
+RemoveOperStmtOption2
+    = DROP _ OPERATOR _ IF _ EXISTS _ OperatorWithArgtypesList _ OptDropBehavior
 
 OperArgtypes
-    = ("(" _ Typename _ "," _ Typename _ ")")
-    / ("(" _ NONE _ "," _ Typename _ ")")
-    / ("(" _ Typename _ "," _ NONE _ ")")
-    / ("(" _ Typename _ ")")
+    = OperArgtypesOption1
+    / OperArgtypesOption2
+    / OperArgtypesOption3
+    / OperArgtypesOption4
+
+OperArgtypesOption1
+    = "(" _ Typename _ ")"
+
+OperArgtypesOption2
+    = "(" _ Typename _ "," _ Typename _ ")"
+
+OperArgtypesOption3
+    = "(" _ NONE _ "," _ Typename _ ")"
+
+OperArgtypesOption4
+    = "(" _ Typename _ "," _ NONE _ ")"
 
 AnyOperator
     = (ColId _ "." _)* AllOp
@@ -1787,13 +3218,25 @@ DostmtOptList
     = DostmtOptItem (_ DostmtOptItem)*
 
 DostmtOptItem
-    = (LANGUAGE _ NonReservedWordOrSconst)
-    / Sconst
+    = Sconst
+    / DostmtOptItemOption2
+
+DostmtOptItemOption2
+    = LANGUAGE _ NonReservedWordOrSconst
 
 CreateCastStmt
-    = (CREATE _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ WITH _ FUNCTION _ FunctionWithArgtypes _ CastContext)
-    / (CREATE _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ WITHOUT _ FUNCTION _ CastContext)
-    / (CREATE _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ WITH _ INOUT _ CastContext)
+    = CreateCastStmtOption1
+    / CreateCastStmtOption2
+    / CreateCastStmtOption3
+
+CreateCastStmtOption1
+    = CREATE _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ WITH _ FUNCTION _ FunctionWithArgtypes _ CastContext
+
+CreateCastStmtOption2
+    = CREATE _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ WITHOUT _ FUNCTION _ CastContext
+
+CreateCastStmtOption3
+    = CREATE _ CAST _ "(" _ Typename _ AS _ Typename _ ")" _ WITH _ INOUT _ CastContext
 
 CastContext
     = ((AS _ IMPLICIT)
@@ -1809,19 +3252,43 @@ CreateTransformStmt
     = (CREATE _ OptOrReplace _ TRANSFORM _ FOR _ Typename _ LANGUAGE _ Name _ "(" _ TransformElementList _ ")")
 
 TransformElementList
-    = (FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes _ "," _ TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
-    / (TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes _ "," _ FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
-    / (FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
-    / (TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes)
+    = TransformElementListOption1
+    / TransformElementListOption2
+    / TransformElementListOption3
+    / TransformElementListOption4
+
+TransformElementListOption1
+    = FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes _ "," _ TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes
+
+TransformElementListOption2
+    = TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes _ "," _ FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes
+
+TransformElementListOption3
+    = FROM _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes
+
+TransformElementListOption4
+    = TO _ SQL _ WITH _ FUNCTION _ FunctionWithArgtypes
 
 DropTransformStmt
     = (DROP _ TRANSFORM _ OptIfExists _ FOR _ Typename _ LANGUAGE _ Name _ OptDropBehavior)
 
 ReindexStmt
-    = (REINDEX _ "(" _ ReindexOptionList _ ")" _ ReindexTargetType _ QualifiedName)
-    / (REINDEX _ "(" _ ReindexOptionList _ ")" _ ReindexTargetMultitable _ Name)
-    / (REINDEX _ ReindexTargetType _ QualifiedName)
-    / (REINDEX _ ReindexTargetMultitable _ Name)
+    = ReindexStmtOption1
+    / ReindexStmtOption2
+    / ReindexStmtOption3
+    / ReindexStmtOption4
+
+ReindexStmtOption1
+    = REINDEX _ ReindexTargetType _ QualifiedName
+
+ReindexStmtOption2
+    = REINDEX _ ReindexTargetMultitable _ Name
+
+ReindexStmtOption3
+    = REINDEX _ "(" _ ReindexOptionList _ ")" _ ReindexTargetType _ QualifiedName
+
+ReindexStmtOption4
+    = REINDEX _ "(" _ ReindexOptionList _ ")" _ ReindexTargetMultitable _ Name
 
 ReindexTargetType
     = INDEX
@@ -1839,63 +3306,228 @@ ReindexOptionElem
     = VERBOSE
 
 AlterTblSpcStmt
-    = (ALTER _ TABLESPACE _ Name _ SET _ Reloptions)
-    / (ALTER _ TABLESPACE _ Name _ RESET _ Reloptions)
+    = AlterTblSpcStmtOption1
+    / AlterTblSpcStmtOption2
+
+AlterTblSpcStmtOption1
+    = ALTER _ TABLESPACE _ Name _ SET _ Reloptions
+
+AlterTblSpcStmtOption2
+    = ALTER _ TABLESPACE _ Name _ RESET _ Reloptions
 
 RenameStmt
-    = (ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name)
-    / (ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ RENAME _ OptColumn _ Name _ TO _ Name)
-    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ CONSTRAINT _ Name _ TO _ Name)
-    / (ALTER _ POLICY _ IF _ EXISTS _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name)
-    / (ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ RENAME _ OptColumn _ Name _ TO _ Name)
-    / (ALTER _ FOREIGN _ TABLE _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name)
-    / (ALTER _ TYPE _ AnyName _ RENAME _ ATTRIBUTE _ Name _ TO _ Name _ OptDropBehavior)
-    / (ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ TO _ Name)
-    / (ALTER _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ RENAME _ TO _ Name)
-    / (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ RENAME _ TO _ Name)
-    / (ALTER _ POLICY _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ TRIGGER _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ RENAME _ TO _ Name)
-    / (ALTER _ TABLE _ RelationExpr _ RENAME _ CONSTRAINT _ Name _ TO _ Name)
-    / (ALTER _ DOMAIN _ AnyName _ RENAME _ CONSTRAINT _ Name _ TO _ Name)
-    / (ALTER _ TEXT _ SEARCH _ PARSER _ AnyName _ RENAME _ TO _ Name)
-    / (ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ RENAME _ TO _ Name)
-    / (ALTER _ TEXT _ SEARCH _ TEMPLATE _ AnyName _ RENAME _ TO _ Name)
-    / (ALTER _ TABLE _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name)
-    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ TO _ Name)
-    / (ALTER _ INDEX _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ RENAME _ TO _ Name)
-    / (ALTER _ VIEW _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ RULE _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ OptProcedural _ LANGUAGE _ Name _ RENAME _ TO _ Name)
-    / (ALTER _ EVENT _ TRIGGER _ Name _ RENAME _ TO _ Name)
-    / (ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ FOREIGN _ TABLE _ RelationExpr _ RENAME _ TO _ Name)
-    / (ALTER _ STATISTICS _ AnyName _ RENAME _ TO _ Name)
-    / (ALTER _ TABLE _ RelationExpr _ RENAME _ TO _ Name)
-    / (ALTER _ SERVER _ Name _ RENAME _ TO _ Name)
-    / (ALTER _ SCHEMA _ Name _ RENAME _ TO _ Name)
-    / (ALTER _ ROUTINE _ FunctionWithArgtypes _ RENAME _ TO _ Name)
-    / (ALTER _ PUBLICATION _ Name _ RENAME _ TO _ Name)
-    / (ALTER _ PROCEDURE _ FunctionWithArgtypes _ RENAME _ TO _ Name)
-    / (ALTER _ AGGREGATE _ AggregateWithArgtypes _ RENAME _ TO _ Name)
-    / (ALTER _ SUBSCRIPTION _ Name _ RENAME _ TO _ Name)
-    / (ALTER _ SEQUENCE _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ GROUP _ RoleId _ RENAME _ TO _ RoleId)
-    / (ALTER _ INDEX _ QualifiedName _ RENAME _ TO _ Name)
-    / (ALTER _ ROLE _ RoleId _ RENAME _ TO _ RoleId)
-    / (ALTER _ USER _ RoleId _ RENAME _ TO _ RoleId)
-    / (ALTER _ TABLESPACE _ Name _ RENAME _ TO _ Name)
-    / (ALTER _ FUNCTION _ FunctionWithArgtypes _ RENAME _ TO _ Name)
-    / (ALTER _ DOMAIN _ AnyName _ RENAME _ TO _ Name)
-    / (ALTER _ DATABASE _ DatabaseName _ RENAME _ TO _ DatabaseName)
-    / (ALTER _ CONVERSION _ AnyName _ RENAME _ TO _ Name)
-    / (ALTER _ COLLATION _ AnyName _ RENAME _ TO _ Name)
-    / (ALTER _ TYPE _ AnyName _ RENAME _ TO _ Name)
-    / (ALTER _ VIEW _ QualifiedName _ RENAME _ TO _ Name)
+    = RenameStmtOption1
+    / RenameStmtOption2
+    / RenameStmtOption3
+    / RenameStmtOption4
+    / RenameStmtOption5
+    / RenameStmtOption6
+    / RenameStmtOption7
+    / RenameStmtOption8
+    / RenameStmtOption9
+    / RenameStmtOption10
+    / RenameStmtOption11
+    / RenameStmtOption12
+    / RenameStmtOption13
+    / RenameStmtOption14
+    / RenameStmtOption15
+    / RenameStmtOption16
+    / RenameStmtOption17
+    / RenameStmtOption18
+    / RenameStmtOption19
+    / RenameStmtOption20
+    / RenameStmtOption21
+    / RenameStmtOption22
+    / RenameStmtOption23
+    / RenameStmtOption24
+    / RenameStmtOption25
+    / RenameStmtOption26
+    / RenameStmtOption27
+    / RenameStmtOption28
+    / RenameStmtOption29
+    / RenameStmtOption30
+    / RenameStmtOption31
+    / RenameStmtOption32
+    / RenameStmtOption33
+    / RenameStmtOption34
+    / RenameStmtOption35
+    / RenameStmtOption36
+    / RenameStmtOption37
+    / RenameStmtOption38
+    / RenameStmtOption39
+    / RenameStmtOption40
+    / RenameStmtOption41
+    / RenameStmtOption42
+    / RenameStmtOption43
+    / RenameStmtOption44
+    / RenameStmtOption45
+    / RenameStmtOption46
+    / RenameStmtOption47
+    / RenameStmtOption48
+    / RenameStmtOption49
+    / RenameStmtOption50
+    / RenameStmtOption51
+    / RenameStmtOption52
+    / RenameStmtOption53
+
+RenameStmtOption1
+    = ALTER _ AGGREGATE _ AggregateWithArgtypes _ RENAME _ TO _ Name
+
+RenameStmtOption2
+    = ALTER _ COLLATION _ AnyName _ RENAME _ TO _ Name
+
+RenameStmtOption3
+    = ALTER _ CONVERSION _ AnyName _ RENAME _ TO _ Name
+
+RenameStmtOption4
+    = ALTER _ DATABASE _ DatabaseName _ RENAME _ TO _ DatabaseName
+
+RenameStmtOption5
+    = ALTER _ DOMAIN _ AnyName _ RENAME _ TO _ Name
+
+RenameStmtOption6
+    = ALTER _ DOMAIN _ AnyName _ RENAME _ CONSTRAINT _ Name _ TO _ Name
+
+RenameStmtOption7
+    = ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ RENAME _ TO _ Name
+
+RenameStmtOption8
+    = ALTER _ FUNCTION _ FunctionWithArgtypes _ RENAME _ TO _ Name
+
+RenameStmtOption9
+    = ALTER _ GROUP _ RoleId _ RENAME _ TO _ RoleId
+
+RenameStmtOption10
+    = ALTER _ OptProcedural _ LANGUAGE _ Name _ RENAME _ TO _ Name
+
+RenameStmtOption11
+    = ALTER _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ RENAME _ TO _ Name
+
+RenameStmtOption12
+    = ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ RENAME _ TO _ Name
+
+RenameStmtOption13
+    = ALTER _ POLICY _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption14
+    = ALTER _ POLICY _ IF _ EXISTS _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption15
+    = ALTER _ PROCEDURE _ FunctionWithArgtypes _ RENAME _ TO _ Name
+
+RenameStmtOption16
+    = ALTER _ PUBLICATION _ Name _ RENAME _ TO _ Name
+
+RenameStmtOption17
+    = ALTER _ ROUTINE _ FunctionWithArgtypes _ RENAME _ TO _ Name
+
+RenameStmtOption18
+    = ALTER _ SCHEMA _ Name _ RENAME _ TO _ Name
+
+RenameStmtOption19
+    = ALTER _ SERVER _ Name _ RENAME _ TO _ Name
+
+RenameStmtOption20
+    = ALTER _ SUBSCRIPTION _ Name _ RENAME _ TO _ Name
+
+RenameStmtOption21
+    = ALTER _ TABLE _ RelationExpr _ RENAME _ TO _ Name
+
+RenameStmtOption22
+    = ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ TO _ Name
+
+RenameStmtOption23
+    = ALTER _ SEQUENCE _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption24
+    = ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption25
+    = ALTER _ VIEW _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption26
+    = ALTER _ VIEW _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption27
+    = ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption28
+    = ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption29
+    = ALTER _ INDEX _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption30
+    = ALTER _ INDEX _ IF _ EXISTS _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption31
+    = ALTER _ FOREIGN _ TABLE _ RelationExpr _ RENAME _ TO _ Name
+
+RenameStmtOption32
+    = ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ TO _ Name
+
+RenameStmtOption33
+    = ALTER _ TABLE _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name
+
+RenameStmtOption34
+    = ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name
+
+RenameStmtOption35
+    = ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ RENAME _ OptColumn _ Name _ TO _ Name
+
+RenameStmtOption36
+    = ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ RENAME _ OptColumn _ Name _ TO _ Name
+
+RenameStmtOption37
+    = ALTER _ TABLE _ RelationExpr _ RENAME _ CONSTRAINT _ Name _ TO _ Name
+
+RenameStmtOption38
+    = ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ CONSTRAINT _ Name _ TO _ Name
+
+RenameStmtOption39
+    = ALTER _ FOREIGN _ TABLE _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name
+
+RenameStmtOption40
+    = ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ RENAME _ OptColumn _ Name _ TO _ Name
+
+RenameStmtOption41
+    = ALTER _ RULE _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption42
+    = ALTER _ TRIGGER _ Name _ ON _ QualifiedName _ RENAME _ TO _ Name
+
+RenameStmtOption43
+    = ALTER _ EVENT _ TRIGGER _ Name _ RENAME _ TO _ Name
+
+RenameStmtOption44
+    = ALTER _ ROLE _ RoleId _ RENAME _ TO _ RoleId
+
+RenameStmtOption45
+    = ALTER _ USER _ RoleId _ RENAME _ TO _ RoleId
+
+RenameStmtOption46
+    = ALTER _ TABLESPACE _ Name _ RENAME _ TO _ Name
+
+RenameStmtOption47
+    = ALTER _ STATISTICS _ AnyName _ RENAME _ TO _ Name
+
+RenameStmtOption48
+    = ALTER _ TEXT _ SEARCH _ PARSER _ AnyName _ RENAME _ TO _ Name
+
+RenameStmtOption49
+    = ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ RENAME _ TO _ Name
+
+RenameStmtOption50
+    = ALTER _ TEXT _ SEARCH _ TEMPLATE _ AnyName _ RENAME _ TO _ Name
+
+RenameStmtOption51
+    = ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ RENAME _ TO _ Name
+
+RenameStmtOption52
+    = ALTER _ TYPE _ AnyName _ RENAME _ TO _ Name
+
+RenameStmtOption53
+    = ALTER _ TYPE _ AnyName _ RENAME _ ATTRIBUTE _ Name _ TO _ Name _ OptDropBehavior
 
 OptColumn
     = COLUMN?
@@ -1904,41 +3536,140 @@ OptSetData
     = (SET _ DATA)?
 
 AlterObjectDependsStmt
-    = (ALTER _ TRIGGER _ Name _ ON _ QualifiedName _ DEPENDS _ ON _ EXTENSION _ Name)
-    / (ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ DEPENDS _ ON _ EXTENSION _ Name)
-    / (ALTER _ FUNCTION _ FunctionWithArgtypes _ DEPENDS _ ON _ EXTENSION _ Name)
-    / (ALTER _ PROCEDURE _ FunctionWithArgtypes _ DEPENDS _ ON _ EXTENSION _ Name)
-    / (ALTER _ ROUTINE _ FunctionWithArgtypes _ DEPENDS _ ON _ EXTENSION _ Name)
-    / (ALTER _ INDEX _ QualifiedName _ DEPENDS _ ON _ EXTENSION _ Name)
+    = AlterObjectDependsStmtOption1
+    / AlterObjectDependsStmtOption2
+    / AlterObjectDependsStmtOption3
+    / AlterObjectDependsStmtOption4
+    / AlterObjectDependsStmtOption5
+    / AlterObjectDependsStmtOption6
+
+AlterObjectDependsStmtOption1
+    = ALTER _ FUNCTION _ FunctionWithArgtypes _ DEPENDS _ ON _ EXTENSION _ Name
+
+AlterObjectDependsStmtOption2
+    = ALTER _ PROCEDURE _ FunctionWithArgtypes _ DEPENDS _ ON _ EXTENSION _ Name
+
+AlterObjectDependsStmtOption3
+    = ALTER _ ROUTINE _ FunctionWithArgtypes _ DEPENDS _ ON _ EXTENSION _ Name
+
+AlterObjectDependsStmtOption4
+    = ALTER _ TRIGGER _ Name _ ON _ QualifiedName _ DEPENDS _ ON _ EXTENSION _ Name
+
+AlterObjectDependsStmtOption5
+    = ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ DEPENDS _ ON _ EXTENSION _ Name
+
+AlterObjectDependsStmtOption6
+    = ALTER _ INDEX _ QualifiedName _ DEPENDS _ ON _ EXTENSION _ Name
 
 AlterObjectSchemaStmt
-    = (ALTER _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ SET _ SCHEMA _ Name)
-    / (ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ SET _ SCHEMA _ Name)
-    / (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ SET _ SCHEMA _ Name)
-    / (ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ SET _ SCHEMA _ Name)
-    / (ALTER _ TEXT _ SEARCH _ PARSER _ AnyName _ SET _ SCHEMA _ Name)
-    / (ALTER _ VIEW _ IF _ EXISTS _ QualifiedName _ SET _ SCHEMA _ Name)
-    / (ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ SET _ SCHEMA _ Name)
-    / (ALTER _ TEXT _ SEARCH _ TEMPLATE _ AnyName _ SET _ SCHEMA _ Name)
-    / (ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ SET _ SCHEMA _ Name)
-    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ SET _ SCHEMA _ Name)
-    / (ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ SET _ SCHEMA _ Name)
-    / (ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ SET _ SCHEMA _ Name)
-    / (ALTER _ FOREIGN _ TABLE _ RelationExpr _ SET _ SCHEMA _ Name)
-    / (ALTER _ AGGREGATE _ AggregateWithArgtypes _ SET _ SCHEMA _ Name)
-    / (ALTER _ STATISTICS _ AnyName _ SET _ SCHEMA _ Name)
-    / (ALTER _ TABLE _ RelationExpr _ SET _ SCHEMA _ Name)
-    / (ALTER _ ROUTINE _ FunctionWithArgtypes _ SET _ SCHEMA _ Name)
-    / (ALTER _ PROCEDURE _ FunctionWithArgtypes _ SET _ SCHEMA _ Name)
-    / (ALTER _ SEQUENCE _ QualifiedName _ SET _ SCHEMA _ Name)
-    / (ALTER _ OPERATOR _ OperatorWithArgtypes _ SET _ SCHEMA _ Name)
-    / (ALTER _ VIEW _ QualifiedName _ SET _ SCHEMA _ Name)
-    / (ALTER _ FUNCTION _ FunctionWithArgtypes _ SET _ SCHEMA _ Name)
-    / (ALTER _ EXTENSION _ Name _ SET _ SCHEMA _ Name)
-    / (ALTER _ DOMAIN _ AnyName _ SET _ SCHEMA _ Name)
-    / (ALTER _ CONVERSION _ AnyName _ SET _ SCHEMA _ Name)
-    / (ALTER _ COLLATION _ AnyName _ SET _ SCHEMA _ Name)
-    / (ALTER _ TYPE _ AnyName _ SET _ SCHEMA _ Name)
+    = AlterObjectSchemaStmtOption1
+    / AlterObjectSchemaStmtOption2
+    / AlterObjectSchemaStmtOption3
+    / AlterObjectSchemaStmtOption4
+    / AlterObjectSchemaStmtOption5
+    / AlterObjectSchemaStmtOption6
+    / AlterObjectSchemaStmtOption7
+    / AlterObjectSchemaStmtOption8
+    / AlterObjectSchemaStmtOption9
+    / AlterObjectSchemaStmtOption10
+    / AlterObjectSchemaStmtOption11
+    / AlterObjectSchemaStmtOption12
+    / AlterObjectSchemaStmtOption13
+    / AlterObjectSchemaStmtOption14
+    / AlterObjectSchemaStmtOption15
+    / AlterObjectSchemaStmtOption16
+    / AlterObjectSchemaStmtOption17
+    / AlterObjectSchemaStmtOption18
+    / AlterObjectSchemaStmtOption19
+    / AlterObjectSchemaStmtOption20
+    / AlterObjectSchemaStmtOption21
+    / AlterObjectSchemaStmtOption22
+    / AlterObjectSchemaStmtOption23
+    / AlterObjectSchemaStmtOption24
+    / AlterObjectSchemaStmtOption25
+    / AlterObjectSchemaStmtOption26
+    / AlterObjectSchemaStmtOption27
+
+AlterObjectSchemaStmtOption1
+    = ALTER _ AGGREGATE _ AggregateWithArgtypes _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption2
+    = ALTER _ COLLATION _ AnyName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption3
+    = ALTER _ CONVERSION _ AnyName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption4
+    = ALTER _ DOMAIN _ AnyName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption5
+    = ALTER _ EXTENSION _ Name _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption6
+    = ALTER _ FUNCTION _ FunctionWithArgtypes _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption7
+    = ALTER _ OPERATOR _ OperatorWithArgtypes _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption8
+    = ALTER _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption9
+    = ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption10
+    = ALTER _ PROCEDURE _ FunctionWithArgtypes _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption11
+    = ALTER _ ROUTINE _ FunctionWithArgtypes _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption12
+    = ALTER _ TABLE _ RelationExpr _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption13
+    = ALTER _ TABLE _ IF _ EXISTS _ RelationExpr _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption14
+    = ALTER _ STATISTICS _ AnyName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption15
+    = ALTER _ TEXT _ SEARCH _ PARSER _ AnyName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption16
+    = ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption17
+    = ALTER _ TEXT _ SEARCH _ TEMPLATE _ AnyName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption18
+    = ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption19
+    = ALTER _ SEQUENCE _ QualifiedName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption20
+    = ALTER _ SEQUENCE _ IF _ EXISTS _ QualifiedName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption21
+    = ALTER _ VIEW _ QualifiedName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption22
+    = ALTER _ VIEW _ IF _ EXISTS _ QualifiedName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption23
+    = ALTER _ MATERIALIZED _ VIEW _ QualifiedName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption24
+    = ALTER _ MATERIALIZED _ VIEW _ IF _ EXISTS _ QualifiedName _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption25
+    = ALTER _ FOREIGN _ TABLE _ RelationExpr _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption26
+    = ALTER _ FOREIGN _ TABLE _ IF _ EXISTS _ RelationExpr _ SET _ SCHEMA _ Name
+
+AlterObjectSchemaStmtOption27
+    = ALTER _ TYPE _ AnyName _ SET _ SCHEMA _ Name
 
 AlterOperatorStmt
     = (ALTER _ OPERATOR _ OperatorWithArgtypes _ SET _ "(" _ OperatorDefList _ ")")
@@ -1947,8 +3678,14 @@ OperatorDefList
     = OperatorDefElem (_ "," _ OperatorDefElem)*
 
 OperatorDefElem
-    = (ColLabel _ "=" _ NONE)
-    / (ColLabel _ "=" _ OperatorDefArg)
+    = OperatorDefElemOption1
+    / OperatorDefElemOption2
+
+OperatorDefElemOption1
+    = ColLabel _ "=" _ NONE
+
+OperatorDefElemOption2
+    = ColLabel _ "=" _ OperatorDefArg
 
 OperatorDefArg
     = FuncType
@@ -1958,30 +3695,102 @@ OperatorDefArg
     / Sconst
 
 AlterOwnerStmt
-    = (ALTER _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ EVENT _ TRIGGER _ Name _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ OptProcedural _ LANGUAGE _ Name _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ LARGE _ OBJECT _ NumericOnly _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ AGGREGATE _ AggregateWithArgtypes _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ OPERATOR _ OperatorWithArgtypes _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ FUNCTION _ FunctionWithArgtypes _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ PROCEDURE _ FunctionWithArgtypes _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ ROUTINE _ FunctionWithArgtypes _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ SCHEMA _ Name _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ TYPE _ AnyName _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ TABLESPACE _ Name _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ STATISTICS _ AnyName _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ DOMAIN _ AnyName _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ DATABASE _ DatabaseName _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ CONVERSION _ AnyName _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ SERVER _ Name _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ COLLATION _ AnyName _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ PUBLICATION _ Name _ OWNER _ TO _ RoleSpec)
-    / (ALTER _ SUBSCRIPTION _ Name _ OWNER _ TO _ RoleSpec)
+    = AlterOwnerStmtOption1
+    / AlterOwnerStmtOption2
+    / AlterOwnerStmtOption3
+    / AlterOwnerStmtOption4
+    / AlterOwnerStmtOption5
+    / AlterOwnerStmtOption6
+    / AlterOwnerStmtOption7
+    / AlterOwnerStmtOption8
+    / AlterOwnerStmtOption9
+    / AlterOwnerStmtOption10
+    / AlterOwnerStmtOption11
+    / AlterOwnerStmtOption12
+    / AlterOwnerStmtOption13
+    / AlterOwnerStmtOption14
+    / AlterOwnerStmtOption15
+    / AlterOwnerStmtOption16
+    / AlterOwnerStmtOption17
+    / AlterOwnerStmtOption18
+    / AlterOwnerStmtOption19
+    / AlterOwnerStmtOption20
+    / AlterOwnerStmtOption21
+    / AlterOwnerStmtOption22
+    / AlterOwnerStmtOption23
+    / AlterOwnerStmtOption24
+
+AlterOwnerStmtOption1
+    = ALTER _ AGGREGATE _ AggregateWithArgtypes _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption2
+    = ALTER _ COLLATION _ AnyName _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption3
+    = ALTER _ CONVERSION _ AnyName _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption4
+    = ALTER _ DATABASE _ DatabaseName _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption5
+    = ALTER _ DOMAIN _ AnyName _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption6
+    = ALTER _ FUNCTION _ FunctionWithArgtypes _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption7
+    = ALTER _ OptProcedural _ LANGUAGE _ Name _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption8
+    = ALTER _ LARGE _ OBJECT _ NumericOnly _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption9
+    = ALTER _ OPERATOR _ OperatorWithArgtypes _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption10
+    = ALTER _ OPERATOR _ CLASS _ AnyName _ USING _ AccessMethod _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption11
+    = ALTER _ OPERATOR _ FAMILY _ AnyName _ USING _ AccessMethod _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption12
+    = ALTER _ PROCEDURE _ FunctionWithArgtypes _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption13
+    = ALTER _ ROUTINE _ FunctionWithArgtypes _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption14
+    = ALTER _ SCHEMA _ Name _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption15
+    = ALTER _ TYPE _ AnyName _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption16
+    = ALTER _ TABLESPACE _ Name _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption17
+    = ALTER _ STATISTICS _ AnyName _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption18
+    = ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption19
+    = ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption20
+    = ALTER _ FOREIGN _ DATA _ WRAPPER _ Name _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption21
+    = ALTER _ SERVER _ Name _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption22
+    = ALTER _ EVENT _ TRIGGER _ Name _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption23
+    = ALTER _ PUBLICATION _ Name _ OWNER _ TO _ RoleSpec
+
+AlterOwnerStmtOption24
+    = ALTER _ SUBSCRIPTION _ Name _ OWNER _ TO _ RoleSpec
 
 CreatePublicationStmt
     = (CREATE _ PUBLICATION _ Name _ OptPublicationForTables _ OptDefinition)
@@ -1990,14 +3799,32 @@ OptPublicationForTables
     = PublicationForTables?
 
 PublicationForTables
-    = (FOR _ TABLE _ RelationExprList)
-    / (FOR _ ALL _ TABLES)
+    = PublicationForTablesOption1
+    / PublicationForTablesOption2
+
+PublicationForTablesOption1
+    = FOR _ TABLE _ RelationExprList
+
+PublicationForTablesOption2
+    = FOR _ ALL _ TABLES
 
 AlterPublicationStmt
-    = (ALTER _ PUBLICATION _ Name _ ADD _ TABLE _ RelationExprList)
-    / (ALTER _ PUBLICATION _ Name _ SET _ TABLE _ RelationExprList)
-    / (ALTER _ PUBLICATION _ Name _ DROP _ TABLE _ RelationExprList)
-    / (ALTER _ PUBLICATION _ Name _ SET _ Definition)
+    = AlterPublicationStmtOption1
+    / AlterPublicationStmtOption2
+    / AlterPublicationStmtOption3
+    / AlterPublicationStmtOption4
+
+AlterPublicationStmtOption1
+    = ALTER _ PUBLICATION _ Name _ SET _ Definition
+
+AlterPublicationStmtOption2
+    = ALTER _ PUBLICATION _ Name _ ADD _ TABLE _ RelationExprList
+
+AlterPublicationStmtOption3
+    = ALTER _ PUBLICATION _ Name _ SET _ TABLE _ RelationExprList
+
+AlterPublicationStmtOption4
+    = ALTER _ PUBLICATION _ Name _ DROP _ TABLE _ RelationExprList
 
 CreateSubscriptionStmt
     = (CREATE _ SUBSCRIPTION _ Name _ CONNECTION _ Sconst _ PUBLICATION _ PublicationNameList _ OptDefinition)
@@ -2009,24 +3836,51 @@ PublicationNameItem
     = ColLabel
 
 AlterSubscriptionStmt
-    = (ALTER _ SUBSCRIPTION _ Name _ SET _ PUBLICATION _ PublicationNameList _ OptDefinition)
-    / (ALTER _ SUBSCRIPTION _ Name _ REFRESH _ PUBLICATION _ OptDefinition)
-    / (ALTER _ SUBSCRIPTION _ Name _ SET _ Definition)
-    / (ALTER _ SUBSCRIPTION _ Name _ CONNECTION _ Sconst)
-    / (ALTER _ SUBSCRIPTION _ Name _ ENABLE)
-    / (ALTER _ SUBSCRIPTION _ Name _ DISABLE)
+    = AlterSubscriptionStmtOption1
+    / AlterSubscriptionStmtOption2
+    / AlterSubscriptionStmtOption3
+    / AlterSubscriptionStmtOption4
+    / AlterSubscriptionStmtOption5
+    / AlterSubscriptionStmtOption6
+
+AlterSubscriptionStmtOption1
+    = ALTER _ SUBSCRIPTION _ Name _ SET _ Definition
+
+AlterSubscriptionStmtOption2
+    = ALTER _ SUBSCRIPTION _ Name _ CONNECTION _ Sconst
+
+AlterSubscriptionStmtOption3
+    = ALTER _ SUBSCRIPTION _ Name _ REFRESH _ PUBLICATION _ OptDefinition
+
+AlterSubscriptionStmtOption4
+    = ALTER _ SUBSCRIPTION _ Name _ SET _ PUBLICATION _ PublicationNameList _ OptDefinition
+
+AlterSubscriptionStmtOption5
+    = ALTER _ SUBSCRIPTION _ Name _ ENABLE
+
+AlterSubscriptionStmtOption6
+    = ALTER _ SUBSCRIPTION _ Name _ DISABLE
 
 DropSubscriptionStmt
-    = (DROP _ SUBSCRIPTION _ IF _ EXISTS _ Name _ OptDropBehavior)
-    / (DROP _ SUBSCRIPTION _ Name _ OptDropBehavior)
+    = DropSubscriptionStmtOption1
+    / DropSubscriptionStmtOption2
+
+DropSubscriptionStmtOption1
+    = DROP _ SUBSCRIPTION _ Name _ OptDropBehavior
+
+DropSubscriptionStmtOption2
+    = DROP _ SUBSCRIPTION _ IF _ EXISTS _ Name _ OptDropBehavior
 
 RuleStmt
     = (CREATE _ OptOrReplace _ RULE _ Name _ AS _ ON _ Event _ TO _ QualifiedName _ WhereClause _ DO _ OptInstead _ RuleActionList)
 
 RuleActionList
-    = ("(" _ RuleActionMulti _ ")")
-    / NOTHING
+    = NOTHING
     / RuleActionStmt
+    / RuleActionListOption3
+
+RuleActionListOption3
+    = "(" _ RuleActionMulti _ ")"
 
 RuleActionMulti
     = RuleActionStmtOrEmpty (_ ";" _ RuleActionStmtOrEmpty)*
@@ -2061,35 +3915,95 @@ ListenStmt
     = (LISTEN _ ColId)
 
 UnlistenStmt
-    = (UNLISTEN _ ColId)
-    / (UNLISTEN _ "*")
+    = UnlistenStmtOption1
+    / UnlistenStmtOption2
+
+UnlistenStmtOption1
+    = UNLISTEN _ ColId
+
+UnlistenStmtOption2
+    = UNLISTEN _ "*"
 
 TransactionStmt
-    = (ROLLBACK _ OptTransaction _ TO _ SAVEPOINT _ ColId)
-    / (ROLLBACK _ OptTransaction _ TO _ ColId)
-    / (BEGIN _ OptTransaction _ TransactionModeListOrEmpty)
-    / (START _ TRANSACTION _ TransactionModeListOrEmpty)
-    / (COMMIT _ PREPARED _ Sconst)
-    / (PREPARE _ TRANSACTION _ Sconst)
-    / (RELEASE _ SAVEPOINT _ ColId)
-    / (ROLLBACK _ PREPARED _ Sconst)
-    / (RELEASE _ ColId)
-    / (SAVEPOINT _ ColId)
-    / (ROLLBACK _ OptTransaction)
-    / (END _ OptTransaction)
-    / (COMMIT _ OptTransaction)
-    / (ABORT _ OptTransaction)
+    = TransactionStmtOption1
+    / TransactionStmtOption2
+    / TransactionStmtOption3
+    / TransactionStmtOption4
+    / TransactionStmtOption5
+    / TransactionStmtOption6
+    / TransactionStmtOption7
+    / TransactionStmtOption8
+    / TransactionStmtOption9
+    / TransactionStmtOption10
+    / TransactionStmtOption11
+    / TransactionStmtOption12
+    / TransactionStmtOption13
+    / TransactionStmtOption14
+
+TransactionStmtOption1
+    = ABORT _ OptTransaction
+
+TransactionStmtOption2
+    = BEGIN _ OptTransaction _ TransactionModeListOrEmpty
+
+TransactionStmtOption3
+    = START _ TRANSACTION _ TransactionModeListOrEmpty
+
+TransactionStmtOption4
+    = COMMIT _ OptTransaction
+
+TransactionStmtOption5
+    = END _ OptTransaction
+
+TransactionStmtOption6
+    = ROLLBACK _ OptTransaction
+
+TransactionStmtOption7
+    = SAVEPOINT _ ColId
+
+TransactionStmtOption8
+    = RELEASE _ SAVEPOINT _ ColId
+
+TransactionStmtOption9
+    = RELEASE _ ColId
+
+TransactionStmtOption10
+    = ROLLBACK _ OptTransaction _ TO _ SAVEPOINT _ ColId
+
+TransactionStmtOption11
+    = ROLLBACK _ OptTransaction _ TO _ ColId
+
+TransactionStmtOption12
+    = PREPARE _ TRANSACTION _ Sconst
+
+TransactionStmtOption13
+    = COMMIT _ PREPARED _ Sconst
+
+TransactionStmtOption14
+    = ROLLBACK _ PREPARED _ Sconst
 
 OptTransaction
     = (WORK
     / TRANSACTION)?
 
 TransactionModeItem
-    = (ISOLATION _ LEVEL _ IsoLevel)
-    / (READ _ ONLY)
-    / (READ _ WRITE)
-    / (NOT _ DEFERRABLE)
+    = TransactionModeItemOption1
+    / TransactionModeItemOption2
+    / TransactionModeItemOption3
     / DEFERRABLE
+    / TransactionModeItemOption5
+
+TransactionModeItemOption1
+    = ISOLATION _ LEVEL _ IsoLevel
+
+TransactionModeItemOption2
+    = READ _ ONLY
+
+TransactionModeItemOption3
+    = READ _ WRITE
+
+TransactionModeItemOption5
+    = NOT _ DEFERRABLE
 
 TransactionModeList
     = TransactionModeItem ((_ "," _ TransactionModeItem) / (_ TransactionModeItem))*
@@ -2098,15 +4012,27 @@ TransactionModeListOrEmpty
     = TransactionModeList?
 
 ViewStmt
-    = (CREATE _ OR _ REPLACE _ OptTemp _ RECURSIVE _ VIEW _ QualifiedName _ "(" _ ColumnList _ ")" _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
-    / (CREATE _ OptTemp _ RECURSIVE _ VIEW _ QualifiedName _ "(" _ ColumnList _ ")" _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
-    / (CREATE _ OR _ REPLACE _ OptTemp _ VIEW _ QualifiedName _ OptColumnList _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
-    / (CREATE _ OptTemp _ VIEW _ QualifiedName _ OptColumnList _ OptReloptions _ AS _ SelectStmt _ OptCheckOption)
+    = ViewStmtOption1
+    / ViewStmtOption2
+    / ViewStmtOption3
+    / ViewStmtOption4
+
+ViewStmtOption1
+    = CREATE _ OptTemp _ VIEW _ QualifiedName _ OptColumnList _ OptReloptions _ AS _ SelectStmt _ OptCheckOption
+
+ViewStmtOption2
+    = CREATE _ OR _ REPLACE _ OptTemp _ VIEW _ QualifiedName _ OptColumnList _ OptReloptions _ AS _ SelectStmt _ OptCheckOption
+
+ViewStmtOption3
+    = CREATE _ OptTemp _ RECURSIVE _ VIEW _ QualifiedName _ "(" _ ColumnList _ ")" _ OptReloptions _ AS _ SelectStmt _ OptCheckOption
+
+ViewStmtOption4
+    = CREATE _ OR _ REPLACE _ OptTemp _ RECURSIVE _ VIEW _ QualifiedName _ "(" _ ColumnList _ ")" _ OptReloptions _ AS _ SelectStmt _ OptCheckOption
 
 OptCheckOption
-    = ((WITH _ CASCADED _ CHECK _ OPTION)
-    / (WITH _ LOCAL _ CHECK _ OPTION)
-    / (WITH _ CHECK _ OPTION))?
+    = ((WITH _ CHECK _ OPTION)
+    / (WITH _ CASCADED _ CHECK _ OPTION)
+    / (WITH _ LOCAL _ CHECK _ OPTION))?
 
 LoadStmt
     = (LOAD _ FileName)
@@ -2121,13 +4047,22 @@ CreatedbOptItems
     = CreatedbOptItem (_ CreatedbOptItem)*
 
 CreatedbOptItem
-    = (CreatedbOptName _ OptEqual _ SignedIconst)
-    / (CreatedbOptName _ OptEqual _ OptBooleanOrString)
-    / (CreatedbOptName _ OptEqual _ DEFAULT)
+    = CreatedbOptItemOption1
+    / CreatedbOptItemOption2
+    / CreatedbOptItemOption3
+
+CreatedbOptItemOption1
+    = CreatedbOptName _ OptEqual _ SignedIconst
+
+CreatedbOptItemOption2
+    = CreatedbOptName _ OptEqual _ OptBooleanOrString
+
+CreatedbOptItemOption3
+    = CreatedbOptName _ OptEqual _ DEFAULT
 
 CreatedbOptName
-    = (CONNECTION _ LIMIT)
-    / IDENT
+    = IDENT
+    / (CONNECTION _ LIMIT)
     / ENCODING
     / LOCATION
     / OWNER
@@ -2138,35 +4073,62 @@ OptEqual
     = "="?
 
 AlterDatabaseStmt
-    = (ALTER _ DATABASE _ DatabaseName _ SET _ TABLESPACE _ Name)
-    / (ALTER _ DATABASE _ DatabaseName _ WITH _ CreatedbOptList)
+    = (ALTER _ DATABASE _ DatabaseName _ WITH _ CreatedbOptList)
     / (ALTER _ DATABASE _ DatabaseName _ CreatedbOptList)
+    / (ALTER _ DATABASE _ DatabaseName _ SET _ TABLESPACE _ Name)
 
 AlterDatabaseSetStmt
     = (ALTER _ DATABASE _ DatabaseName _ SetResetClause)
 
 DropdbStmt
-    = (DROP _ DATABASE _ IF _ EXISTS _ DatabaseName)
-    / (DROP _ DATABASE _ DatabaseName)
+    = (DROP _ DATABASE _ DatabaseName)
+    / (DROP _ DATABASE _ IF _ EXISTS _ DatabaseName)
 
 AlterCollationStmt
     = (ALTER _ COLLATION _ AnyName _ REFRESH _ VERSION)
 
 AlterSystemStmt
-    = (ALTER _ SYSTEM _ SET _ GenericSet)
-    / (ALTER _ SYSTEM _ RESET _ GenericReset)
+    = AlterSystemStmtOption1
+    / AlterSystemStmtOption2
+
+AlterSystemStmtOption1
+    = ALTER _ SYSTEM _ SET _ GenericSet
+
+AlterSystemStmtOption2
+    = ALTER _ SYSTEM _ RESET _ GenericReset
 
 CreateDomainStmt
     = (CREATE _ DOMAIN _ AnyName _ OptAs _ Typename _ ColQualList)
 
 AlterDomainStmt
-    = (ALTER _ DOMAIN _ AnyName _ DROP _ CONSTRAINT _ IF _ EXISTS _ Name _ OptDropBehavior)
-    / (ALTER _ DOMAIN _ AnyName _ DROP _ CONSTRAINT _ Name _ OptDropBehavior)
-    / (ALTER _ DOMAIN _ AnyName _ VALIDATE _ CONSTRAINT _ Name)
-    / (ALTER _ DOMAIN _ AnyName _ DROP _ NOT _ NULL)
-    / (ALTER _ DOMAIN _ AnyName _ SET _ NOT _ NULL)
-    / (ALTER _ DOMAIN _ AnyName _ ADD _ TableConstraint)
-    / (ALTER _ DOMAIN _ AnyName _ AlterColumnDefault)
+    = AlterDomainStmtOption1
+    / AlterDomainStmtOption2
+    / AlterDomainStmtOption3
+    / AlterDomainStmtOption4
+    / AlterDomainStmtOption5
+    / AlterDomainStmtOption6
+    / AlterDomainStmtOption7
+
+AlterDomainStmtOption1
+    = ALTER _ DOMAIN _ AnyName _ AlterColumnDefault
+
+AlterDomainStmtOption2
+    = ALTER _ DOMAIN _ AnyName _ DROP _ NOT _ NULL
+
+AlterDomainStmtOption3
+    = ALTER _ DOMAIN _ AnyName _ SET _ NOT _ NULL
+
+AlterDomainStmtOption4
+    = ALTER _ DOMAIN _ AnyName _ ADD _ TableConstraint
+
+AlterDomainStmtOption5
+    = ALTER _ DOMAIN _ AnyName _ DROP _ CONSTRAINT _ Name _ OptDropBehavior
+
+AlterDomainStmtOption6
+    = ALTER _ DOMAIN _ AnyName _ DROP _ CONSTRAINT _ IF _ EXISTS _ Name _ OptDropBehavior
+
+AlterDomainStmtOption7
+    = ALTER _ DOMAIN _ AnyName _ VALIDATE _ CONSTRAINT _ Name
 
 OptAs
     = AS?
@@ -2175,12 +4137,30 @@ AlterTSDictionaryStmt
     = (ALTER _ TEXT _ SEARCH _ DICTIONARY _ AnyName _ Definition)
 
 AlterTSConfigurationStmt
-    = (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ALTER _ MAPPING _ FOR _ NameList _ REPLACE _ AnyName _ AnyWith _ AnyName)
-    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ADD _ MAPPING _ FOR _ NameList _ AnyWith _ AnyNameList)
-    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ALTER _ MAPPING _ FOR _ NameList _ AnyWith _ AnyNameList)
-    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ALTER _ MAPPING _ REPLACE _ AnyName _ AnyWith _ AnyName)
-    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ DROP _ MAPPING _ IF _ EXISTS _ FOR _ NameList)
-    / (ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ DROP _ MAPPING _ FOR _ NameList)
+    = AlterTSConfigurationStmtOption1
+    / AlterTSConfigurationStmtOption2
+    / AlterTSConfigurationStmtOption3
+    / AlterTSConfigurationStmtOption4
+    / AlterTSConfigurationStmtOption5
+    / AlterTSConfigurationStmtOption6
+
+AlterTSConfigurationStmtOption1
+    = ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ADD _ MAPPING _ FOR _ NameList _ AnyWith _ AnyNameList
+
+AlterTSConfigurationStmtOption2
+    = ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ALTER _ MAPPING _ FOR _ NameList _ AnyWith _ AnyNameList
+
+AlterTSConfigurationStmtOption3
+    = ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ALTER _ MAPPING _ REPLACE _ AnyName _ AnyWith _ AnyName
+
+AlterTSConfigurationStmtOption4
+    = ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ ALTER _ MAPPING _ FOR _ NameList _ REPLACE _ AnyName _ AnyWith _ AnyName
+
+AlterTSConfigurationStmtOption5
+    = ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ DROP _ MAPPING _ FOR _ NameList
+
+AlterTSConfigurationStmtOption6
+    = ALTER _ TEXT _ SEARCH _ CONFIGURATION _ AnyName _ DROP _ MAPPING _ IF _ EXISTS _ FOR _ NameList
 
 AnyWith
     = WITH
@@ -2189,16 +4169,31 @@ CreateConversionStmt
     = (CREATE _ OptDefault _ CONVERSION _ AnyName _ FOR _ Sconst _ TO _ Sconst _ FROM _ AnyName)
 
 ClusterStmt
-    = (CLUSTER _ OptVerbose _ IndexName _ ON _ QualifiedName)
-    / (CLUSTER _ OptVerbose _ QualifiedName _ ClusterIndexSpecification)
-    / (CLUSTER _ OptVerbose)
+    = ClusterStmtOption1
+    / ClusterStmtOption2
+    / ClusterStmtOption3
+
+ClusterStmtOption1
+    = CLUSTER _ OptVerbose _ QualifiedName _ ClusterIndexSpecification
+
+ClusterStmtOption2
+    = CLUSTER _ OptVerbose
+
+ClusterStmtOption3
+    = CLUSTER _ OptVerbose _ IndexName _ ON _ QualifiedName
 
 ClusterIndexSpecification
     = (USING _ IndexName)?
 
 VacuumStmt
-    = (VACUUM _ OptFull _ OptFreeze _ OptVerbose _ OptAnalyze _ OptVacuumRelationList)
-    / (VACUUM _ "(" _ VacuumOptionList _ ")" _ OptVacuumRelationList)
+    = VacuumStmtOption1
+    / VacuumStmtOption2
+
+VacuumStmtOption1
+    = VACUUM _ OptFull _ OptFreeze _ OptVerbose _ OptAnalyze _ OptVacuumRelationList
+
+VacuumStmtOption2
+    = VACUUM _ "(" _ VacuumOptionList _ ")" _ OptVacuumRelationList
 
 VacuumOptionList
     = VacuumOptionElem (_ "," _ VacuumOptionElem)*
@@ -2211,8 +4206,14 @@ VacuumOptionElem
     / IDENT
 
 AnalyzeStmt
-    = (AnalyzeKeyword _ "(" _ AnalyzeOptionList _ ")" _ OptVacuumRelationList)
-    / (AnalyzeKeyword _ OptVerbose _ OptVacuumRelationList)
+    = AnalyzeStmtOption1
+    / AnalyzeStmtOption2
+
+AnalyzeStmtOption1
+    = AnalyzeKeyword _ OptVerbose _ OptVacuumRelationList
+
+AnalyzeStmtOption2
+    = AnalyzeKeyword _ "(" _ AnalyzeOptionList _ ")" _ OptVacuumRelationList
 
 AnalyzeOptionList
     = AnalyzeOptionElem (_ "," _ AnalyzeOptionElem)*
@@ -2249,10 +4250,22 @@ OptVacuumRelationList
     = VacuumRelationList?
 
 ExplainStmt
-    = (EXPLAIN _ "(" _ ExplainOptionList _ ")" _ ExplainableStmt)
-    / (EXPLAIN _ AnalyzeKeyword _ OptVerbose _ ExplainableStmt)
-    / (EXPLAIN _ VERBOSE _ ExplainableStmt)
-    / (EXPLAIN _ ExplainableStmt)
+    = ExplainStmtOption1
+    / ExplainStmtOption2
+    / ExplainStmtOption3
+    / ExplainStmtOption4
+
+ExplainStmtOption1
+    = EXPLAIN _ ExplainableStmt
+
+ExplainStmtOption2
+    = EXPLAIN _ AnalyzeKeyword _ OptVerbose _ ExplainableStmt
+
+ExplainStmtOption3
+    = EXPLAIN _ VERBOSE _ ExplainableStmt
+
+ExplainStmtOption4
+    = EXPLAIN _ "(" _ ExplainOptionList _ ")" _ ExplainableStmt
 
 ExplainableStmt
     = SelectStmt
@@ -2292,31 +4305,52 @@ PreparableStmt
     / DeleteStmt
 
 ExecuteStmt
-    = (CREATE _ OptTemp _ TABLE _ CreateAsTarget _ AS _ EXECUTE _ Name _ ExecuteParamClause _ OptWithData)
-    / (EXECUTE _ Name _ ExecuteParamClause)
+    = ExecuteStmtOption1
+    / ExecuteStmtOption2
+
+ExecuteStmtOption1
+    = EXECUTE _ Name _ ExecuteParamClause
+
+ExecuteStmtOption2
+    = CREATE _ OptTemp _ TABLE _ CreateAsTarget _ AS _ EXECUTE _ Name _ ExecuteParamClause _ OptWithData
 
 ExecuteParamClause
     = ("(" _ ExprList _ ")")?
 
 DeallocateStmt
-    = (DEALLOCATE _ PREPARE _ Name)
-    / (DEALLOCATE _ PREPARE _ ALL)
-    / (DEALLOCATE _ Name)
+    = (DEALLOCATE _ Name)
+    / (DEALLOCATE _ PREPARE _ Name)
     / (DEALLOCATE _ ALL)
+    / (DEALLOCATE _ PREPARE _ ALL)
 
 InsertStmt
     = (OptWithClause _ INSERT _ INTO _ InsertTarget _ InsertRest _ OptOnConflict _ ReturningClause)
 
 InsertTarget
-    = (QualifiedName _ AS _ ColId)
-    / QualifiedName
+    = QualifiedName
+    / InsertTargetOption2
+
+InsertTargetOption2
+    = QualifiedName _ AS _ ColId
 
 InsertRest
-    = ("(" _ InsertColumnList _ ")" _ OVERRIDING _ OverrideKind _ VALUE _ SelectStmt)
-    / (OVERRIDING _ OverrideKind _ VALUE _ SelectStmt)
-    / ("(" _ InsertColumnList _ ")" _ SelectStmt)
-    / (DEFAULT _ VALUES)
-    / SelectStmt
+    = SelectStmt
+    / InsertRestOption2
+    / InsertRestOption3
+    / InsertRestOption4
+    / InsertRestOption5
+
+InsertRestOption2
+    = OVERRIDING _ OverrideKind _ VALUE _ SelectStmt
+
+InsertRestOption3
+    = "(" _ InsertColumnList _ ")" _ SelectStmt
+
+InsertRestOption4
+    = "(" _ InsertColumnList _ ")" _ OVERRIDING _ OverrideKind _ VALUE _ SelectStmt
+
+InsertRestOption5
+    = DEFAULT _ VALUES
 
 OverrideKind
     = USER
@@ -2329,12 +4363,24 @@ InsertColumnItem
     = (ColId _ OptIndirection)
 
 OptOnConflict
-    = ((ON _ CONFLICT _ OptConfExpr _ DO _ UPDATE _ SET _ SetClauseList _ WhereClause)
-    / (ON _ CONFLICT _ OptConfExpr _ DO _ NOTHING))?
+    = (OptOnConflictOption1
+    / OptOnConflictOption2)?
+
+OptOnConflictOption1
+    = ON _ CONFLICT _ OptConfExpr _ DO _ UPDATE _ SET _ SetClauseList _ WhereClause
+
+OptOnConflictOption2
+    = ON _ CONFLICT _ OptConfExpr _ DO _ NOTHING
 
 OptConfExpr
-    = (("(" _ IndexParams _ ")" _ WhereClause)
-    / (ON _ CONSTRAINT _ Name))?
+    = (OptConfExprOption1
+    / OptConfExprOption2)?
+
+OptConfExprOption1
+    = "(" _ IndexParams _ ")" _ WhereClause
+
+OptConfExprOption2
+    = ON _ CONSTRAINT _ Name
 
 ReturningClause
     = (RETURNING _ TargetList)?
@@ -2352,21 +4398,21 @@ OptLock
     = (IN _ LockType _ MODE)?
 
 LockType
-    = (SHARE _ UPDATE _ EXCLUSIVE)
-    / (SHARE _ ROW _ EXCLUSIVE)
-    / (ACCESS _ SHARE)
+    = (ACCESS _ SHARE)
     / (ROW _ SHARE)
     / (ROW _ EXCLUSIVE)
-    / (ACCESS _ EXCLUSIVE)
+    / (SHARE _ UPDATE _ EXCLUSIVE)
     / SHARE
+    / (SHARE _ ROW _ EXCLUSIVE)
     / EXCLUSIVE
+    / (ACCESS _ EXCLUSIVE)
 
 OptNowait
     = NOWAIT?
 
 OptNowaitOrSkip
-    = ((SKIP _ LOCKED)
-    / NOWAIT)?
+    = (NOWAIT
+    / (SKIP _ LOCKED))?
 
 UpdateStmt
     = (OptWithClause _ UPDATE _ RelationExprOptAlias _ SET _ SetClauseList _ FromClause _ WhereOrCurrentClause _ ReturningClause)
@@ -2375,8 +4421,14 @@ SetClauseList
     = SetClause (_ "," _ SetClause)*
 
 SetClause
-    = ("(" _ SetTargetList _ ")" _ "=" _ AExpr)
-    / (SetTarget _ "=" _ AExpr)
+    = SetClauseOption1
+    / SetClauseOption2
+
+SetClauseOption1
+    = SetTarget _ "=" _ AExpr
+
+SetClauseOption2
+    = "(" _ SetTargetList _ ")" _ "=" _ AExpr
 
 SetTarget
     = (ColId _ OptIndirection)
@@ -2405,44 +4457,104 @@ SelectStmt
     / SelectWithParens
 
 SelectWithParens
-    = ("(" _ SelectNoParens _ ")")
-    / ("(" _ SelectWithParens _ ")")
+    = SelectWithParensOption1
+    / SelectWithParensOption2
+
+SelectWithParensOption1
+    = "(" _ SelectNoParens _ ")"
+
+SelectWithParensOption2
+    = "(" _ SelectWithParens _ ")"
 
 SelectNoParens
-    = (WithClause _ SelectClause _ OptSortClause _ ForLockingClause _ OptSelectLimit)
-    / (WithClause _ SelectClause _ OptSortClause _ SelectLimit _ OptForLockingClause)
-    / (SelectClause _ OptSortClause _ SelectLimit _ OptForLockingClause)
-    / (SelectClause _ UNION _ AllOrDistinct _ SelectClause)
-    / (SelectClause _ INTERSECT _ AllOrDistinct _ SelectClause)
-    / (SelectClause _ OptSortClause _ ForLockingClause _ OptSelectLimit)
-    / (SelectClause _ EXCEPT _ AllOrDistinct _ SelectClause)
-    / (WithClause _ SelectClause _ SortClause)
-    / (WithClause _ SelectClause)
-    / (SelectClause _ SortClause)
-    / SimpleSelect
+    = SimpleSelect
+    / SelectNoParensOption2
+    / SelectNoParensOption3
+    / SelectNoParensOption4
+    / SelectNoParensOption5
+    / SelectNoParensOption6
+    / SelectNoParensOption7
+    / SelectNoParensOption8
+    / SelectNoParensOption9
+    / SelectNoParensOption10
+    / SelectNoParensOption11
+
+SelectNoParensOption2
+    = SelectClause _ UNION _ AllOrDistinct _ SelectClause
+
+SelectNoParensOption3
+    = SelectClause _ INTERSECT _ AllOrDistinct _ SelectClause
+
+SelectNoParensOption4
+    = SelectClause _ EXCEPT _ AllOrDistinct _ SelectClause
+
+SelectNoParensOption5
+    = SelectClause _ SortClause
+
+SelectNoParensOption6
+    = SelectClause _ OptSortClause _ ForLockingClause _ OptSelectLimit
+
+SelectNoParensOption7
+    = SelectClause _ OptSortClause _ SelectLimit _ OptForLockingClause
+
+SelectNoParensOption8
+    = WithClause _ SelectClause
+
+SelectNoParensOption9
+    = WithClause _ SelectClause _ SortClause
+
+SelectNoParensOption10
+    = WithClause _ SelectClause _ OptSortClause _ ForLockingClause _ OptSelectLimit
+
+SelectNoParensOption11
+    = WithClause _ SelectClause _ OptSortClause _ SelectLimit _ OptForLockingClause
 
 SelectClause
-    = (SelectClause1 _ UNION _ AllOrDistinct _ SelectClause1)
-    / (SelectClause1 _ INTERSECT _ AllOrDistinct _ SelectClause1)
-    / (SelectClause1 _ EXCEPT _ AllOrDistinct _ SelectClause1)
-    / SelectClause1
+    = SelectClauseOption1
+    / SelectClauseOption2
+    / SelectClauseOption3
+    / SelectClauseSelfRefSplit
 
-SelectClause1
+SelectClauseOption1
+    = SelectClauseSelfRefSplit _ UNION _ AllOrDistinct _ SelectClauseSelfRefSplit
+
+SelectClauseOption2
+    = SelectClauseSelfRefSplit _ INTERSECT _ AllOrDistinct _ SelectClauseSelfRefSplit
+
+SelectClauseOption3
+    = SelectClauseSelfRefSplit _ EXCEPT _ AllOrDistinct _ SelectClauseSelfRefSplit
+
+SelectClauseSelfRefSplit
     = SelectWithParens
     / SimpleSelect
 
 SimpleSelect
-    = (SELECT _ OptAllClause _ OptTargetList _ IntoClause _ FromClause _ WhereClause _ GroupClause _ HavingClause _ WindowClause)
-    / (SELECT _ DistinctClause _ TargetList _ IntoClause _ FromClause _ WhereClause _ GroupClause _ HavingClause _ WindowClause)
-    / (TABLE _ RelationExpr)
+    = SimpleSelectOption1
+    / SimpleSelectOption2
     / ValuesClause
+    / SimpleSelectOption4
+
+SimpleSelectOption1
+    = SELECT _ OptAllClause _ OptTargetList _ IntoClause _ FromClause _ WhereClause _ GroupClause _ HavingClause _ WindowClause
+
+SimpleSelectOption2
+    = SELECT _ DistinctClause _ TargetList _ IntoClause _ FromClause _ WhereClause _ GroupClause _ HavingClause _ WindowClause
+
+SimpleSelectOption4
+    = TABLE _ RelationExpr
 
 SelectClausee
     = SelectWithParens
 
 WithClause
-    = (WITH _ RECURSIVE _ CteList)
-    / (WITH _ CteList)
+    = WithClauseOption1
+    / WithClauseOption2
+
+WithClauseOption1
+    = WITH _ CteList
+
+WithClauseOption2
+    = WITH _ RECURSIVE _ CteList
 
 CteList
     = CommonTableExpr (_ "," _ CommonTableExpr)*
@@ -2457,15 +4569,39 @@ IntoClause
     = (INTO _ OptTempTableName)?
 
 OptTempTableName
-    = (LOCAL _ TEMPORARY _ OptTable _ QualifiedName)
-    / (LOCAL _ TEMP _ OptTable _ QualifiedName)
-    / (GLOBAL _ TEMPORARY _ OptTable _ QualifiedName)
-    / (GLOBAL _ TEMP _ OptTable _ QualifiedName)
-    / (TEMPORARY _ OptTable _ QualifiedName)
-    / (TEMP _ OptTable _ QualifiedName)
-    / (UNLOGGED _ OptTable _ QualifiedName)
-    / (TABLE _ QualifiedName)
+    = OptTempTableNameOption1
+    / OptTempTableNameOption2
+    / OptTempTableNameOption3
+    / OptTempTableNameOption4
+    / OptTempTableNameOption5
+    / OptTempTableNameOption6
+    / OptTempTableNameOption7
+    / OptTempTableNameOption8
     / QualifiedName
+
+OptTempTableNameOption1
+    = TEMPORARY _ OptTable _ QualifiedName
+
+OptTempTableNameOption2
+    = TEMP _ OptTable _ QualifiedName
+
+OptTempTableNameOption3
+    = LOCAL _ TEMPORARY _ OptTable _ QualifiedName
+
+OptTempTableNameOption4
+    = LOCAL _ TEMP _ OptTable _ QualifiedName
+
+OptTempTableNameOption5
+    = GLOBAL _ TEMPORARY _ OptTable _ QualifiedName
+
+OptTempTableNameOption6
+    = GLOBAL _ TEMP _ OptTable _ QualifiedName
+
+OptTempTableNameOption7
+    = UNLOGGED _ OptTable _ QualifiedName
+
+OptTempTableNameOption8
+    = TABLE _ QualifiedName
 
 OptTable
     = TABLE?
@@ -2475,8 +4611,11 @@ AllOrDistinct
     / DISTINCT)?
 
 DistinctClause
-    = (DISTINCT _ ON _ "(" _ ExprList _ ")")
-    / DISTINCT
+    = DISTINCT
+    / DistinctClauseOption2
+
+DistinctClauseOption2
+    = DISTINCT _ ON _ "(" _ ExprList _ ")"
 
 OptAllClause
     = ALL?
@@ -2491,26 +4630,53 @@ SortbyList
     = Sortby (_ "," _ Sortby)*
 
 Sortby
-    = (AExpr _ USING _ QualAllOp _ OptNullsOrder)
-    / (AExpr _ OptAscDesc _ OptNullsOrder)
+    = SortbyOption1
+    / SortbyOption2
+
+SortbyOption1
+    = AExpr _ USING _ QualAllOp _ OptNullsOrder
+
+SortbyOption2
+    = AExpr _ OptAscDesc _ OptNullsOrder
 
 SelectLimit
-    = (LimitClause _ OffsetClause)
-    / (OffsetClause _ LimitClause)
+    = SelectLimitOption1
+    / SelectLimitOption2
     / LimitClause
     / OffsetClause
+
+SelectLimitOption1
+    = LimitClause _ OffsetClause
+
+SelectLimitOption2
+    = OffsetClause _ LimitClause
 
 OptSelectLimit
     = SelectLimit?
 
 LimitClause
-    = (FETCH _ FirstOrNext _ OptSelectFetchFirstValue _ RowOrRows _ ONLY)
-    / (LIMIT _ SelectLimitValue _ "," _ SelectOffsetValue)
-    / (LIMIT _ SelectLimitValue)
+    = LimitClauseOption1
+    / LimitClauseOption2
+    / LimitClauseOption3
+
+LimitClauseOption1
+    = LIMIT _ SelectLimitValue
+
+LimitClauseOption2
+    = LIMIT _ SelectLimitValue _ "," _ SelectOffsetValue
+
+LimitClauseOption3
+    = FETCH _ FirstOrNext _ OptSelectFetchFirstValue _ RowOrRows _ ONLY
 
 OffsetClause
-    = (OFFSET _ SelectOffsetValue2 _ RowOrRows)
-    / (OFFSET _ SelectOffsetValue)
+    = OffsetClauseOption1
+    / OffsetClauseOption2
+
+OffsetClauseOption1
+    = OFFSET _ SelectOffsetValue
+
+OffsetClauseOption2
+    = OFFSET _ SelectOffsetValue2 _ RowOrRows
 
 SelectLimitValue
     = AExpr
@@ -2520,8 +4686,11 @@ SelectOffsetValue
     = AExpr
 
 OptSelectFetchFirstValue
-    = (("(" _ AExpr _ ")")
-    / SignedIconst)?
+    = (SignedIconst
+    / OptSelectFetchFirstValueOption2)?
+
+OptSelectFetchFirstValueOption2
+    = "(" _ AExpr _ ")"
 
 SelectOffsetValue2
     = CExpr
@@ -2563,8 +4732,8 @@ HavingClause
     = (HAVING _ AExpr)?
 
 ForLockingClause
-    = (FOR _ READ _ ONLY)
-    / ForLockingItems
+    = ForLockingItems
+    / (FOR _ READ _ ONLY)
 
 OptForLockingClause
     = ForLockingClause?
@@ -2576,10 +4745,10 @@ ForLockingItem
     = (ForLockingStrength _ LockedRelsList _ OptNowaitOrSkip)
 
 ForLockingStrength
-    = (FOR _ NO _ KEY _ UPDATE)
-    / (FOR _ KEY _ SHARE)
-    / (FOR _ UPDATE)
+    = (FOR _ UPDATE)
+    / (FOR _ NO _ KEY _ UPDATE)
     / (FOR _ SHARE)
+    / (FOR _ KEY _ SHARE)
 
 LockedRelsList
     = (OF _ QualifiedNameList)?
@@ -2594,47 +4763,128 @@ FromList
     = TableRef (_ "," _ TableRef)*
 
 TableRef
-    = (TableRef1 _ JoinType _ JOIN _ TableRef1 _ JoinQual)
-    / (TableRef1 _ NATURAL _ JoinType _ JOIN _ TableRef1)
-    / (TableRef1 _ CROSS _ JOIN _ TableRef1)
-    / (TableRef1 _ JOIN _ TableRef1 _ JoinQual)
-    / (TableRef1 _ NATURAL _ JOIN _ TableRef1)
-    / TableRef1
+    = TableRefOption1
+    / TableRefOption2
+    / TableRefOption3
+    / TableRefOption4
+    / TableRefOption5
+    / TableRefSelfRefSplit
 
-TableRef1
-    = ("(" _ JoinedTable _ ")" _ AliasClause)
-    / (RelationExpr _ OptAliasClause _ TablesampleClause)
-    / ("(" _ JoinedTable _ ")")
-    / (LATERAL _ Xmltable _ OptAliasClause)
-    / (LATERAL _ SelectWithParens _ OptAliasClause)
-    / (LATERAL _ FuncTable _ FuncAliasClause)
-    / (RelationExpr _ OptAliasClause)
-    / (Xmltable _ OptAliasClause)
-    / (SelectWithParens _ OptAliasClause)
-    / (FuncTable _ FuncAliasClause)
+TableRefOption1
+    = TableRefSelfRefSplit _ CROSS _ JOIN _ TableRefSelfRefSplit
+
+TableRefOption2
+    = TableRefSelfRefSplit _ JoinType _ JOIN _ TableRefSelfRefSplit _ JoinQual
+
+TableRefOption3
+    = TableRefSelfRefSplit _ JOIN _ TableRefSelfRefSplit _ JoinQual
+
+TableRefOption4
+    = TableRefSelfRefSplit _ NATURAL _ JoinType _ JOIN _ TableRefSelfRefSplit
+
+TableRefOption5
+    = TableRefSelfRefSplit _ NATURAL _ JOIN _ TableRefSelfRefSplit
+
+TableRefSelfRefSplit
+    = TableRefSelfRefSplitOption1
+    / TableRefSelfRefSplitOption2
+    / TableRefSelfRefSplitOption3
+    / TableRefSelfRefSplitOption4
+    / TableRefSelfRefSplitOption5
+    / TableRefSelfRefSplitOption6
+    / TableRefSelfRefSplitOption7
+    / TableRefSelfRefSplitOption8
+    / TableRefSelfRefSplitOption9
+    / TableRefSelfRefSplitOption10
+
+TableRefSelfRefSplitOption1
+    = RelationExpr _ OptAliasClause
+
+TableRefSelfRefSplitOption2
+    = RelationExpr _ OptAliasClause _ TablesampleClause
+
+TableRefSelfRefSplitOption3
+    = FuncTable _ FuncAliasClause
+
+TableRefSelfRefSplitOption4
+    = LATERAL _ FuncTable _ FuncAliasClause
+
+TableRefSelfRefSplitOption5
+    = Xmltable _ OptAliasClause
+
+TableRefSelfRefSplitOption6
+    = LATERAL _ Xmltable _ OptAliasClause
+
+TableRefSelfRefSplitOption7
+    = SelectWithParens _ OptAliasClause
+
+TableRefSelfRefSplitOption8
+    = LATERAL _ SelectWithParens _ OptAliasClause
+
+TableRefSelfRefSplitOption9
+    = "(" _ JoinedTable _ ")"
+
+TableRefSelfRefSplitOption10
+    = "(" _ JoinedTable _ ")" _ AliasClause
 
 JoinedTable
-    = (TableRef _ JoinType _ JOIN _ TableRef _ JoinQual)
-    / (TableRef _ NATURAL _ JoinType _ JOIN _ TableRef)
-    / (TableRef _ CROSS _ JOIN _ TableRef)
-    / (TableRef _ JOIN _ TableRef _ JoinQual)
-    / (TableRef _ NATURAL _ JOIN _ TableRef)
-    / ("(" _ JoinedTable _ ")")
+    = JoinedTableOption1
+    / JoinedTableOption2
+    / JoinedTableOption3
+    / JoinedTableOption4
+    / JoinedTableOption5
+    / JoinedTableOption6
+
+JoinedTableOption1
+    = "(" _ JoinedTable _ ")"
+
+JoinedTableOption2
+    = TableRef _ CROSS _ JOIN _ TableRef
+
+JoinedTableOption3
+    = TableRef _ JoinType _ JOIN _ TableRef _ JoinQual
+
+JoinedTableOption4
+    = TableRef _ JOIN _ TableRef _ JoinQual
+
+JoinedTableOption5
+    = TableRef _ NATURAL _ JoinType _ JOIN _ TableRef
+
+JoinedTableOption6
+    = TableRef _ NATURAL _ JOIN _ TableRef
 
 AliasClause
-    = (AS _ ColId _ "(" _ NameList _ ")")
-    / (ColId _ "(" _ NameList _ ")")
-    / (AS _ ColId)
+    = AliasClauseOption1
+    / AliasClauseOption2
+    / AliasClauseOption3
     / ColId
+
+AliasClauseOption1
+    = AS _ ColId _ "(" _ NameList _ ")"
+
+AliasClauseOption2
+    = AS _ ColId
+
+AliasClauseOption3
+    = ColId _ "(" _ NameList _ ")"
 
 OptAliasClause
     = AliasClause?
 
 FuncAliasClause
-    = ((AS _ ColId _ "(" _ TableFuncElementList _ ")")
-    / (AS _ "(" _ TableFuncElementList _ ")")
-    / (ColId _ "(" _ TableFuncElementList _ ")")
-    / AliasClause)?
+    = (AliasClause
+    / FuncAliasClauseOption2
+    / FuncAliasClauseOption3
+    / FuncAliasClauseOption4)?
+
+FuncAliasClauseOption2
+    = AS _ "(" _ TableFuncElementList _ ")"
+
+FuncAliasClauseOption3
+    = AS _ ColId _ "(" _ TableFuncElementList _ ")"
+
+FuncAliasClauseOption4
+    = ColId _ "(" _ TableFuncElementList _ ")"
 
 JoinType
     = (FULL _ JoinOuter)
@@ -2646,22 +4896,43 @@ JoinOuter
     = OUTER?
 
 JoinQual
-    = (USING _ "(" _ NameList _ ")")
-    / (ON _ AExpr)
+    = JoinQualOption1
+    / JoinQualOption2
+
+JoinQualOption1
+    = USING _ "(" _ NameList _ ")"
+
+JoinQualOption2
+    = ON _ AExpr
 
 RelationExpr
-    = (ONLY _ "(" _ QualifiedName _ ")")
-    / (QualifiedName _ "*")
-    / (ONLY _ QualifiedName)
-    / QualifiedName
+    = QualifiedName
+    / RelationExprOption2
+    / RelationExprOption3
+    / RelationExprOption4
+
+RelationExprOption2
+    = QualifiedName _ "*"
+
+RelationExprOption3
+    = ONLY _ QualifiedName
+
+RelationExprOption4
+    = ONLY _ "(" _ QualifiedName _ ")"
 
 RelationExprList
     = RelationExpr (_ "," _ RelationExpr)*
 
 RelationExprOptAlias
-    = (RelationExpr _ AS _ ColId)
-    / (RelationExpr _ ColId)
-    / RelationExpr
+    = RelationExpr
+    / RelationExprOptAliasOption2
+    / RelationExprOptAliasOption3
+
+RelationExprOptAliasOption2
+    = RelationExpr _ ColId
+
+RelationExprOptAliasOption3
+    = RelationExpr _ AS _ ColId
 
 TablesampleClause
     = (TABLESAMPLE _ FuncName _ "(" _ ExprList _ ")" _ OptRepeatableClause)
@@ -2670,8 +4941,14 @@ OptRepeatableClause
     = (REPEATABLE _ "(" _ AExpr _ ")")?
 
 FuncTable
-    = (ROWS _ FROM _ "(" _ RowsfromList _ ")" _ OptOrdinality)
-    / (FuncExprWindowless _ OptOrdinality)
+    = FuncTableOption1
+    / FuncTableOption2
+
+FuncTableOption1
+    = FuncExprWindowless _ OptOrdinality
+
+FuncTableOption2
+    = ROWS _ FROM _ "(" _ RowsfromList _ ")" _ OptOrdinality
 
 RowsfromItem
     = (FuncExprWindowless _ OptColDefList)
@@ -2689,8 +4966,14 @@ WhereClause
     = (WHERE _ AExpr)?
 
 WhereOrCurrentClause
-    = ((WHERE _ CURRENT _ OF _ CursorName)
-    / (WHERE _ AExpr))?
+    = (WhereOrCurrentClauseOption1
+    / WhereOrCurrentClauseOption2)?
+
+WhereOrCurrentClauseOption1
+    = WHERE _ AExpr
+
+WhereOrCurrentClauseOption2
+    = WHERE _ CURRENT _ OF _ CursorName
 
 OptTableFuncElementList
     = TableFuncElementList?
@@ -2702,53 +4985,107 @@ TableFuncElement
     = (ColId _ Typename _ OptCollateClause)
 
 Xmltable
-    = (XMLTABLE _ "(" _ XMLNAMESPACES _ "(" _ XmlNamespaceList _ ")" _ "," _ CExpr _ XmlexistsArgument _ COLUMNS _ XmltableColumnList _ ")")
-    / (XMLTABLE _ "(" _ CExpr _ XmlexistsArgument _ COLUMNS _ XmltableColumnList _ ")")
+    = XmltableOption1
+    / XmltableOption2
+
+XmltableOption1
+    = XMLTABLE _ "(" _ CExpr _ XmlexistsArgument _ COLUMNS _ XmltableColumnList _ ")"
+
+XmltableOption2
+    = XMLTABLE _ "(" _ XMLNAMESPACES _ "(" _ XmlNamespaceList _ ")" _ "," _ CExpr _ XmlexistsArgument _ COLUMNS _ XmltableColumnList _ ")"
 
 XmltableColumnList
     = XmltableColumnEl (_ "," _ XmltableColumnEl)*
 
 XmltableColumnEl
-    = (ColId _ Typename _ XmltableColumnOptionList)
-    / (ColId _ FOR _ ORDINALITY)
-    / (ColId _ Typename)
+    = XmltableColumnElOption1
+    / XmltableColumnElOption2
+    / XmltableColumnElOption3
+
+XmltableColumnElOption1
+    = ColId _ Typename
+
+XmltableColumnElOption2
+    = ColId _ Typename _ XmltableColumnOptionList
+
+XmltableColumnElOption3
+    = ColId _ FOR _ ORDINALITY
 
 XmltableColumnOptionList
     = XmltableColumnOptionEl (_ XmltableColumnOptionEl)*
 
 XmltableColumnOptionEl
-    = (IDENT _ BExpr)
-    / (DEFAULT _ BExpr)
-    / (NOT _ NULL)
+    = XmltableColumnOptionElOption1
+    / XmltableColumnOptionElOption2
+    / XmltableColumnOptionElOption3
     / NULL
+
+XmltableColumnOptionElOption1
+    = IDENT _ BExpr
+
+XmltableColumnOptionElOption2
+    = DEFAULT _ BExpr
+
+XmltableColumnOptionElOption3
+    = NOT _ NULL
 
 XmlNamespaceList
     = XmlNamespaceEl (_ "," _ XmlNamespaceEl)*
 
 XmlNamespaceEl
-    = (BExpr _ AS _ ColLabel)
-    / (DEFAULT _ BExpr)
+    = XmlNamespaceElOption1
+    / XmlNamespaceElOption2
+
+XmlNamespaceElOption1
+    = BExpr _ AS _ ColLabel
+
+XmlNamespaceElOption2
+    = DEFAULT _ BExpr
 
 Typename
-    = (SETOF _ SimpleTypename _ ARRAY _ "[" _ Iconst _ "]")
-    / (SimpleTypename _ ARRAY _ "[" _ Iconst _ "]")
-    / (SETOF _ SimpleTypename _ OptArrayBounds)
-    / (SETOF _ SimpleTypename _ ARRAY)
-    / (SimpleTypename _ OptArrayBounds)
-    / (SimpleTypename _ ARRAY)
+    = TypenameOption1
+    / TypenameOption2
+    / TypenameOption3
+    / TypenameOption4
+    / TypenameOption5
+    / TypenameOption6
+
+TypenameOption1
+    = SimpleTypename _ OptArrayBounds
+
+TypenameOption2
+    = SETOF _ SimpleTypename _ OptArrayBounds
+
+TypenameOption3
+    = SimpleTypename _ ARRAY _ "[" _ Iconst _ "]"
+
+TypenameOption4
+    = SETOF _ SimpleTypename _ ARRAY _ "[" _ Iconst _ "]"
+
+TypenameOption5
+    = SimpleTypename _ ARRAY
+
+TypenameOption6
+    = SETOF _ SimpleTypename _ ARRAY
 
 OptArrayBounds
-    = ((_ "[" _ Iconst _ "]")
-    / (_ "[" _ "]"))*
+    = ((_ "[" _ "]")
+    / (_ "[" _ Iconst _ "]"))*
 
 SimpleTypename
-    = (ConstInterval _ "(" _ Iconst _ ")")
-    / (ConstInterval _ OptInterval)
+    = GenericType
     / Numeric
     / Bit
     / Character
     / ConstDatetime
-    / GenericType
+    / SimpleTypenameOption6
+    / SimpleTypenameOption7
+
+SimpleTypenameOption6
+    = ConstInterval _ OptInterval
+
+SimpleTypenameOption7
+    = ConstInterval _ "(" _ Iconst _ ")"
 
 ConstTypename
     = Numeric
@@ -2757,24 +5094,45 @@ ConstTypename
     / ConstDatetime
 
 GenericType
-    = (TypeFunctionName _ Attrs _ OptTypeModifiers)
-    / (TypeFunctionName _ OptTypeModifiers)
+    = GenericTypeOption1
+    / GenericTypeOption2
+
+GenericTypeOption1
+    = TypeFunctionName _ OptTypeModifiers
+
+GenericTypeOption2
+    = TypeFunctionName _ Attrs _ OptTypeModifiers
 
 OptTypeModifiers
     = ("(" _ ExprList _ ")")?
 
 Numeric
-    = (DOUBLE _ PRECISION)
-    / (DECIMAL _ OptTypeModifiers)
-    / (DEC _ OptTypeModifiers)
-    / (NUMERIC _ OptTypeModifiers)
-    / (FLOAT _ OptFloat)
-    / REAL
-    / INT
+    = INT
     / INTEGER
     / SMALLINT
     / BIGINT
+    / REAL
+    / NumericOption6
+    / NumericOption7
+    / NumericOption8
+    / NumericOption9
+    / NumericOption10
     / BOOLEAN
+
+NumericOption6
+    = FLOAT _ OptFloat
+
+NumericOption7
+    = DOUBLE _ PRECISION
+
+NumericOption8
+    = DECIMAL _ OptTypeModifiers
+
+NumericOption9
+    = DEC _ OptTypeModifiers
+
+NumericOption10
+    = NUMERIC _ OptTypeModifiers
 
 OptFloat
     = ("(" _ Iconst _ ")")?
@@ -2808,21 +5166,33 @@ CharacterWithoutLength
     = Character1
 
 Character1
-    = (NATIONAL _ CHARACTER _ OptVarying)
-    / (NATIONAL _ CHAR _ OptVarying)
-    / (CHARACTER _ OptVarying)
+    = (CHARACTER _ OptVarying)
     / (CHAR _ OptVarying)
-    / (NCHAR _ OptVarying)
     / VARCHAR
+    / (NATIONAL _ CHARACTER _ OptVarying)
+    / (NATIONAL _ CHAR _ OptVarying)
+    / (NCHAR _ OptVarying)
 
 OptVarying
     = VARYING?
 
 ConstDatetime
-    = (TIMESTAMP _ "(" _ Iconst _ ")" _ OptTimezone)
-    / (TIME _ "(" _ Iconst _ ")" _ OptTimezone)
-    / (TIMESTAMP _ OptTimezone)
-    / (TIME _ OptTimezone)
+    = ConstDatetimeOption1
+    / ConstDatetimeOption2
+    / ConstDatetimeOption3
+    / ConstDatetimeOption4
+
+ConstDatetimeOption1
+    = TIMESTAMP _ "(" _ Iconst _ ")" _ OptTimezone
+
+ConstDatetimeOption2
+    = TIMESTAMP _ OptTimezone
+
+ConstDatetimeOption3
+    = TIME _ "(" _ Iconst _ ")" _ OptTimezone
+
+ConstDatetimeOption4
+    = TIME _ OptTimezone
 
 ConstInterval
     = INTERVAL
@@ -2832,207 +5202,627 @@ OptTimezone
     / (WITHOUT _ TIME _ ZONE))?
 
 OptInterval
-    = ((YEAR _ TO _ MONTH)
-    / (HOUR _ TO _ IntervalSecond)
-    / (HOUR _ TO _ MINUTE)
-    / (DAY _ TO _ IntervalSecond)
-    / (DAY _ TO _ MINUTE)
-    / (DAY _ TO _ HOUR)
-    / (MINUTE _ TO _ IntervalSecond)
-    / IntervalSecond
-    / MINUTE
-    / HOUR
-    / DAY
+    = (YEAR
     / MONTH
-    / YEAR)?
+    / DAY
+    / HOUR
+    / MINUTE
+    / IntervalSecond
+    / OptIntervalOption7
+    / OptIntervalOption8
+    / OptIntervalOption9
+    / OptIntervalOption10
+    / OptIntervalOption11
+    / OptIntervalOption12
+    / OptIntervalOption13)?
+
+OptIntervalOption7
+    = YEAR _ TO _ MONTH
+
+OptIntervalOption8
+    = DAY _ TO _ HOUR
+
+OptIntervalOption9
+    = DAY _ TO _ MINUTE
+
+OptIntervalOption10
+    = DAY _ TO _ IntervalSecond
+
+OptIntervalOption11
+    = HOUR _ TO _ MINUTE
+
+OptIntervalOption12
+    = HOUR _ TO _ IntervalSecond
+
+OptIntervalOption13
+    = MINUTE _ TO _ IntervalSecond
 
 IntervalSecond
-    = (SECOND _ "(" _ Iconst _ ")")
-    / SECOND
+    = SECOND
+    / (SECOND _ "(" _ Iconst _ ")")
 
 AExpr
-    = (AExpr1 _ NOT _ BETWEEN _ SYMMETRIC _ BExpr _ AND _ AExpr1)
-    / (AExpr1 _ IS _ NOT _ OF _ "(" _ TypeList _ ")")
-    / (AExpr1 _ NOT _ BETWEEN _ OptAsymmetric _ BExpr _ AND _ AExpr1)
-    / (AExpr1 _ NOT _ SIMILAR _ TO _ AExpr1 _ ESCAPE _ AExpr1)
-    / (AExpr1 _ IS _ NOT _ DISTINCT _ FROM _ AExpr1)
-    / (AExpr1 _ SIMILAR _ TO _ AExpr1 _ ESCAPE _ AExpr1)
-    / (AExpr1 _ SubqueryOp _ SubType _ "(" _ AExpr1 _ ")")
-    / (AExpr1 _ BETWEEN _ SYMMETRIC _ BExpr _ AND _ AExpr1)
-    / (AExpr1 _ NOT _ ILIKE _ AExpr1 _ ESCAPE _ AExpr1)
-    / (AExpr1 _ BETWEEN _ OptAsymmetric _ BExpr _ AND _ AExpr1)
-    / (AExpr1 _ NOT _ LIKE _ AExpr1 _ ESCAPE _ AExpr1)
-    / (AExpr1 _ IS _ OF _ "(" _ TypeList _ ")")
-    / (AExpr1 _ ILIKE _ AExpr1 _ ESCAPE _ AExpr1)
-    / (AExpr1 _ AT _ TIME _ ZONE _ AExpr1)
-    / (AExpr1 _ LIKE _ AExpr1 _ ESCAPE _ AExpr1)
-    / (AExpr1 _ IS _ DISTINCT _ FROM _ AExpr1)
-    / (AExpr1 _ NOT _ SIMILAR _ TO _ AExpr1)
-    / (AExpr1 _ IS _ NOT _ UNKNOWN)
-    / (AExpr1 _ IS _ NOT _ NULL)
-    / (AExpr1 _ IS _ NOT _ TRUE)
-    / (AExpr1 _ IS _ NOT _ FALSE)
-    / (AExpr1 _ NOT _ IN _ InExpr)
-    / (AExpr1 _ SubqueryOp _ SubType _ SelectWithParens)
-    / (AExpr1 _ SIMILAR _ TO _ AExpr1)
-    / (AExpr1 _ IS _ NOT _ DOCUMENT)
-    / (AExpr1 _ NOT _ ILIKE _ AExpr1)
-    / (AExpr1 _ NOT _ LIKE _ AExpr1)
-    / (AExpr1 _ TYPECAST _ Typename)
-    / (AExpr1 _ LIKE _ AExpr1)
-    / (AExpr1 _ OR _ AExpr1)
-    / (AExpr1 _ AND _ AExpr1)
-    / (AExpr1 _ IS _ NULL)
-    / (AExpr1 _ COLLATE _ AnyName)
-    / (AExpr1 _ IS _ DOCUMENT)
-    / (AExpr1 _ "+" _ AExpr1)
-    / (AExpr1 _ IS _ TRUE)
-    / (AExpr1 _ QualOp _ AExpr1)
-    / (AExpr1 _ IS _ FALSE)
-    / (AExpr1 _ NOTEQUALS _ AExpr1)
-    / (AExpr1 _ IS _ UNKNOWN)
-    / (AExpr1 _ GREATEREQUALS _ AExpr1)
-    / (AExpr1 _ ILIKE _ AExpr1)
-    / (AExpr1 _ LESSEQUALS _ AExpr1)
-    / (AExpr1 _ "=" _ AExpr1)
-    / (AExpr1 _ ">" _ AExpr1)
-    / (AExpr1 _ "<" _ AExpr1)
-    / (AExpr1 _ "^" _ AExpr1)
-    / (AExpr1 _ "%" _ AExpr1)
-    / (AExpr1 _ "/" _ AExpr1)
-    / (AExpr1 _ IN _ InExpr)
-    / (AExpr1 _ "*" _ AExpr1)
-    / (AExpr1 _ "-" _ AExpr1)
-    / (AExpr1 _ NOTNULL)
-    / (AExpr1 _ QualOp)
-    / (AExpr1 _ ISNULL)
-    / AExpr1
+    = AExprOption1
+    / AExprOption2
+    / AExprOption3
+    / AExprOption4
+    / AExprOption5
+    / AExprOption6
+    / AExprOption7
+    / AExprOption8
+    / AExprOption9
+    / AExprOption10
+    / AExprOption11
+    / AExprOption12
+    / AExprOption13
+    / AExprOption14
+    / AExprOption15
+    / AExprOption16
+    / AExprOption17
+    / AExprOption18
+    / AExprOption19
+    / AExprOption20
+    / AExprOption21
+    / AExprOption22
+    / AExprOption23
+    / AExprOption24
+    / AExprOption25
+    / AExprOption26
+    / AExprOption27
+    / AExprOption28
+    / AExprOption29
+    / AExprOption30
+    / AExprOption31
+    / AExprOption32
+    / AExprOption33
+    / AExprOption34
+    / AExprOption35
+    / AExprOption36
+    / AExprOption37
+    / AExprOption38
+    / AExprOption39
+    / AExprOption40
+    / AExprOption41
+    / AExprOption42
+    / AExprOption43
+    / AExprOption44
+    / AExprOption45
+    / AExprOption46
+    / AExprOption47
+    / AExprOption48
+    / AExprOption49
+    / AExprOption50
+    / AExprOption51
+    / AExprOption52
+    / AExprOption53
+    / AExprOption54
+    / AExprOption55
+    / AExprSelfRefSplit
 
-AExpr1
-    = (Row _ OVERLAPS _ Row)
-    / (UNIQUE _ SelectWithParens)
-    / ("+" _ AExpr)
-    / ("-" _ AExpr)
-    / (QualOp _ AExpr)
-    / (NOT _ AExpr)
-    / CExpr
+AExprOption1
+    = AExprSelfRefSplit _ TYPECAST _ Typename
+
+AExprOption2
+    = AExprSelfRefSplit _ COLLATE _ AnyName
+
+AExprOption3
+    = AExprSelfRefSplit _ AT _ TIME _ ZONE _ AExprSelfRefSplit
+
+AExprOption4
+    = AExprSelfRefSplit _ "+" _ AExprSelfRefSplit
+
+AExprOption5
+    = AExprSelfRefSplit _ "-" _ AExprSelfRefSplit
+
+AExprOption6
+    = AExprSelfRefSplit _ "*" _ AExprSelfRefSplit
+
+AExprOption7
+    = AExprSelfRefSplit _ "/" _ AExprSelfRefSplit
+
+AExprOption8
+    = AExprSelfRefSplit _ "%" _ AExprSelfRefSplit
+
+AExprOption9
+    = AExprSelfRefSplit _ "^" _ AExprSelfRefSplit
+
+AExprOption10
+    = AExprSelfRefSplit _ "<" _ AExprSelfRefSplit
+
+AExprOption11
+    = AExprSelfRefSplit _ ">" _ AExprSelfRefSplit
+
+AExprOption12
+    = AExprSelfRefSplit _ "=" _ AExprSelfRefSplit
+
+AExprOption13
+    = AExprSelfRefSplit _ LESSEQUALS _ AExprSelfRefSplit
+
+AExprOption14
+    = AExprSelfRefSplit _ GREATEREQUALS _ AExprSelfRefSplit
+
+AExprOption15
+    = AExprSelfRefSplit _ NOTEQUALS _ AExprSelfRefSplit
+
+AExprOption16
+    = AExprSelfRefSplit _ QualOp _ AExprSelfRefSplit
+
+AExprOption17
+    = AExprSelfRefSplit _ QualOp
+
+AExprOption18
+    = AExprSelfRefSplit _ AND _ AExprSelfRefSplit
+
+AExprOption19
+    = AExprSelfRefSplit _ OR _ AExprSelfRefSplit
+
+AExprOption20
+    = AExprSelfRefSplit _ LIKE _ AExprSelfRefSplit
+
+AExprOption21
+    = AExprSelfRefSplit _ LIKE _ AExprSelfRefSplit _ ESCAPE _ AExprSelfRefSplit
+
+AExprOption22
+    = AExprSelfRefSplit _ NOT _ LIKE _ AExprSelfRefSplit
+
+AExprOption23
+    = AExprSelfRefSplit _ NOT _ LIKE _ AExprSelfRefSplit _ ESCAPE _ AExprSelfRefSplit
+
+AExprOption24
+    = AExprSelfRefSplit _ ILIKE _ AExprSelfRefSplit
+
+AExprOption25
+    = AExprSelfRefSplit _ ILIKE _ AExprSelfRefSplit _ ESCAPE _ AExprSelfRefSplit
+
+AExprOption26
+    = AExprSelfRefSplit _ NOT _ ILIKE _ AExprSelfRefSplit
+
+AExprOption27
+    = AExprSelfRefSplit _ NOT _ ILIKE _ AExprSelfRefSplit _ ESCAPE _ AExprSelfRefSplit
+
+AExprOption28
+    = AExprSelfRefSplit _ SIMILAR _ TO _ AExprSelfRefSplit
+
+AExprOption29
+    = AExprSelfRefSplit _ SIMILAR _ TO _ AExprSelfRefSplit _ ESCAPE _ AExprSelfRefSplit
+
+AExprOption30
+    = AExprSelfRefSplit _ NOT _ SIMILAR _ TO _ AExprSelfRefSplit
+
+AExprOption31
+    = AExprSelfRefSplit _ NOT _ SIMILAR _ TO _ AExprSelfRefSplit _ ESCAPE _ AExprSelfRefSplit
+
+AExprOption32
+    = AExprSelfRefSplit _ IS _ NULL
+
+AExprOption33
+    = AExprSelfRefSplit _ ISNULL
+
+AExprOption34
+    = AExprSelfRefSplit _ IS _ NOT _ NULL
+
+AExprOption35
+    = AExprSelfRefSplit _ NOTNULL
+
+AExprOption36
+    = AExprSelfRefSplit _ IS _ TRUE
+
+AExprOption37
+    = AExprSelfRefSplit _ IS _ NOT _ TRUE
+
+AExprOption38
+    = AExprSelfRefSplit _ IS _ FALSE
+
+AExprOption39
+    = AExprSelfRefSplit _ IS _ NOT _ FALSE
+
+AExprOption40
+    = AExprSelfRefSplit _ IS _ UNKNOWN
+
+AExprOption41
+    = AExprSelfRefSplit _ IS _ NOT _ UNKNOWN
+
+AExprOption42
+    = AExprSelfRefSplit _ IS _ DISTINCT _ FROM _ AExprSelfRefSplit
+
+AExprOption43
+    = AExprSelfRefSplit _ IS _ NOT _ DISTINCT _ FROM _ AExprSelfRefSplit
+
+AExprOption44
+    = AExprSelfRefSplit _ IS _ OF _ "(" _ TypeList _ ")"
+
+AExprOption45
+    = AExprSelfRefSplit _ IS _ NOT _ OF _ "(" _ TypeList _ ")"
+
+AExprOption46
+    = AExprSelfRefSplit _ BETWEEN _ OptAsymmetric _ BExpr _ AND _ AExprSelfRefSplit
+
+AExprOption47
+    = AExprSelfRefSplit _ NOT _ BETWEEN _ OptAsymmetric _ BExpr _ AND _ AExprSelfRefSplit
+
+AExprOption48
+    = AExprSelfRefSplit _ BETWEEN _ SYMMETRIC _ BExpr _ AND _ AExprSelfRefSplit
+
+AExprOption49
+    = AExprSelfRefSplit _ NOT _ BETWEEN _ SYMMETRIC _ BExpr _ AND _ AExprSelfRefSplit
+
+AExprOption50
+    = AExprSelfRefSplit _ IN _ InExpr
+
+AExprOption51
+    = AExprSelfRefSplit _ NOT _ IN _ InExpr
+
+AExprOption52
+    = AExprSelfRefSplit _ SubqueryOp _ SubType _ SelectWithParens
+
+AExprOption53
+    = AExprSelfRefSplit _ SubqueryOp _ SubType _ "(" _ AExprSelfRefSplit _ ")"
+
+AExprOption54
+    = AExprSelfRefSplit _ IS _ DOCUMENT
+
+AExprOption55
+    = AExprSelfRefSplit _ IS _ NOT _ DOCUMENT
+
+AExprSelfRefSplit
+    = CExpr
+    / AExprSelfRefSplitOption2
+    / AExprSelfRefSplitOption3
+    / AExprSelfRefSplitOption4
+    / AExprSelfRefSplitOption5
+    / AExprSelfRefSplitOption6
+    / AExprSelfRefSplitOption7
     / DEFAULT
 
-BExpr
-    = (BExpr1 _ IS _ NOT _ OF _ "(" _ TypeList _ ")")
-    / (BExpr1 _ IS _ OF _ "(" _ TypeList _ ")")
-    / (BExpr1 _ IS _ NOT _ DISTINCT _ FROM _ BExpr1)
-    / (BExpr1 _ IS _ DISTINCT _ FROM _ BExpr1)
-    / (BExpr1 _ IS _ NOT _ DOCUMENT)
-    / (BExpr1 _ TYPECAST _ Typename)
-    / (BExpr1 _ "^" _ BExpr1)
-    / (BExpr1 _ "<" _ BExpr1)
-    / (BExpr1 _ ">" _ BExpr1)
-    / (BExpr1 _ "=" _ BExpr1)
-    / (BExpr1 _ LESSEQUALS _ BExpr1)
-    / (BExpr1 _ GREATEREQUALS _ BExpr1)
-    / (BExpr1 _ NOTEQUALS _ BExpr1)
-    / (BExpr1 _ QualOp _ BExpr1)
-    / (BExpr1 _ "%" _ BExpr1)
-    / (BExpr1 _ "/" _ BExpr1)
-    / (BExpr1 _ "*" _ BExpr1)
-    / (BExpr1 _ "-" _ BExpr1)
-    / (BExpr1 _ "+" _ BExpr1)
-    / (BExpr1 _ IS _ DOCUMENT)
-    / (BExpr1 _ QualOp)
-    / BExpr1
+AExprSelfRefSplitOption2
+    = "+" _ AExpr
 
-BExpr1
-    = ("+" _ BExpr)
-    / ("-" _ BExpr)
-    / (QualOp _ BExpr)
-    / CExpr
+AExprSelfRefSplitOption3
+    = "-" _ AExpr
+
+AExprSelfRefSplitOption4
+    = QualOp _ AExpr
+
+AExprSelfRefSplitOption5
+    = NOT _ AExpr
+
+AExprSelfRefSplitOption6
+    = Row _ OVERLAPS _ Row
+
+AExprSelfRefSplitOption7
+    = UNIQUE _ SelectWithParens
+
+BExpr
+    = BExprOption1
+    / BExprOption2
+    / BExprOption3
+    / BExprOption4
+    / BExprOption5
+    / BExprOption6
+    / BExprOption7
+    / BExprOption8
+    / BExprOption9
+    / BExprOption10
+    / BExprOption11
+    / BExprOption12
+    / BExprOption13
+    / BExprOption14
+    / BExprOption15
+    / BExprOption16
+    / BExprOption17
+    / BExprOption18
+    / BExprOption19
+    / BExprOption20
+    / BExprOption21
+    / BExprSelfRefSplit
+
+BExprOption1
+    = BExprSelfRefSplit _ TYPECAST _ Typename
+
+BExprOption2
+    = BExprSelfRefSplit _ "+" _ BExprSelfRefSplit
+
+BExprOption3
+    = BExprSelfRefSplit _ "-" _ BExprSelfRefSplit
+
+BExprOption4
+    = BExprSelfRefSplit _ "*" _ BExprSelfRefSplit
+
+BExprOption5
+    = BExprSelfRefSplit _ "/" _ BExprSelfRefSplit
+
+BExprOption6
+    = BExprSelfRefSplit _ "%" _ BExprSelfRefSplit
+
+BExprOption7
+    = BExprSelfRefSplit _ "^" _ BExprSelfRefSplit
+
+BExprOption8
+    = BExprSelfRefSplit _ "<" _ BExprSelfRefSplit
+
+BExprOption9
+    = BExprSelfRefSplit _ ">" _ BExprSelfRefSplit
+
+BExprOption10
+    = BExprSelfRefSplit _ "=" _ BExprSelfRefSplit
+
+BExprOption11
+    = BExprSelfRefSplit _ LESSEQUALS _ BExprSelfRefSplit
+
+BExprOption12
+    = BExprSelfRefSplit _ GREATEREQUALS _ BExprSelfRefSplit
+
+BExprOption13
+    = BExprSelfRefSplit _ NOTEQUALS _ BExprSelfRefSplit
+
+BExprOption14
+    = BExprSelfRefSplit _ QualOp _ BExprSelfRefSplit
+
+BExprOption15
+    = BExprSelfRefSplit _ QualOp
+
+BExprOption16
+    = BExprSelfRefSplit _ IS _ DISTINCT _ FROM _ BExprSelfRefSplit
+
+BExprOption17
+    = BExprSelfRefSplit _ IS _ NOT _ DISTINCT _ FROM _ BExprSelfRefSplit
+
+BExprOption18
+    = BExprSelfRefSplit _ IS _ OF _ "(" _ TypeList _ ")"
+
+BExprOption19
+    = BExprSelfRefSplit _ IS _ NOT _ OF _ "(" _ TypeList _ ")"
+
+BExprOption20
+    = BExprSelfRefSplit _ IS _ DOCUMENT
+
+BExprOption21
+    = BExprSelfRefSplit _ IS _ NOT _ DOCUMENT
+
+BExprSelfRefSplit
+    = CExpr
+    / BExprSelfRefSplitOption2
+    / BExprSelfRefSplitOption3
+    / BExprSelfRefSplitOption4
+
+BExprSelfRefSplitOption2
+    = "+" _ BExpr
+
+BExprSelfRefSplitOption3
+    = "-" _ BExpr
+
+BExprSelfRefSplitOption4
+    = QualOp _ BExpr
 
 CExpr
-    = (GROUPING _ "(" _ ExprList _ ")")
-    / ("(" _ AExpr _ ")" _ OptIndirection)
-    / (ARRAY _ ArrayExpr)
-    / (PARAM _ OptIndirection)
-    / (ARRAY _ SelectWithParens)
-    / (EXISTS _ SelectWithParens)
-    / (SelectWithParens _ Indirection)
-    / SelectWithParens
-    / FuncExpr
-    / CaseExpr
+    = Columnref
     / AexprConst
+    / CExprOption3
+    / CExprOption4
+    / CaseExpr
+    / FuncExpr
+    / SelectWithParens
+    / CExprOption8
+    / CExprOption9
+    / CExprOption10
+    / CExprOption11
     / ExplicitRow
     / ImplicitRow
-    / Columnref
+    / CExprOption14
+
+CExprOption3
+    = PARAM _ OptIndirection
+
+CExprOption4
+    = "(" _ AExpr _ ")" _ OptIndirection
+
+CExprOption8
+    = SelectWithParens _ Indirection
+
+CExprOption9
+    = EXISTS _ SelectWithParens
+
+CExprOption10
+    = ARRAY _ SelectWithParens
+
+CExprOption11
+    = ARRAY _ ArrayExpr
+
+CExprOption14
+    = GROUPING _ "(" _ ExprList _ ")"
 
 FuncApplication
-    = (FuncName _ "(" _ FuncArgList _ "," _ VARIADIC _ FuncArgExpr _ OptSortClause _ ")")
-    / (FuncName _ "(" _ VARIADIC _ FuncArgExpr _ OptSortClause _ ")")
-    / (FuncName _ "(" _ ALL _ FuncArgList _ OptSortClause _ ")")
-    / (FuncName _ "(" _ DISTINCT _ FuncArgList _ OptSortClause _ ")")
-    / (FuncName _ "(" _ FuncArgList _ OptSortClause _ ")")
-    / (FuncName _ "(" _ "*" _ ")")
-    / (FuncName _ "(" _ ")")
+    = FuncApplicationOption1
+    / FuncApplicationOption2
+    / FuncApplicationOption3
+    / FuncApplicationOption4
+    / FuncApplicationOption5
+    / FuncApplicationOption6
+    / FuncApplicationOption7
+
+FuncApplicationOption1
+    = FuncName _ "(" _ ")"
+
+FuncApplicationOption2
+    = FuncName _ "(" _ FuncArgList _ OptSortClause _ ")"
+
+FuncApplicationOption3
+    = FuncName _ "(" _ VARIADIC _ FuncArgExpr _ OptSortClause _ ")"
+
+FuncApplicationOption4
+    = FuncName _ "(" _ FuncArgList _ "," _ VARIADIC _ FuncArgExpr _ OptSortClause _ ")"
+
+FuncApplicationOption5
+    = FuncName _ "(" _ ALL _ FuncArgList _ OptSortClause _ ")"
+
+FuncApplicationOption6
+    = FuncName _ "(" _ DISTINCT _ FuncArgList _ OptSortClause _ ")"
+
+FuncApplicationOption7
+    = FuncName _ "(" _ "*" _ ")"
 
 FuncExpr
-    = (FuncApplication _ WithinGroupClause _ FilterClause _ OverClause)
+    = FuncExprOption1
     / FuncExprCommonSubexpr
+
+FuncExprOption1
+    = FuncApplication _ WithinGroupClause _ FilterClause _ OverClause
 
 FuncExprWindowless
     = FuncApplication
     / FuncExprCommonSubexpr
 
 FuncExprCommonSubexpr
-    = (XMLELEMENT _ "(" _ NAME _ ColLabel _ "," _ XmlAttributes _ "," _ ExprList _ ")")
-    / (XMLROOT _ "(" _ AExpr _ "," _ XmlRootVersion _ OptXmlRootStandalone _ ")")
-    / (XMLPI _ "(" _ NAME _ ColLabel _ "," _ AExpr _ ")")
-    / (XMLELEMENT _ "(" _ NAME _ ColLabel _ "," _ XmlAttributes _ ")")
-    / (XMLSERIALIZE _ "(" _ DocumentOrContent _ AExpr _ AS _ SimpleTypename _ ")")
-    / (XMLELEMENT _ "(" _ NAME _ ColLabel _ "," _ ExprList _ ")")
-    / (NULLIF _ "(" _ AExpr _ "," _ AExpr _ ")")
-    / (XMLPARSE _ "(" _ DocumentOrContent _ AExpr _ XmlWhitespaceOption _ ")")
-    / (CAST _ "(" _ AExpr _ AS _ Typename _ ")")
-    / (TREAT _ "(" _ AExpr _ AS _ Typename _ ")")
-    / (COLLATION _ FOR _ "(" _ AExpr _ ")")
-    / (XMLPI _ "(" _ NAME _ ColLabel _ ")")
-    / (TRIM _ "(" _ TRAILING _ TrimList _ ")")
-    / (TRIM _ "(" _ LEADING _ TrimList _ ")")
-    / (TRIM _ "(" _ BOTH _ TrimList _ ")")
-    / (XMLEXISTS _ "(" _ CExpr _ XmlexistsArgument _ ")")
-    / (XMLELEMENT _ "(" _ NAME _ ColLabel _ ")")
-    / (LEAST _ "(" _ ExprList _ ")")
-    / (OVERLAY _ "(" _ OverlayList _ ")")
-    / (POSITION _ "(" _ PositionList _ ")")
-    / (SUBSTRING _ "(" _ SubstrList _ ")")
-    / (CURRENTTIME _ "(" _ Iconst _ ")")
-    / (LOCALTIME _ "(" _ Iconst _ ")")
-    / (LOCALTIMESTAMP _ "(" _ Iconst _ ")")
-    / (XMLFOREST _ "(" _ XmlAttributeList _ ")")
-    / (TRIM _ "(" _ TrimList _ ")")
-    / (XMLCONCAT _ "(" _ ExprList _ ")")
-    / (COALESCE _ "(" _ ExprList _ ")")
-    / (GREATEST _ "(" _ ExprList _ ")")
-    / (EXTRACT _ "(" _ ExtractList _ ")")
-    / (CURRENTTIMESTAMP _ "(" _ Iconst _ ")")
+    = FuncExprCommonSubexprOption1
+    / CURRENTDATE
+    / CURRENTTIME
+    / FuncExprCommonSubexprOption4
+    / CURRENTTIMESTAMP
+    / FuncExprCommonSubexprOption6
+    / LOCALTIME
+    / FuncExprCommonSubexprOption8
+    / LOCALTIMESTAMP
+    / FuncExprCommonSubexprOption10
+    / CURRENTROLE
     / CURRENTUSER
     / SESSIONUSER
-    / CURRENTROLE
     / USER
-    / LOCALTIMESTAMP
-    / LOCALTIME
-    / CURRENTTIMESTAMP
-    / CURRENTSCHEMA
-    / CURRENTTIME
-    / CURRENTDATE
     / CURRENTCATALOG
+    / CURRENTSCHEMA
+    / FuncExprCommonSubexprOption17
+    / FuncExprCommonSubexprOption18
+    / FuncExprCommonSubexprOption19
+    / FuncExprCommonSubexprOption20
+    / FuncExprCommonSubexprOption21
+    / FuncExprCommonSubexprOption22
+    / FuncExprCommonSubexprOption23
+    / FuncExprCommonSubexprOption24
+    / FuncExprCommonSubexprOption25
+    / FuncExprCommonSubexprOption26
+    / FuncExprCommonSubexprOption27
+    / FuncExprCommonSubexprOption28
+    / FuncExprCommonSubexprOption29
+    / FuncExprCommonSubexprOption30
+    / FuncExprCommonSubexprOption31
+    / FuncExprCommonSubexprOption32
+    / FuncExprCommonSubexprOption33
+    / FuncExprCommonSubexprOption34
+    / FuncExprCommonSubexprOption35
+    / FuncExprCommonSubexprOption36
+    / FuncExprCommonSubexprOption37
+    / FuncExprCommonSubexprOption38
+    / FuncExprCommonSubexprOption39
+    / FuncExprCommonSubexprOption40
+    / FuncExprCommonSubexprOption41
+    / FuncExprCommonSubexprOption42
+
+FuncExprCommonSubexprOption1
+    = COLLATION _ FOR _ "(" _ AExpr _ ")"
+
+FuncExprCommonSubexprOption4
+    = CURRENTTIME _ "(" _ Iconst _ ")"
+
+FuncExprCommonSubexprOption6
+    = CURRENTTIMESTAMP _ "(" _ Iconst _ ")"
+
+FuncExprCommonSubexprOption8
+    = LOCALTIME _ "(" _ Iconst _ ")"
+
+FuncExprCommonSubexprOption10
+    = LOCALTIMESTAMP _ "(" _ Iconst _ ")"
+
+FuncExprCommonSubexprOption17
+    = CAST _ "(" _ AExpr _ AS _ Typename _ ")"
+
+FuncExprCommonSubexprOption18
+    = EXTRACT _ "(" _ ExtractList _ ")"
+
+FuncExprCommonSubexprOption19
+    = OVERLAY _ "(" _ OverlayList _ ")"
+
+FuncExprCommonSubexprOption20
+    = POSITION _ "(" _ PositionList _ ")"
+
+FuncExprCommonSubexprOption21
+    = SUBSTRING _ "(" _ SubstrList _ ")"
+
+FuncExprCommonSubexprOption22
+    = TREAT _ "(" _ AExpr _ AS _ Typename _ ")"
+
+FuncExprCommonSubexprOption23
+    = TRIM _ "(" _ BOTH _ TrimList _ ")"
+
+FuncExprCommonSubexprOption24
+    = TRIM _ "(" _ LEADING _ TrimList _ ")"
+
+FuncExprCommonSubexprOption25
+    = TRIM _ "(" _ TRAILING _ TrimList _ ")"
+
+FuncExprCommonSubexprOption26
+    = TRIM _ "(" _ TrimList _ ")"
+
+FuncExprCommonSubexprOption27
+    = NULLIF _ "(" _ AExpr _ "," _ AExpr _ ")"
+
+FuncExprCommonSubexprOption28
+    = COALESCE _ "(" _ ExprList _ ")"
+
+FuncExprCommonSubexprOption29
+    = GREATEST _ "(" _ ExprList _ ")"
+
+FuncExprCommonSubexprOption30
+    = LEAST _ "(" _ ExprList _ ")"
+
+FuncExprCommonSubexprOption31
+    = XMLCONCAT _ "(" _ ExprList _ ")"
+
+FuncExprCommonSubexprOption32
+    = XMLELEMENT _ "(" _ NAME _ ColLabel _ ")"
+
+FuncExprCommonSubexprOption33
+    = XMLELEMENT _ "(" _ NAME _ ColLabel _ "," _ XmlAttributes _ ")"
+
+FuncExprCommonSubexprOption34
+    = XMLELEMENT _ "(" _ NAME _ ColLabel _ "," _ ExprList _ ")"
+
+FuncExprCommonSubexprOption35
+    = XMLELEMENT _ "(" _ NAME _ ColLabel _ "," _ XmlAttributes _ "," _ ExprList _ ")"
+
+FuncExprCommonSubexprOption36
+    = XMLEXISTS _ "(" _ CExpr _ XmlexistsArgument _ ")"
+
+FuncExprCommonSubexprOption37
+    = XMLFOREST _ "(" _ XmlAttributeList _ ")"
+
+FuncExprCommonSubexprOption38
+    = XMLPARSE _ "(" _ DocumentOrContent _ AExpr _ XmlWhitespaceOption _ ")"
+
+FuncExprCommonSubexprOption39
+    = XMLPI _ "(" _ NAME _ ColLabel _ ")"
+
+FuncExprCommonSubexprOption40
+    = XMLPI _ "(" _ NAME _ ColLabel _ "," _ AExpr _ ")"
+
+FuncExprCommonSubexprOption41
+    = XMLROOT _ "(" _ AExpr _ "," _ XmlRootVersion _ OptXmlRootStandalone _ ")"
+
+FuncExprCommonSubexprOption42
+    = XMLSERIALIZE _ "(" _ DocumentOrContent _ AExpr _ AS _ SimpleTypename _ ")"
 
 XmlRootVersion
-    = (VERSION _ NO _ VALUE)
-    / (VERSION _ AExpr)
+    = XmlRootVersionOption1
+    / XmlRootVersionOption2
+
+XmlRootVersionOption1
+    = VERSION _ AExpr
+
+XmlRootVersionOption2
+    = VERSION _ NO _ VALUE
 
 OptXmlRootStandalone
-    = (("," _ STANDALONE _ NO _ VALUE)
-    / ("," _ STANDALONE _ YES)
-    / ("," _ STANDALONE _ NO))?
+    = (("," _ STANDALONE _ YES)
+    / ("," _ STANDALONE _ NO)
+    / ("," _ STANDALONE _ NO _ VALUE))?
 
 XmlAttributes
     = (XMLATTRIBUTES _ "(" _ XmlAttributeList _ ")")
@@ -3041,8 +5831,11 @@ XmlAttributeList
     = XmlAttributeEl (_ "," _ XmlAttributeEl)*
 
 XmlAttributeEl
-    = (AExpr _ AS _ ColLabel)
+    = XmlAttributeElOption1
     / AExpr
+
+XmlAttributeElOption1
+    = AExpr _ AS _ ColLabel
 
 DocumentOrContent
     = DOCUMENT
@@ -3053,10 +5846,22 @@ XmlWhitespaceOption
     / (STRIP _ WHITESPACE))?
 
 XmlexistsArgument
-    = (PASSING _ BY _ REF _ CExpr _ BY _ REF)
-    / (PASSING _ CExpr _ BY _ REF)
-    / (PASSING _ BY _ REF _ CExpr)
-    / (PASSING _ CExpr)
+    = XmlexistsArgumentOption1
+    / XmlexistsArgumentOption2
+    / XmlexistsArgumentOption3
+    / XmlexistsArgumentOption4
+
+XmlexistsArgumentOption1
+    = PASSING _ CExpr
+
+XmlexistsArgumentOption2
+    = PASSING _ CExpr _ BY _ REF
+
+XmlexistsArgumentOption3
+    = PASSING _ BY _ REF _ CExpr
+
+XmlexistsArgumentOption4
+    = PASSING _ BY _ REF _ CExpr _ BY _ REF
 
 WithinGroupClause
     = (WITHIN _ GROUP _ "(" _ SortClause _ ")")?
@@ -3074,8 +5879,14 @@ WindowDefinition
     = (ColId _ AS _ WindowSpecification)
 
 OverClause
-    = ((OVER _ WindowSpecification)
-    / (OVER _ ColId))?
+    = (OverClauseOption1
+    / OverClauseOption2)?
+
+OverClauseOption1
+    = OVER _ WindowSpecification
+
+OverClauseOption2
+    = OVER _ ColId
 
 WindowSpecification
     = ("(" _ OptExistingWindowName _ OptPartitionClause _ OptSortClause _ OptFrameClause _ ")")
@@ -3087,35 +5898,77 @@ OptPartitionClause
     = (PARTITION _ BY _ ExprList)?
 
 OptFrameClause
-    = ((RANGE _ FrameExtent _ OptWindowExclusionClause)
-    / (ROWS _ FrameExtent _ OptWindowExclusionClause)
-    / (GROUPS _ FrameExtent _ OptWindowExclusionClause))?
+    = (OptFrameClauseOption1
+    / OptFrameClauseOption2
+    / OptFrameClauseOption3)?
+
+OptFrameClauseOption1
+    = RANGE _ FrameExtent _ OptWindowExclusionClause
+
+OptFrameClauseOption2
+    = ROWS _ FrameExtent _ OptWindowExclusionClause
+
+OptFrameClauseOption3
+    = GROUPS _ FrameExtent _ OptWindowExclusionClause
 
 FrameExtent
-    = (BETWEEN _ FrameBound _ AND _ FrameBound)
-    / FrameBound
+    = FrameBound
+    / FrameExtentOption2
+
+FrameExtentOption2
+    = BETWEEN _ FrameBound _ AND _ FrameBound
 
 FrameBound
-    = (UNBOUNDED _ PRECEDING)
-    / (UNBOUNDED _ FOLLOWING)
-    / (CURRENT _ ROW)
-    / (AExpr _ PRECEDING)
-    / (AExpr _ FOLLOWING)
+    = FrameBoundOption1
+    / FrameBoundOption2
+    / FrameBoundOption3
+    / FrameBoundOption4
+    / FrameBoundOption5
+
+FrameBoundOption1
+    = UNBOUNDED _ PRECEDING
+
+FrameBoundOption2
+    = UNBOUNDED _ FOLLOWING
+
+FrameBoundOption3
+    = CURRENT _ ROW
+
+FrameBoundOption4
+    = AExpr _ PRECEDING
+
+FrameBoundOption5
+    = AExpr _ FOLLOWING
 
 OptWindowExclusionClause
     = ((EXCLUDE _ CURRENT _ ROW)
-    / (EXCLUDE _ NO _ OTHERS)
     / (EXCLUDE _ GROUP)
-    / (EXCLUDE _ TIES))?
+    / (EXCLUDE _ TIES)
+    / (EXCLUDE _ NO _ OTHERS))?
 
 Row
-    = ("(" _ ExprList _ "," _ AExpr _ ")")
-    / (ROW _ "(" _ ExprList _ ")")
-    / (ROW _ "(" _ ")")
+    = RowOption1
+    / RowOption2
+    / RowOption3
+
+RowOption1
+    = ROW _ "(" _ ExprList _ ")"
+
+RowOption2
+    = ROW _ "(" _ ")"
+
+RowOption3
+    = "(" _ ExprList _ "," _ AExpr _ ")"
 
 ExplicitRow
-    = (ROW _ "(" _ ExprList _ ")")
-    / (ROW _ "(" _ ")")
+    = ExplicitRowOption1
+    / ExplicitRowOption2
+
+ExplicitRowOption1
+    = ROW _ "(" _ ExprList _ ")"
+
+ExplicitRowOption2
+    = ROW _ "(" _ ")"
 
 ImplicitRow
     = ("(" _ ExprList _ "," _ AExpr _ ")")
@@ -3144,20 +5997,35 @@ MathOp
     / NOTEQUALS
 
 QualOp
-    = (OPERATOR _ "(" _ AnyOperator _ ")")
-    / Op
+    = Op
+    / QualOpOption2
+
+QualOpOption2
+    = OPERATOR _ "(" _ AnyOperator _ ")"
 
 QualAllOp
-    = (OPERATOR _ "(" _ AnyOperator _ ")")
-    / AllOp
+    = AllOp
+    / QualAllOpOption2
+
+QualAllOpOption2
+    = OPERATOR _ "(" _ AnyOperator _ ")"
 
 SubqueryOp
-    = (OPERATOR _ "(" _ AnyOperator _ ")")
-    / (NOT _ LIKE)
-    / (NOT _ ILIKE)
-    / AllOp
+    = AllOp
+    / SubqueryOpOption2
     / LIKE
+    / SubqueryOpOption4
     / ILIKE
+    / SubqueryOpOption6
+
+SubqueryOpOption2
+    = OPERATOR _ "(" _ AnyOperator _ ")"
+
+SubqueryOpOption4
+    = NOT _ LIKE
+
+SubqueryOpOption6
+    = NOT _ ILIKE
 
 ExprList
     = AExpr (_ "," _ AExpr)*
@@ -3166,17 +6034,32 @@ FuncArgList
     = FuncArgExpr (_ "," _ FuncArgExpr)*
 
 FuncArgExpr
-    = (ParamName _ COLONEQUALS _ AExpr)
-    / (ParamName _ EQUALSGREATER _ AExpr)
-    / AExpr
+    = AExpr
+    / FuncArgExprOption2
+    / FuncArgExprOption3
+
+FuncArgExprOption2
+    = ParamName _ COLONEQUALS _ AExpr
+
+FuncArgExprOption3
+    = ParamName _ EQUALSGREATER _ AExpr
 
 TypeList
     = Typename (_ "," _ Typename)*
 
 ArrayExpr
-    = ("[" _ ExprList _ "]")
-    / ("[" _ ArrayExprList _ "]")
-    / ("[" _ "]")
+    = ArrayExprOption1
+    / ArrayExprOption2
+    / ArrayExprOption3
+
+ArrayExprOption1
+    = "[" _ ExprList _ "]"
+
+ArrayExprOption2
+    = "[" _ ArrayExprList _ "]"
+
+ArrayExprOption3
+    = "[" _ "]"
 
 ArrayExprList
     = ArrayExpr (_ "," _ ArrayExpr)*
@@ -3195,8 +6078,14 @@ ExtractArg
     / Sconst
 
 OverlayList
-    = (AExpr _ OverlayPlacing _ SubstrFrom _ SubstrFor)
-    / (AExpr _ OverlayPlacing _ SubstrFrom)
+    = OverlayListOption1
+    / OverlayListOption2
+
+OverlayListOption1
+    = AExpr _ OverlayPlacing _ SubstrFrom _ SubstrFor
+
+OverlayListOption2
+    = AExpr _ OverlayPlacing _ SubstrFrom
 
 OverlayPlacing
     = (PLACING _ AExpr)
@@ -3205,11 +6094,23 @@ PositionList
     = (BExpr _ IN _ BExpr)?
 
 SubstrList
-    = ((AExpr _ SubstrFrom _ SubstrFor)
-    / (AExpr _ SubstrFor _ SubstrFrom)
-    / (AExpr _ SubstrFrom)
-    / (AExpr _ SubstrFor)
+    = (SubstrListOption1
+    / SubstrListOption2
+    / SubstrListOption3
+    / SubstrListOption4
     / ExprList)?
+
+SubstrListOption1
+    = AExpr _ SubstrFrom _ SubstrFor
+
+SubstrListOption2
+    = AExpr _ SubstrFor _ SubstrFrom
+
+SubstrListOption3
+    = AExpr _ SubstrFrom
+
+SubstrListOption4
+    = AExpr _ SubstrFor
 
 SubstrFrom
     = (FROM _ AExpr)
@@ -3218,13 +6119,22 @@ SubstrFor
     = (FOR _ AExpr)
 
 TrimList
-    = (AExpr _ FROM _ ExprList)
-    / (FROM _ ExprList)
+    = TrimListOption1
+    / TrimListOption2
     / ExprList
 
+TrimListOption1
+    = AExpr _ FROM _ ExprList
+
+TrimListOption2
+    = FROM _ ExprList
+
 InExpr
-    = ("(" _ ExprList _ ")")
-    / SelectWithParens
+    = SelectWithParens
+    / InExprOption2
+
+InExprOption2
+    = "(" _ ExprList _ ")"
 
 CaseExpr
     = (CASE _ CaseArg _ WhenClauseList _ CaseDefault _ END)
@@ -3242,14 +6152,29 @@ CaseArg
     = AExpr?
 
 Columnref
-    = (ColId _ Indirection)
-    / ColId
+    = ColId
+    / ColumnrefOption2
+
+ColumnrefOption2
+    = ColId _ Indirection
 
 IndirectionEl
-    = ("[" _ OptSliceBound _ ":" _ OptSliceBound _ "]")
-    / ("[" _ AExpr _ "]")
-    / ("." _ AttrName)
-    / ("." _ "*")
+    = IndirectionElOption1
+    / IndirectionElOption2
+    / IndirectionElOption3
+    / IndirectionElOption4
+
+IndirectionElOption1
+    = "." _ AttrName
+
+IndirectionElOption2
+    = "." _ "*"
+
+IndirectionElOption3
+    = "[" _ AExpr _ "]"
+
+IndirectionElOption4
+    = "[" _ OptSliceBound _ ":" _ OptSliceBound _ "]"
 
 OptSliceBound
     = AExpr?
@@ -3270,17 +6195,26 @@ TargetList
     = TargetEl (_ "," _ TargetEl)*
 
 TargetEl
-    = (AExpr _ AS _ ColLabel)
-    / (AExpr _ IDENT)
+    = TargetElOption1
+    / TargetElOption2
     / AExpr
     / "*"
+
+TargetElOption1
+    = AExpr _ AS _ ColLabel
+
+TargetElOption2
+    = AExpr _ IDENT
 
 QualifiedNameList
     = QualifiedName (_ "," _ QualifiedName)*
 
 QualifiedName
-    = (ColId _ Indirection)
-    / ColId
+    = ColId
+    / QualifiedNameOption2
+
+QualifiedNameOption2
+    = ColId _ Indirection
 
 NameList
     = Name (_ "," _ Name)*
@@ -3304,23 +6238,41 @@ FileName
     = Sconst
 
 FuncName
-    = (ColId _ Indirection)
-    / TypeFunctionName
+    = TypeFunctionName
+    / FuncNameOption2
+
+FuncNameOption2
+    = ColId _ Indirection
 
 AexprConst
-    = (FuncName _ "(" _ FuncArgList _ OptSortClause _ ")" _ Sconst)
-    / (ConstInterval _ "(" _ Iconst _ ")" _ Sconst)
-    / (ConstInterval _ Sconst _ OptInterval)
-    / (FuncName _ Sconst)
-    / (ConstTypename _ Sconst)
-    / Iconst
-    / XCONST
-    / BCONST
-    / Sconst
+    = Iconst
     / FCONST
+    / Sconst
+    / BCONST
+    / XCONST
+    / AexprConstOption6
+    / AexprConstOption7
+    / AexprConstOption8
+    / AexprConstOption9
+    / AexprConstOption10
     / TRUE
     / FALSE
     / NULL
+
+AexprConstOption6
+    = FuncName _ Sconst
+
+AexprConstOption7
+    = FuncName _ "(" _ FuncArgList _ OptSortClause _ ")" _ Sconst
+
+AexprConstOption8
+    = ConstTypename _ Sconst
+
+AexprConstOption9
+    = ConstInterval _ Sconst _ OptInterval
+
+AexprConstOption10
+    = ConstInterval _ "(" _ Iconst _ ")" _ Sconst
 
 Iconst
     = ICONST
@@ -3329,9 +6281,9 @@ Sconst
     = SCONST
 
 SignedIconst
-    = ("+" _ Iconst)
+    = Iconst
+    / ("+" _ Iconst)
     / ("-" _ Iconst)
-    / Iconst
 
 RoleId
     = RoleSpec
@@ -3347,9 +6299,7 @@ RoleList
 ColId
     = IDENT
     / UnreservedKeyword
-    / ColNameKeyword {
-        return string(c.text), nil
-    }
+    / ColNameKeyword
 
 TypeFunctionName
     = IDENT

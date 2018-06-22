@@ -5,6 +5,7 @@ import (
 	"errors"
 	// "log"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -18,6 +19,8 @@ type Rule struct {
 	SelfRefAtBeginOnly bool
 	SelfRefAtEndOnly   bool
 }
+
+var rulemap = map[string]Rule{}
 
 func (r Rule) WritePegTo(buffer *bytes.Buffer) {
 	buffer.WriteString(r.Name.String())
@@ -58,6 +61,72 @@ func (r *Rule) ReorderSubrules() {
 	}
 }
 
+func (r Rule) SplitMultiChoice() []Rule {
+	tokenGroup, ok := r.Expression.(*TokenGroup)
+	if !ok || tokenGroup.Type != Choice || len(tokenGroup.Tokens) == 1 {
+		return []Rule{r}
+	}
+	result := []Rule{}
+
+	split := false
+	for _, token := range tokenGroup.Tokens {
+		group, ok := token.(*TokenGroup)
+		if !ok || group.Type != Sequence {
+			continue
+		}
+		for _, childToken := range group.Tokens {
+			ref, ok := childToken.(*ReferToken)
+			if !ok || ref.Name == "_" {
+				continue
+			}
+			rule, keyOk := rulemap[ref.Name]
+			if !keyOk {
+				continue
+			}
+			_, typeOk := rule.Expression.(*TokenGroup)
+			if typeOk {
+				split = true
+				break
+			}
+		}
+		if split {
+			break
+		}
+	}
+
+	if !split {
+		return []Rule{r}
+	}
+
+	heirTokenGroup := TokenGroup{
+		Tokens: []TokenPointer{},
+		IsRoot: true,
+		Repeat: tokenGroup.Repeat,
+		Type:   Choice,
+	}
+	result = append(result, Rule{
+		Name:       r.Name,
+		Expression: &heirTokenGroup,
+	})
+
+	for ind, token := range tokenGroup.Tokens {
+		group, ok := token.(*TokenGroup)
+		if !ok {
+			(&heirTokenGroup).Tokens = append(heirTokenGroup.Tokens, token)
+			continue
+		}
+		group.IsRoot = true
+		ruleName := MakeReferToken(r.Name.Name+"_option"+strconv.Itoa(ind+1), true, 0)
+		result = append(result, Rule{
+			Name:       *ruleName,
+			Expression: token,
+		})
+		(&heirTokenGroup).Tokens = append(heirTokenGroup.Tokens, MakeReferToken(ruleName.Name, false, 0))
+	}
+
+	return result
+}
+
 func (r Rule) SplitSelfRef(nameToken *ReferToken) []Rule {
 	tokenGroup, ok := r.Expression.(*TokenGroup)
 	if !ok || tokenGroup.Type != Choice {
@@ -68,7 +137,7 @@ func (r Rule) SplitSelfRef(nameToken *ReferToken) []Rule {
 	if nameToken == nil {
 		nameToken = &r.Name
 	}
-	newRuleName := MakeReferToken(nameToken.Name+"1", true, 0)
+	newRuleName := MakeReferToken(nameToken.Name+"_self_ref_split", true, 0)
 	for _, token := range tokenGroup.Tokens {
 		group, ok := token.(*TokenGroup)
 		if !ok {
@@ -167,6 +236,7 @@ func MakeRule(src string) (Rule, error) {
 		Name:       nameToken,
 		Expression: expression,
 	}
+	rulemap[nameToken.Name] = rule
 	return rule, nil
 }
 
