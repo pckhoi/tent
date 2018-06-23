@@ -88,7 +88,9 @@ func MakeFromBison(bytes []byte) Grammar {
 		newRules = append(newRules, rs...)
 	}
 	for ind, rule := range newRules {
-		newRules[ind] = rule.Dressup()
+		rulePointer := &rule
+		rulePointer.Dressup()
+		newRules[ind] = *rulePointer
 	}
 	newRules = append(newRules, keywordRules()...)
 	newRules = append(newRules, miscellaneousRules()...)

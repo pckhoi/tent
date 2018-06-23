@@ -6,12 +6,11 @@ Stmtblock
     = Stmtmulti
 
 Stmtmulti
-    = var1:Stmt (_ ";" _ Stmt)* {
+    = list:(Stmt (_ ";" _ Stmt)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "Stmtmulti",
-            Props: map[string]interface{}{
-                "Stmt1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -166,10 +165,22 @@ OptWith
     = WITH?
 
 OptRoleList
-    = (_ CreateOptRoleElem)*
+    = list:(_ CreateOptRoleElem)* {
+        vals := extractList(list, -1, -1, 1)
+        return Node{
+            Name: "OptRoleList",
+            Vals: vals,
+        }, nil
+    }
 
 AlterOptRoleList
-    = (_ AlterOptRoleElem)*
+    = list:(_ AlterOptRoleElem)* {
+        vals := extractList(list, -1, -1, 1)
+        return Node{
+            Name: "AlterOptRoleList",
+            Vals: vals,
+        }, nil
+    }
 
 AlterOptRoleElem
     = AlterOptRoleElemOption1
@@ -511,7 +522,13 @@ OptSchemaName
     = ColId?
 
 OptSchemaEltList
-    = (_ SchemaStmt)*
+    = list:(_ SchemaStmt)* {
+        vals := extractList(list, -1, -1, 1)
+        return Node{
+            Name: "OptSchemaEltList",
+            Vals: vals,
+        }, nil
+    }
 
 SchemaStmt
     = CreateStmt
@@ -715,22 +732,20 @@ SetRestMoreOption10
     = SCHEMA _ Sconst
 
 VarName
-    = var1:ColId (_ "." _ ColId)* {
+    = list:(ColId (_ "." _ ColId)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "VarName",
-            Props: map[string]interface{}{
-                "ColId1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
 VarList
-    = var1:VarValue (_ "," _ VarValue)* {
+    = list:(VarValue (_ "," _ VarValue)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "VarList",
-            Props: map[string]interface{}{
-                "VarValue1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -1090,12 +1105,11 @@ AlterTableStmtOption19
     }
 
 AlterTableCmds
-    = var1:AlterTableCmd (_ "," _ AlterTableCmd)* {
+    = list:(AlterTableCmd (_ "," _ AlterTableCmd)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "AlterTableCmds",
-            Props: map[string]interface{}{
-                "AlterTableCmd1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -1640,12 +1654,11 @@ OptReloptions
     = (WITH _ Reloptions)?
 
 ReloptionList
-    = var1:ReloptionElem (_ "," _ ReloptionElem)* {
+    = list:(ReloptionElem (_ "," _ ReloptionElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "ReloptionList",
-            Props: map[string]interface{}{
-                "ReloptionElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -1690,12 +1703,11 @@ ReloptionElemOption3
     }
 
 AlterIdentityColumnOptionList
-    = var1:AlterIdentityColumnOption (_ AlterIdentityColumnOption)* {
+    = list:(AlterIdentityColumnOption (_ AlterIdentityColumnOption)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "AlterIdentityColumnOptionList",
-            Props: map[string]interface{}{
-                "AlterIdentityColumnOption1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -1784,12 +1796,11 @@ HashPartboundElem
     }
 
 HashPartbound
-    = var1:HashPartboundElem (_ "," _ HashPartboundElem)* {
+    = list:(HashPartboundElem (_ "," _ HashPartboundElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "HashPartbound",
-            Props: map[string]interface{}{
-                "HashPartboundElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -1801,22 +1812,20 @@ PartboundDatum
     / NULL
 
 PartboundDatumList
-    = var1:PartboundDatum (_ "," _ PartboundDatum)* {
+    = list:(PartboundDatum (_ "," _ PartboundDatum)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "PartboundDatumList",
-            Props: map[string]interface{}{
-                "PartboundDatum1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
 RangeDatumList
-    = var1:PartitionRangeDatum (_ "," _ PartitionRangeDatum)* {
+    = list:(PartitionRangeDatum (_ "," _ PartitionRangeDatum)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "RangeDatumList",
-            Props: map[string]interface{}{
-                "PartitionRangeDatum1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -1837,12 +1846,11 @@ AlterCompositeTypeStmt
     }
 
 AlterTypeCmds
-    = var1:AlterTypeCmd (_ "," _ AlterTypeCmd)* {
+    = list:(AlterTypeCmd (_ "," _ AlterTypeCmd)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "AlterTypeCmds",
-            Props: map[string]interface{}{
-                "AlterTypeCmd1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -1964,7 +1972,13 @@ CopyOptionsOption1
     }
 
 CopyOptList
-    = (_ CopyOptItem)*
+    = list:(_ CopyOptItem)* {
+        vals := extractList(list, -1, -1, 1)
+        return Node{
+            Name: "CopyOptList",
+            Vals: vals,
+        }, nil
+    }
 
 CopyOptItem
     = CopyOptItemOption1
@@ -2043,12 +2057,11 @@ OptUsing
     = USING?
 
 CopyGenericOptList
-    = var1:CopyGenericOptElem (_ "," _ CopyGenericOptElem)* {
+    = list:(CopyGenericOptElem (_ "," _ CopyGenericOptElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "CopyGenericOptList",
-            Props: map[string]interface{}{
-                "CopyGenericOptElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -2080,7 +2093,13 @@ CopyGenericOptArgOption1
     }
 
 CopyGenericOptArgList
-    = CopyGenericOptArgListItem (_ "," _ CopyGenericOptArgListItem)*
+    = list:(CopyGenericOptArgListItem (_ "," _ CopyGenericOptArgListItem)*) {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "CopyGenericOptArgList",
+            Vals: vals,
+        }, nil
+    }
 
 CopyGenericOptArgListItem
     = OptBooleanOrString
@@ -2205,22 +2224,20 @@ OptTypedTableElementList
     = ("(" _ TypedTableElementList _ ")")?
 
 TableElementList
-    = var1:TableElement (_ "," _ TableElement)* {
+    = list:(TableElement (_ "," _ TableElement)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "TableElementList",
-            Props: map[string]interface{}{
-                "TableElement1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
 TypedTableElementList
-    = var1:TypedTableElement (_ "," _ TypedTableElement)* {
+    = list:(TypedTableElement (_ "," _ TypedTableElement)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "TypedTableElementList",
-            Props: map[string]interface{}{
-                "TypedTableElement1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -2273,7 +2290,13 @@ ColumnOptionsOption2
     }
 
 ColQualList
-    = (_ ColConstraint)*
+    = list:(_ ColConstraint)* {
+        vals := extractList(list, -1, -1, 1)
+        return Node{
+            Name: "ColQualList",
+            Vals: vals,
+        }, nil
+    }
 
 ColConstraint
     = ColConstraintOption1
@@ -2558,7 +2581,13 @@ OptColumnList
     = ("(" _ ColumnList _ ")")?
 
 ColumnList
-    = ColumnElem (_ "," _ ColumnElem)*
+    = list:(ColumnElem (_ "," _ ColumnElem)*) {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "ColumnList",
+            Vals: vals,
+        }, nil
+    }
 
 ColumnElem
     = ColId
@@ -2572,12 +2601,11 @@ KeyMatch
     / (MATCH _ SIMPLE))?
 
 ExclusionConstraintList
-    = var1:ExclusionConstraintElem (_ "," _ ExclusionConstraintElem)* {
+    = list:(ExclusionConstraintElem (_ "," _ ExclusionConstraintElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "ExclusionConstraintList",
-            Props: map[string]interface{}{
-                "ExclusionConstraintElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -2687,12 +2715,11 @@ PartStrategy
     / UnreservedKeyword
 
 PartParams
-    = var1:PartElem (_ "," _ PartElem)* {
+    = list:(PartElem (_ "," _ PartElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "PartParams",
-            Props: map[string]interface{}{
-                "PartElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -2961,12 +2988,11 @@ OptParenthesizedSeqOptList
     = ("(" _ SeqOptList _ ")")?
 
 SeqOptList
-    = var1:SeqOptElem (_ SeqOptElem)* {
+    = list:(SeqOptElem (_ SeqOptElem)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "SeqOptList",
-            Props: map[string]interface{}{
-                "SeqOptElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -3097,12 +3123,11 @@ NumericOnly
     / SignedIconst
 
 NumericOnlyList
-    = var1:NumericOnly (_ "," _ NumericOnly)* {
+    = list:(NumericOnly (_ "," _ NumericOnly)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "NumericOnlyList",
-            Props: map[string]interface{}{
-                "NumericOnly1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -3248,7 +3273,13 @@ CreateExtensionStmtOption2
     }
 
 CreateExtensionOptList
-    = (_ CreateExtensionOptItem)*
+    = list:(_ CreateExtensionOptItem)* {
+        vals := extractList(list, -1, -1, 1)
+        return Node{
+            Name: "CreateExtensionOptList",
+            Vals: vals,
+        }, nil
+    }
 
 CreateExtensionOptItem
     = CreateExtensionOptItemOption1
@@ -3290,7 +3321,13 @@ AlterExtensionStmt
     }
 
 AlterExtensionOptList
-    = (_ AlterExtensionOptItem)*
+    = list:(_ AlterExtensionOptItem)* {
+        vals := extractList(list, -1, -1, 1)
+        return Node{
+            Name: "AlterExtensionOptList",
+            Vals: vals,
+        }, nil
+    }
 
 AlterExtensionOptItem
     = (TO _ var1:NonReservedWordOrSconst) {
@@ -3678,12 +3715,11 @@ FdwOptionOption4
     = NO _ VALIDATOR
 
 FdwOptions
-    = var1:FdwOption (_ FdwOption)* {
+    = list:(FdwOption (_ FdwOption)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "FdwOptions",
-            Props: map[string]interface{}{
-                "FdwOption1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -3718,12 +3754,11 @@ CreateGenericOptions
     = (OPTIONS _ "(" _ GenericOptionList _ ")")?
 
 GenericOptionList
-    = var1:GenericOptionElem (_ "," _ GenericOptionElem)* {
+    = list:(GenericOptionElem (_ "," _ GenericOptionElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "GenericOptionList",
-            Props: map[string]interface{}{
-                "GenericOptionElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -3738,12 +3773,11 @@ AlterGenericOptions
     }
 
 AlterGenericOptionList
-    = var1:AlterGenericOptionElem (_ "," _ AlterGenericOptionElem)* {
+    = list:(AlterGenericOptionElem (_ "," _ AlterGenericOptionElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "AlterGenericOptionList",
-            Props: map[string]interface{}{
-                "AlterGenericOptionElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -4130,12 +4164,11 @@ TriggerActionTime
     / AFTER
 
 TriggerEvents
-    = var1:TriggerOneEvent (_ OR _ TriggerOneEvent)* {
+    = list:(TriggerOneEvent (_ OR _ TriggerOneEvent)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "TriggerEvents",
-            Props: map[string]interface{}{
-                "TriggerOneEvent1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -4160,12 +4193,11 @@ TriggerReferencing
     = (REFERENCING _ TriggerTransitions)?
 
 TriggerTransitions
-    = var1:TriggerTransition (_ TriggerTransition)* {
+    = list:(TriggerTransition (_ TriggerTransition)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "TriggerTransitions",
-            Props: map[string]interface{}{
-                "TriggerTransition1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -4205,7 +4237,13 @@ TriggerWhen
     = (WHEN _ "(" _ AExpr _ ")")?
 
 TriggerFuncArgs
-    = (TriggerFuncArg (_ "," _ TriggerFuncArg)*)?
+    = list:(TriggerFuncArg (_ "," _ TriggerFuncArg)*)? {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "TriggerFuncArgs",
+            Vals: vals,
+        }, nil
+    }
 
 TriggerFuncArg
     = Iconst
@@ -4217,7 +4255,13 @@ OptConstrFromTable
     = (FROM _ QualifiedName)?
 
 ConstraintAttributeSpec
-    = (_ ConstraintAttributeElem)*
+    = list:(_ ConstraintAttributeElem)* {
+        vals := extractList(list, -1, -1, 1)
+        return Node{
+            Name: "ConstraintAttributeSpec",
+            Vals: vals,
+        }, nil
+    }
 
 ConstraintAttributeElem
     = (NOT _ DEFERRABLE)
@@ -4255,12 +4299,11 @@ CreateEventTrigStmtOption2
     }
 
 EventTriggerWhenList
-    = var1:EventTriggerWhenItem (_ AND _ EventTriggerWhenItem)* {
+    = list:(EventTriggerWhenItem (_ AND _ EventTriggerWhenItem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "EventTriggerWhenList",
-            Props: map[string]interface{}{
-                "EventTriggerWhenItem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -4276,7 +4319,13 @@ EventTriggerWhenItem
     }
 
 EventTriggerValueList
-    = SCONST (_ "," _ SCONST)*
+    = list:(SCONST (_ "," _ SCONST)*) {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "EventTriggerValueList",
+            Vals: vals,
+        }, nil
+    }
 
 AlterEventTrigStmt
     = (ALTER _ EVENT _ TRIGGER _ Name _ var1:EnableTrigger) {
@@ -4518,12 +4567,11 @@ Definition
     }
 
 DefList
-    = var1:DefElem (_ "," _ DefElem)* {
+    = list:(DefElem (_ "," _ DefElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "DefList",
-            Props: map[string]interface{}{
-                "DefElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -4561,12 +4609,11 @@ OldAggrDefinition
     }
 
 OldAggrList
-    = var1:OldAggrElem (_ "," _ OldAggrElem)* {
+    = list:(OldAggrElem (_ "," _ OldAggrElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "OldAggrList",
-            Props: map[string]interface{}{
-                "OldAggrElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -4584,7 +4631,13 @@ OptEnumValList
     = EnumValList?
 
 EnumValList
-    = Sconst (_ "," _ Sconst)*
+    = list:(Sconst (_ "," _ Sconst)*) {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "EnumValList",
+            Vals: vals,
+        }, nil
+    }
 
 AlterEnumStmt
     = AlterEnumStmtOption1
@@ -4652,12 +4705,11 @@ CreateOpClassStmt
     }
 
 OpclassItemList
-    = var1:OpclassItem (_ "," _ OpclassItem)* {
+    = list:(OpclassItem (_ "," _ OpclassItem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "OpclassItemList",
-            Props: map[string]interface{}{
-                "OpclassItem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -4784,12 +4836,11 @@ AlterOpFamilyStmtOption2
     }
 
 OpclassDropList
-    = var1:OpclassDrop (_ "," _ OpclassDrop)* {
+    = list:(OpclassDrop (_ "," _ OpclassDrop)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "OpclassDropList",
-            Props: map[string]interface{}{
-                "OpclassDrop1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -5073,12 +5124,11 @@ DropTypeNameOnAnyName
     / TRIGGER
 
 AnyNameList
-    = var1:AnyName (_ "," _ AnyName)* {
+    = list:(AnyName (_ "," _ AnyName)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "AnyNameList",
-            Props: map[string]interface{}{
-                "AnyName1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -5098,15 +5148,20 @@ AnyNameOption1
     }
 
 Attrs
-    = "." _ AttrName (_ "." _ AttrName)*
+    = list:("." _ AttrName (_ "." _ AttrName)*) {
+        vals := extractList(list, 2, 3, 3)
+        return Node{
+            Name: "Attrs",
+            Vals: vals,
+        }, nil
+    }
 
 TypeNameList
-    = var1:Typename (_ "," _ Typename)* {
+    = list:(Typename (_ "," _ Typename)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "TypeNameList",
-            Props: map[string]interface{}{
-                "Typename1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -5747,12 +5802,11 @@ PrivilegesOption3
     = ALL _ PRIVILEGES
 
 PrivilegeList
-    = var1:Privilege (_ "," _ Privilege)* {
+    = list:(Privilege (_ "," _ Privilege)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "PrivilegeList",
-            Props: map[string]interface{}{
-                "Privilege1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -6016,12 +6070,11 @@ PrivilegeTargetOption19
     }
 
 GranteeList
-    = var1:Grantee (_ "," _ Grantee)* {
+    = list:(Grantee (_ "," _ Grantee)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "GranteeList",
-            Props: map[string]interface{}{
-                "Grantee1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -6103,7 +6156,13 @@ AlterDefaultPrivilegesStmt
     }
 
 DefACLOptionList
-    = (_ DefACLOption)*
+    = list:(_ DefACLOption)* {
+        vals := extractList(list, -1, -1, 1)
+        return Node{
+            Name: "DefACLOptionList",
+            Vals: vals,
+        }, nil
+    }
 
 DefACLOption
     = DefACLOptionOption1
@@ -6241,12 +6300,11 @@ AccessMethodClause
     = (USING _ AccessMethod)?
 
 IndexParams
-    = var1:IndexElem (_ "," _ IndexElem)* {
+    = list:(IndexElem (_ "," _ IndexElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "IndexParams",
-            Props: map[string]interface{}{
-                "IndexElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -6298,12 +6356,11 @@ OptInclude
     = (INCLUDE _ "(" _ IndexIncludingParams _ ")")?
 
 IndexIncludingParams
-    = var1:IndexElem (_ "," _ IndexElem)* {
+    = list:(IndexElem (_ "," _ IndexElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "IndexIncludingParams",
-            Props: map[string]interface{}{
-                "IndexElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -6401,22 +6458,20 @@ FuncArgsOption2
     = "(" _ ")"
 
 FuncArgsList
-    = var1:FuncArg (_ "," _ FuncArg)* {
+    = list:(FuncArg (_ "," _ FuncArg)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "FuncArgsList",
-            Props: map[string]interface{}{
-                "FuncArg1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
 FunctionWithArgtypesList
-    = var1:FunctionWithArgtypes (_ "," _ FunctionWithArgtypes)* {
+    = list:(FunctionWithArgtypes (_ "," _ FunctionWithArgtypes)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "FunctionWithArgtypesList",
-            Props: map[string]interface{}{
-                "FunctionWithArgtypes1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -6466,12 +6521,11 @@ FuncArgsWithDefaultsOption2
     = "(" _ ")"
 
 FuncArgsWithDefaultsList
-    = var1:FuncArgWithDefault (_ "," _ FuncArgWithDefault)* {
+    = list:(FuncArgWithDefault (_ "," _ FuncArgWithDefault)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "FuncArgsWithDefaultsList",
-            Props: map[string]interface{}{
-                "FuncArgWithDefault1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -6636,7 +6690,13 @@ AggrArgsOption4
     }
 
 AggrArgsList
-    = AggrArg (_ "," _ AggrArg)*
+    = list:(AggrArg (_ "," _ AggrArg)*) {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "AggrArgsList",
+            Vals: vals,
+        }, nil
+    }
 
 AggregateWithArgtypes
     = (var1:FuncName _ var2:AggrArgs) {
@@ -6650,22 +6710,20 @@ AggregateWithArgtypes
     }
 
 AggregateWithArgtypesList
-    = var1:AggregateWithArgtypes (_ "," _ AggregateWithArgtypes)* {
+    = list:(AggregateWithArgtypes (_ "," _ AggregateWithArgtypes)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "AggregateWithArgtypesList",
-            Props: map[string]interface{}{
-                "AggregateWithArgtypes1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
 CreatefuncOptList
-    = var1:CreatefuncOptItem (_ CreatefuncOptItem)* {
+    = list:(CreatefuncOptItem (_ CreatefuncOptItem)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "CreatefuncOptList",
-            Props: map[string]interface{}{
-                "CreatefuncOptItem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -6780,12 +6838,11 @@ FuncAs
     / Sconst
 
 TransformTypeList
-    = FOR _ TYPE _ var1:Typename (_ "," _ FOR _ TYPE _ Typename)* {
+    = list:(FOR _ TYPE _ Typename (_ "," _ FOR _ TYPE _ Typename)*) {
+        vals := extractList(list, 4, 5, 7)
         return Node{
             Name: "TransformTypeList",
-            Props: map[string]interface{}{
-                "Typename1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -6803,12 +6860,11 @@ TableFuncColumn
     }
 
 TableFuncColumnList
-    = var1:TableFuncColumn (_ "," _ TableFuncColumn)* {
+    = list:(TableFuncColumn (_ "," _ TableFuncColumn)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "TableFuncColumnList",
-            Props: map[string]interface{}{
-                "TableFuncColumn1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -6851,12 +6907,11 @@ AlterFunctionStmtOption3
     }
 
 AlterfuncOptList
-    = var1:CommonFuncOptItem (_ CommonFuncOptItem)* {
+    = list:(CommonFuncOptItem (_ CommonFuncOptItem)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "AlterfuncOptList",
-            Props: map[string]interface{}{
-                "CommonFuncOptItem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -7047,12 +7102,11 @@ AnyOperator
     }
 
 OperatorWithArgtypesList
-    = var1:OperatorWithArgtypes (_ "," _ OperatorWithArgtypes)* {
+    = list:(OperatorWithArgtypes (_ "," _ OperatorWithArgtypes)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "OperatorWithArgtypesList",
-            Props: map[string]interface{}{
-                "OperatorWithArgtypes1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -7078,12 +7132,11 @@ DoStmt
     }
 
 DostmtOptList
-    = var1:DostmtOptItem (_ DostmtOptItem)* {
+    = list:(DostmtOptItem (_ DostmtOptItem)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "DostmtOptList",
-            Props: map[string]interface{}{
-                "DostmtOptItem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -7295,7 +7348,13 @@ ReindexTargetMultitable
     / DATABASE
 
 ReindexOptionList
-    = ReindexOptionElem (_ "," _ ReindexOptionElem)*
+    = list:(ReindexOptionElem (_ "," _ ReindexOptionElem)*) {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "ReindexOptionList",
+            Vals: vals,
+        }, nil
+    }
 
 ReindexOptionElem
     = VERBOSE
@@ -8204,12 +8263,11 @@ AlterOperatorStmt
     }
 
 OperatorDefList
-    = var1:OperatorDefElem (_ "," _ OperatorDefElem)* {
+    = list:(OperatorDefElem (_ "," _ OperatorDefElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "OperatorDefList",
-            Props: map[string]interface{}{
-                "OperatorDefElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -8614,7 +8672,13 @@ CreateSubscriptionStmt
     }
 
 PublicationNameList
-    = PublicationNameItem (_ "," _ PublicationNameItem)*
+    = list:(PublicationNameItem (_ "," _ PublicationNameItem)*) {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "PublicationNameList",
+            Vals: vals,
+        }, nil
+    }
 
 PublicationNameItem
     = ColLabel
@@ -8722,7 +8786,13 @@ RuleActionListOption1
     }
 
 RuleActionMulti
-    = RuleActionStmtOrEmpty (_ ";" _ RuleActionStmtOrEmpty)*
+    = list:(RuleActionStmtOrEmpty (_ ";" _ RuleActionStmtOrEmpty)*) {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "RuleActionMulti",
+            Vals: vals,
+        }, nil
+    }
 
 RuleActionStmt
     = SelectStmt
@@ -9046,12 +9116,11 @@ CreatedbOptList
     = CreatedbOptItems?
 
 CreatedbOptItems
-    = var1:CreatedbOptItem (_ CreatedbOptItem)* {
+    = list:(CreatedbOptItem (_ CreatedbOptItem)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "CreatedbOptItems",
-            Props: map[string]interface{}{
-                "CreatedbOptItem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -9413,12 +9482,11 @@ VacuumStmtOption2
     }
 
 VacuumOptionList
-    = var1:VacuumOptionElem (_ "," _ VacuumOptionElem)* {
+    = list:(VacuumOptionElem (_ "," _ VacuumOptionElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "VacuumOptionList",
-            Props: map[string]interface{}{
-                "VacuumOptionElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -9455,7 +9523,13 @@ AnalyzeStmtOption2
     }
 
 AnalyzeOptionList
-    = AnalyzeOptionElem (_ "," _ AnalyzeOptionElem)*
+    = list:(AnalyzeOptionElem (_ "," _ AnalyzeOptionElem)*) {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "AnalyzeOptionList",
+            Vals: vals,
+        }, nil
+    }
 
 AnalyzeOptionElem
     = VERBOSE
@@ -9491,12 +9565,11 @@ VacuumRelation
     }
 
 VacuumRelationList
-    = var1:VacuumRelation (_ "," _ VacuumRelation)* {
+    = list:(VacuumRelation (_ "," _ VacuumRelation)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "VacuumRelationList",
-            Props: map[string]interface{}{
-                "VacuumRelation1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -9563,12 +9636,11 @@ ExplainableStmt
     / ExecuteStmt
 
 ExplainOptionList
-    = var1:ExplainOptionElem (_ "," _ ExplainOptionElem)* {
+    = list:(ExplainOptionElem (_ "," _ ExplainOptionElem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "ExplainOptionList",
-            Props: map[string]interface{}{
-                "ExplainOptionElem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -9724,12 +9796,11 @@ OverrideKind
     / SYSTEM
 
 InsertColumnList
-    = var1:InsertColumnItem (_ "," _ InsertColumnItem)* {
+    = list:(InsertColumnItem (_ "," _ InsertColumnItem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "InsertColumnList",
-            Props: map[string]interface{}{
-                "InsertColumnItem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -9853,12 +9924,11 @@ UpdateStmt
     }
 
 SetClauseList
-    = var1:SetClause (_ "," _ SetClause)* {
+    = list:(SetClause (_ "," _ SetClause)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "SetClauseList",
-            Props: map[string]interface{}{
-                "SetClause1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -9900,12 +9970,11 @@ SetTarget
     }
 
 SetTargetList
-    = var1:SetTarget (_ "," _ SetTarget)* {
+    = list:(SetTarget (_ "," _ SetTarget)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "SetTargetList",
-            Props: map[string]interface{}{
-                "SetTarget1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -10207,12 +10276,11 @@ WithClauseOption2
     }
 
 CteList
-    = var1:CommonTableExpr (_ "," _ CommonTableExpr)* {
+    = list:(CommonTableExpr (_ "," _ CommonTableExpr)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "CteList",
-            Props: map[string]interface{}{
-                "CommonTableExpr1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -10362,12 +10430,11 @@ SortClause
     }
 
 SortbyList
-    = var1:Sortby (_ "," _ Sortby)* {
+    = list:(Sortby (_ "," _ Sortby)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "SortbyList",
-            Props: map[string]interface{}{
-                "Sortby1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -10520,12 +10587,11 @@ GroupClause
     = (GROUP _ BY _ GroupByList)?
 
 GroupByList
-    = var1:GroupByItem (_ "," _ GroupByItem)* {
+    = list:(GroupByItem (_ "," _ GroupByItem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "GroupByList",
-            Props: map[string]interface{}{
-                "GroupByItem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -10580,12 +10646,11 @@ OptForLockingClause
     = ForLockingClause?
 
 ForLockingItems
-    = var1:ForLockingItem (_ ForLockingItem)* {
+    = list:(ForLockingItem (_ ForLockingItem)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "ForLockingItems",
-            Props: map[string]interface{}{
-                "ForLockingItem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -10611,12 +10676,11 @@ LockedRelsList
     = (OF _ QualifiedNameList)?
 
 ValuesClause
-    = VALUES _ "(" _ var1:ExprList _ ")" (_ "," _ "(" _ ExprList _ ")")* {
+    = list:(VALUES _ "(" _ ExprList _ ")" (_ "," _ "(" _ ExprList _ ")")*) {
+        vals := extractList(list, 4, 7, 5)
         return Node{
             Name: "ValuesClause",
-            Props: map[string]interface{}{
-                "ExprList1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -10624,12 +10688,11 @@ FromClause
     = (FROM _ FromList)?
 
 FromList
-    = var1:TableRef (_ "," _ TableRef)* {
+    = list:(TableRef (_ "," _ TableRef)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "FromList",
-            Props: map[string]interface{}{
-                "TableRef1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -11020,12 +11083,11 @@ RelationExprOption3
     }
 
 RelationExprList
-    = var1:RelationExpr (_ "," _ RelationExpr)* {
+    = list:(RelationExpr (_ "," _ RelationExpr)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "RelationExprList",
-            Props: map[string]interface{}{
-                "RelationExpr1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -11109,12 +11171,11 @@ RowsfromItem
     }
 
 RowsfromList
-    = var1:RowsfromItem (_ "," _ RowsfromItem)* {
+    = list:(RowsfromItem (_ "," _ RowsfromItem)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "RowsfromList",
-            Props: map[string]interface{}{
-                "RowsfromItem1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -11148,12 +11209,11 @@ OptTableFuncElementList
     = TableFuncElementList?
 
 TableFuncElementList
-    = var1:TableFuncElement (_ "," _ TableFuncElement)* {
+    = list:(TableFuncElement (_ "," _ TableFuncElement)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "TableFuncElementList",
-            Props: map[string]interface{}{
-                "TableFuncElement1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -11199,12 +11259,11 @@ XmltableOption2
     }
 
 XmltableColumnList
-    = var1:XmltableColumnEl (_ "," _ XmltableColumnEl)* {
+    = list:(XmltableColumnEl (_ "," _ XmltableColumnEl)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "XmltableColumnList",
-            Props: map[string]interface{}{
-                "XmltableColumnEl1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -11247,12 +11306,11 @@ XmltableColumnElOption3
     }
 
 XmltableColumnOptionList
-    = var1:XmltableColumnOptionEl (_ XmltableColumnOptionEl)* {
+    = list:(XmltableColumnOptionEl (_ XmltableColumnOptionEl)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "XmltableColumnOptionList",
-            Props: map[string]interface{}{
-                "XmltableColumnOptionEl1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -11286,12 +11344,11 @@ XmltableColumnOptionElOption3
     = NOT _ NULL
 
 XmlNamespaceList
-    = var1:XmlNamespaceEl (_ "," _ XmlNamespaceEl)* {
+    = list:(XmlNamespaceEl (_ "," _ XmlNamespaceEl)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "XmlNamespaceList",
-            Props: map[string]interface{}{
-                "XmlNamespaceEl1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -12801,12 +12858,11 @@ XmlAttributes
     }
 
 XmlAttributeList
-    = var1:XmlAttributeEl (_ "," _ XmlAttributeEl)* {
+    = list:(XmlAttributeEl (_ "," _ XmlAttributeEl)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "XmlAttributeList",
-            Props: map[string]interface{}{
-                "XmlAttributeEl1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -12889,12 +12945,11 @@ WindowClause
     = (WINDOW _ WindowDefinitionList)?
 
 WindowDefinitionList
-    = var1:WindowDefinition (_ "," _ WindowDefinition)* {
+    = list:(WindowDefinition (_ "," _ WindowDefinition)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "WindowDefinitionList",
-            Props: map[string]interface{}{
-                "WindowDefinition1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -13178,22 +13233,20 @@ SubqueryOpOption3
     = NOT _ ILIKE
 
 ExprList
-    = var1:AExpr (_ "," _ AExpr)* {
+    = list:(AExpr (_ "," _ AExpr)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "ExprList",
-            Props: map[string]interface{}{
-                "AExpr1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
 FuncArgList
-    = var1:FuncArgExpr (_ "," _ FuncArgExpr)* {
+    = list:(FuncArgExpr (_ "," _ FuncArgExpr)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "FuncArgList",
-            Props: map[string]interface{}{
-                "FuncArgExpr1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -13223,12 +13276,11 @@ FuncArgExprOption2
     }
 
 TypeList
-    = var1:Typename (_ "," _ Typename)* {
+    = list:(Typename (_ "," _ Typename)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "TypeList",
-            Props: map[string]interface{}{
-                "Typename1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -13261,12 +13313,11 @@ ArrayExprOption3
     = "[" _ "]"
 
 ArrayExprList
-    = var1:ArrayExpr (_ "," _ ArrayExpr)* {
+    = list:(ArrayExpr (_ "," _ ArrayExpr)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "ArrayExprList",
-            Props: map[string]interface{}{
-                "ArrayExpr1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -13450,12 +13501,11 @@ CaseExpr
     }
 
 WhenClauseList
-    = var1:WhenClause (_ WhenClause)* {
+    = list:(WhenClause (_ WhenClause)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "WhenClauseList",
-            Props: map[string]interface{}{
-                "WhenClause1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -13520,17 +13570,22 @@ OptSliceBound
     = AExpr?
 
 Indirection
-    = var1:IndirectionEl (_ IndirectionEl)* {
+    = list:(IndirectionEl (_ IndirectionEl)*) {
+        vals := extractList(list, 0, 1, 1)
         return Node{
             Name: "Indirection",
-            Props: map[string]interface{}{
-                "IndirectionEl1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
 OptIndirection
-    = (_ IndirectionEl)*
+    = list:(_ IndirectionEl)* {
+        vals := extractList(list, -1, -1, 1)
+        return Node{
+            Name: "OptIndirection",
+            Vals: vals,
+        }, nil
+    }
 
 OptAsymmetric
     = ASYMMETRIC?
@@ -13539,12 +13594,11 @@ OptTargetList
     = TargetList?
 
 TargetList
-    = var1:TargetEl (_ "," _ TargetEl)* {
+    = list:(TargetEl (_ "," _ TargetEl)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "TargetList",
-            Props: map[string]interface{}{
-                "TargetEl1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -13576,12 +13630,11 @@ TargetElOption2
     }
 
 QualifiedNameList
-    = var1:QualifiedName (_ "," _ QualifiedName)* {
+    = list:(QualifiedName (_ "," _ QualifiedName)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "QualifiedNameList",
-            Props: map[string]interface{}{
-                "QualifiedName1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 
@@ -13601,7 +13654,13 @@ QualifiedNameOption1
     }
 
 NameList
-    = Name (_ "," _ Name)*
+    = list:(Name (_ "," _ Name)*) {
+        vals := extractList(list, 0, 1, 3)
+        return Node{
+            Name: "NameList",
+            Vals: vals,
+        }, nil
+    }
 
 Name
     = ColId
@@ -13715,12 +13774,11 @@ RoleSpec
     / SESSIONUSER
 
 RoleList
-    = var1:RoleSpec (_ "," _ RoleSpec)* {
+    = list:(RoleSpec (_ "," _ RoleSpec)*) {
+        vals := extractList(list, 0, 1, 3)
         return Node{
             Name: "RoleList",
-            Props: map[string]interface{}{
-                "RoleSpec1": var1,
-            },
+            Vals: vals,
         }, nil
     }
 

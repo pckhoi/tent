@@ -40,6 +40,25 @@ func toIfaceSlice(v interface{}) []interface{} {
 	return v.([]interface{})
 }
 
+func extractList(list interface{}, firstElIndex int, restIndex int, restElIndex int) []interface{} {
+	vals := []interface{}{}
+	valsSlice := toIfaceSlice(list)
+	if firstElIndex != -1 {
+		vals = append(vals, valsSlice[firstElIndex])
+	}
+	var restSlice []interface{}
+	if firstElIndex == -1 {
+		restSlice = valsSlice
+	} else {
+		restSlice = toIfaceSlice(valsSlice[restIndex])
+	}
+	for _, v := range restSlice {
+		vSlice := toIfaceSlice(v)
+		vals = append(vals, vSlice[restElIndex])
+	}
+	return vals
+}
+
 func toByteSlice(v interface{}) []byte {
 	valsSl := toIfaceSlice(v)
 	var result []byte

@@ -43,6 +43,18 @@ func indexOfString(slice []string, find string) int {
 	return -1
 }
 
+func (refer ReferToken) referToGroupRule() bool {
+	rule, keyOk := rulemap[refer.Name]
+	if !keyOk {
+		return false
+	}
+	_, groupOk := rule.Expression.(*TokenGroup)
+	if !groupOk {
+		return false
+	}
+	return true
+}
+
 func newRepr(name string) string {
 	if name == "_" {
 		return name

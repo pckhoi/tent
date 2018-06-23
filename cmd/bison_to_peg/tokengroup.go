@@ -5,6 +5,7 @@ import (
 	// "log"
 	"regexp"
 	"sort"
+	"strings"
 )
 
 type ExpressionType int
@@ -15,10 +16,11 @@ const (
 )
 
 type TokenGroup struct {
-	Tokens []TokenPointer
-	IsRoot bool
-	Repeat RepeatCharacteristic
-	Type   ExpressionType
+	Tokens       []TokenPointer
+	IsRoot       bool
+	VariableName string
+	Repeat       RepeatCharacteristic
+	Type         ExpressionType
 }
 
 func (group TokenGroup) GetTokenGroups() func() (int, *TokenGroup) {
@@ -64,7 +66,11 @@ func (group *TokenGroup) String() string {
 }
 
 func (group *TokenGroup) WritePegTo(buffer *bytes.Buffer) {
-	bracket := !group.IsRoot || group.Repeat != 0
+	bracket := !group.IsRoot || group.Repeat != 0 || group.VariableName != ""
+	if group.VariableName != "" {
+		buffer.WriteString(group.VariableName)
+		buffer.WriteString(":")
+	}
 	if bracket {
 		buffer.WriteString("(")
 	}
@@ -131,6 +137,53 @@ func (s *TokenGroup) ReplaceToken(search, replace ReferToken) {
 			s.Tokens[ind] = &replace
 		}
 	}
+}
+
+func (group *TokenGroup) DressupList() (string, int, int, int) {
+	referTokens := []*ReferToken{}
+	groupTokens := []*TokenGroup{}
+	var firstElInd = -1
+	var restInd = -1
+	var firstReferToken *ReferToken
+	var restElToken *ReferToken
+	var restElInd = -1
+	for ind, token := range group.Tokens {
+		switch val := token.(type) {
+		case *ReferToken:
+			if val.Name != "_" && (val.Name == "SCONST" || val.Name != strings.ToUpper(val.Name)) {
+				referTokens = append(referTokens, val)
+				firstReferToken = val
+				firstElInd = ind
+			}
+		case *TokenGroup:
+			groupTokens = append(groupTokens, val)
+			restInd = ind
+		}
+	}
+	if len(groupTokens) == 0 && group.Repeat == Any {
+		firstElInd = -1
+		firstReferToken = nil
+		restInd = -1
+		groupTokens = []*TokenGroup{group}
+	} else if len(referTokens) > 1 || len(groupTokens) != 1 || groupTokens[0].Repeat != Any {
+		return "", -1, -1, -1
+	}
+
+	referTokens = []*ReferToken{}
+	for ind, token := range groupTokens[0].Tokens {
+		val, ok := token.(*ReferToken)
+		if ok && val.Name != "_" && (val.Name == "SCONST" || val.Name != strings.ToUpper(val.Name)) {
+			referTokens = append(referTokens, val)
+			restElToken = val
+			restElInd = ind
+		}
+
+	}
+	if len(referTokens) != 1 || (firstReferToken != nil && restElToken.Name != firstReferToken.Name) {
+		return "", -1, -1, -1
+	}
+	group.VariableName = "list"
+	return group.VariableName, firstElInd, restInd, restElInd
 }
 
 func (group *TokenGroup) DetectSelfReferencing(name ReferToken) (bool, bool, bool, bool) {

@@ -13,5 +13,6 @@ type Enum struct {
 
 type Node struct {
 	Name  string
+	Vals  []interface{}
 	Props map[string]interface{}
 }

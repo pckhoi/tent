@@ -19,6 +19,10 @@ type Rule struct {
 	SelfRefAtBegin     bool
 	SelfRefAtBeginOnly bool
 	SelfRefAtEndOnly   bool
+	ExpressionListVar  string
+	ListFirstElIndex   int
+	ListRestIndex      int
+	ListRestElIndex    int
 }
 
 var rulemap = map[string]Rule{}
@@ -44,6 +48,20 @@ func (r Rule) WritePegTo(buffer *bytes.Buffer) {
 			buffer.WriteString(",\n")
 		}
 		buffer.WriteString("            },\n")
+		buffer.WriteString("        }, nil\n")
+		buffer.WriteString("    }")
+	} else if r.ExpressionListVar != "" {
+		buffer.WriteString(" {\n        vals := extractList(")
+		buffer.WriteString(r.ExpressionListVar)
+		buffer.WriteString(", ")
+		buffer.WriteString(strconv.Itoa(r.ListFirstElIndex))
+		buffer.WriteString(", ")
+		buffer.WriteString(strconv.Itoa(r.ListRestIndex))
+		buffer.WriteString(", ")
+		buffer.WriteString(strconv.Itoa(r.ListRestElIndex))
+		buffer.WriteString(")\n        return Node{\n            Name: \"")
+		buffer.WriteString(r.Name.String())
+		buffer.WriteString("\",\n            Vals: vals,\n")
 		buffer.WriteString("        }, nil\n")
 		buffer.WriteString("    }")
 	}
@@ -77,10 +95,27 @@ func (r *Rule) ReorderSubrules() {
 	}
 }
 
-func (r Rule) Dressup() Rule {
+func (r *Rule) DressupList() {
+	expressionListVar, listFirstElIndex, listRestIndex, listRestElIndex := r.Expression.(*TokenGroup).DressupList()
+	r.ExpressionListVar = expressionListVar
+	r.ListFirstElIndex = listFirstElIndex
+	r.ListRestIndex = listRestIndex
+	r.ListRestElIndex = listRestElIndex
+}
+
+func (r *Rule) Dressup() {
 	tokenGroup, ok := r.Expression.(*TokenGroup)
-	if !ok || tokenGroup.Type != Sequence || len(tokenGroup.Tokens) == 1 || tokenGroup.Repeat != 0 {
-		return r
+	if !ok || tokenGroup.Type != Sequence || len(tokenGroup.Tokens) == 1 {
+		return
+	}
+
+	r.DressupList()
+	if r.ExpressionListVar != "" {
+		return
+	}
+
+	if tokenGroup.Repeat != 0 {
+		return
 	}
 	refers := []*ReferToken{}
 	counter := 0
@@ -89,25 +124,18 @@ func (r Rule) Dressup() Rule {
 		if !ok {
 			continue
 		}
-		rule, keyOk := rulemap[refer.Name]
-		if !keyOk {
-			continue
+		if refer.referToGroupRule() {
+			counter++
+			refer.VariableName = "var" + strconv.Itoa(counter)
+			refers = append(refers, refer)
 		}
-		_, groupOk := rule.Expression.(*TokenGroup)
-		if !groupOk {
-			continue
-		}
-		counter++
-		refer.VariableName = "var" + strconv.Itoa(counter)
-		refers = append(refers, refer)
 	}
 
 	if len(refers) == 0 {
-		return r
+		return
 	}
 
-	(&r).Refers = refers
-	return r
+	r.Refers = refers
 }
 
 func (r Rule) SplitMultiChoice() []Rule {
