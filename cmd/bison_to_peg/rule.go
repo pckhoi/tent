@@ -12,6 +12,7 @@ import (
 type Rule struct {
 	Name               ReferToken
 	Expression         TokenPointer
+	Refers             []*ReferToken
 	ReturnsNil         bool
 	ReturnsString      bool
 	SelfReferencing    bool
@@ -30,6 +31,21 @@ func (r Rule) WritePegTo(buffer *bytes.Buffer) {
 		buffer.WriteString(" {\n        return nil, nil\n    }")
 	} else if r.ReturnsString {
 		buffer.WriteString(" {\n        return string(c.text), nil\n    }")
+	} else if len(r.Refers) > 0 {
+		buffer.WriteString(" {\n        return Node{\n            Name: \"")
+		buffer.WriteString(r.Name.String())
+		buffer.WriteString("\",\n            Props: map[string]interface{}{\n")
+		gen := nameWithCount()
+		for _, refer := range r.Refers {
+			buffer.WriteString("                \"")
+			buffer.WriteString(gen(namemap[refer.Name]))
+			buffer.WriteString("\": ")
+			buffer.WriteString(refer.VariableName)
+			buffer.WriteString(",\n")
+		}
+		buffer.WriteString("            },\n")
+		buffer.WriteString("        }, nil\n")
+		buffer.WriteString("    }")
 	}
 }
 
@@ -59,6 +75,39 @@ func (r *Rule) ReorderSubrules() {
 	if val, ok := r.Expression.(*TokenGroup); ok {
 		val.ReorderTokens()
 	}
+}
+
+func (r Rule) Dressup() Rule {
+	tokenGroup, ok := r.Expression.(*TokenGroup)
+	if !ok || tokenGroup.Type != Sequence || len(tokenGroup.Tokens) == 1 || tokenGroup.Repeat != 0 {
+		return r
+	}
+	refers := []*ReferToken{}
+	counter := 0
+	for _, token := range tokenGroup.Tokens {
+		refer, ok := token.(*ReferToken)
+		if !ok {
+			continue
+		}
+		rule, keyOk := rulemap[refer.Name]
+		if !keyOk {
+			continue
+		}
+		_, groupOk := rule.Expression.(*TokenGroup)
+		if !groupOk {
+			continue
+		}
+		counter++
+		refer.VariableName = "var" + strconv.Itoa(counter)
+		refers = append(refers, refer)
+	}
+
+	if len(refers) == 0 {
+		return r
+	}
+
+	(&r).Refers = refers
+	return r
 }
 
 func (r Rule) SplitMultiChoice() []Rule {

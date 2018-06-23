@@ -83,8 +83,12 @@ func MakeFromBison(bytes []byte) Grammar {
 	newRules := []Rule{}
 	for _, rule := range rules {
 		rule.Simplify()
+		rule.ReorderSubrules()
 		rs := rule.SplitMultiChoice()
 		newRules = append(newRules, rs...)
+	}
+	for ind, rule := range newRules {
+		newRules[ind] = rule.Dressup()
 	}
 	newRules = append(newRules, keywordRules()...)
 	newRules = append(newRules, miscellaneousRules()...)

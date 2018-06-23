@@ -25,8 +25,9 @@ type TokenPointer interface {
 }
 
 type ReferToken struct {
-	Name   string
-	Repeat RepeatCharacteristic
+	Name         string
+	VariableName string
+	Repeat       RepeatCharacteristic
 }
 
 var namemap = map[string]string{}
@@ -64,6 +65,10 @@ func newRepr(name string) string {
 }
 
 func (token *ReferToken) WritePegTo(buffer *bytes.Buffer) {
+	if token.VariableName != "" {
+		buffer.WriteString(token.VariableName)
+		buffer.WriteString(":")
+	}
 	buffer.WriteString(namemap[token.Name])
 	switch token.Repeat {
 	case OneOrMany:

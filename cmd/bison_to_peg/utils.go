@@ -1,5 +1,11 @@
 package main
 
+import (
+	"bytes"
+	"strconv"
+	"strings"
+)
+
 func combinations(pool []TokenPointer, r int) [][]TokenPointer {
 	lenpool := len(pool)
 	result := [][]TokenPointer{}
@@ -27,7 +33,7 @@ func combinations(pool []TokenPointer, r int) [][]TokenPointer {
 		if !broke {
 			break
 		}
-		indices[i] += 1
+		indices[i]++
 		for j := i + 1; j < r; j++ {
 			indices[j] = indices[j-1] + 1
 		}
@@ -39,4 +45,18 @@ func combinations(pool []TokenPointer, r int) [][]TokenPointer {
 		result = append(result, combination)
 	}
 	return result
+}
+
+func nameWithCount() func(string) string {
+	counter := map[string]int{}
+
+	return func(str string) string {
+		_, ok := counter[str]
+		if ok {
+			counter[str]++
+		} else {
+			counter[str] = 1
+		}
+		return str + strconv.Itoa(counter[str])
+	}
 }
