@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"strconv"
-	"strings"
 )
 
 func combinations(pool []TokenPointer, r int) [][]TokenPointer {

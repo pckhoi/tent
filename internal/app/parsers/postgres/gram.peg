@@ -15581,20 +15581,24 @@ PARAM
     = "$" ICONST
 
 Identifier
-    = [A-Za-z\pL_] [A-Za-z\pL_0-9$]*
+    = [A-Za-z\pL_] [A-Za-z\pL_0-9$]* {
+        return string(c.text), nil
+    }
 
 DblQuoIdentifier
-    = "\"" ("\"\"" / [^"])+ "\""
+    = "\"" ("\"\"" / [^"])+ "\"" {
+        return string(c.text), nil
+    }
 
 QuoUniIdentifier
-    = "U"i "&\"" ("\"\"" / [^"])+ "\"" (_ "UESCAPE"i _ "'" [^'] "'")?
+    = "U"i "&\"" ("\"\"" / [^"])+ "\"" (_ "UESCAPE"i _ "'" [^'] "'")? {
+        return string(c.text), nil
+    }
 
 IDENT
     = Identifier
     / DblQuoIdentifier
-    / QuoUniIdentifier {
-        return string(c.text), nil
-    }
+    / QuoUniIdentifier
 
 BCONST
     = "B"i "'" (QuoteContinue / [^'])* "'"

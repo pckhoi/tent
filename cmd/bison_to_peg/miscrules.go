@@ -245,6 +245,7 @@ func miscellaneousRules() []Rule {
 				IsRoot: true,
 				Type:   Sequence,
 			},
+			ReturnsString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("DblQuoIdentifier", true, 0),
@@ -272,6 +273,7 @@ func miscellaneousRules() []Rule {
 				IsRoot: true,
 				Type:   Sequence,
 			},
+			ReturnsString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("QuoUniIdentifier", true, 0),
@@ -324,6 +326,7 @@ func miscellaneousRules() []Rule {
 				IsRoot: true,
 				Type:   Sequence,
 			},
+			ReturnsString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("IDENT", true, 0),
@@ -336,7 +339,6 @@ func miscellaneousRules() []Rule {
 				IsRoot: true,
 				Type:   Choice,
 			},
-			ReturnsString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("BCONST", true, 0),
