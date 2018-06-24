@@ -99,8 +99,20 @@ func MakeFromBison(bytes []byte) Grammar {
 	}
 }
 
+var grammarImports = []string{
+	"strconv",
+}
+
 func (g Grammar) WritePegTo(buffer *bytes.Buffer) {
-	buffer.WriteString("{\n    package postgres\n}\n\n")
+	buffer.WriteString("{\n    package postgres\n\n")
+	buffer.WriteString("    import (\n")
+	for _, imp := range grammarImports {
+		buffer.WriteString("       \"")
+		buffer.WriteString(imp)
+		buffer.WriteString("\"\n")
+	}
+	buffer.WriteString("    )\n")
+	buffer.WriteString("}\n\n")
 
 	for _, rule := range g.Rules {
 		rule.WritePegTo(buffer)

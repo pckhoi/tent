@@ -34,17 +34,4 @@ func main() {
 	log.Println("Writing Peg...")
 	grammar.WritePegTo(&buffer)
 	fmt.Print(buffer.String())
-	for k, _ := range namemap {
-		cont := false
-		for _, rulename := range rulenames {
-			if rulename == k {
-				cont = true
-				break
-			}
-		}
-		if cont {
-			continue
-		}
-		log.Println("Rule missing:", k)
-	}
 }

@@ -5,8 +5,9 @@ import (
 )
 
 type LiteralToken struct {
-	Literal string
-	Repeat  RepeatCharacteristic
+	Literal      string
+	Repeat       RepeatCharacteristic
+	VariableName string
 }
 
 func (token *LiteralToken) WritePegTo(buffer *bytes.Buffer) {
@@ -25,6 +26,10 @@ func (token *LiteralToken) String() string {
 	var buffer bytes.Buffer
 	token.WritePegTo(&buffer)
 	return buffer.String()
+}
+
+func (token *LiteralToken) GetVariableName() string {
+	return token.VariableName
 }
 
 func (token *LiteralToken) SetRepeat(repeat RepeatCharacteristic) {

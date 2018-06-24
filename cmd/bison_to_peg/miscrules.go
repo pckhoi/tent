@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func miscellaneousRules() []Rule {
 	return []Rule{
 		Rule{
@@ -8,6 +10,7 @@ func miscellaneousRules() []Rule {
 				Literal: "[0-9]",
 				Repeat:  OneOrMany,
 			},
+			ReturnsLiteral: fmt.Sprintf("strconv.ParseInt(string(c.text), 10, 64)"),
 		},
 		Rule{
 			Name: *MakeReferToken("Decimal", true, 0),
@@ -365,9 +368,11 @@ func miscellaneousRules() []Rule {
 						Name: `'`,
 					},
 				},
-				IsRoot: true,
-				Type:   Sequence,
+				IsRoot:       true,
+				Type:         Sequence,
+				VariableName: "val",
 			},
+			ReturnsComplexString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("QuoteContinue", true, 0),
@@ -384,6 +389,7 @@ func miscellaneousRules() []Rule {
 				Type:   Sequence,
 				IsRoot: true,
 			},
+			ReturnsNil: true,
 		},
 		Rule{
 			Name: *MakeReferToken("HexEscape", true, 0),
@@ -403,6 +409,7 @@ func miscellaneousRules() []Rule {
 				Type:   Sequence,
 				IsRoot: true,
 			},
+			ReturnsString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("OctalEscape", true, 0),
@@ -431,6 +438,7 @@ func miscellaneousRules() []Rule {
 				Type:   Sequence,
 				IsRoot: true,
 			},
+			ReturnsString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("GenericEscape", true, 0),
@@ -446,6 +454,7 @@ func miscellaneousRules() []Rule {
 				Type:   Sequence,
 				IsRoot: true,
 			},
+			ReturnsString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("UnicodeEscape", true, 0),
@@ -515,6 +524,7 @@ func miscellaneousRules() []Rule {
 				Type:   Sequence,
 				IsRoot: true,
 			},
+			ReturnsString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("QuoEscString", true, 0),
@@ -548,8 +558,10 @@ func miscellaneousRules() []Rule {
 						Name: `'`,
 					},
 				},
-				IsRoot: true,
+				IsRoot:       true,
+				VariableName: "val",
 			},
+			ReturnsComplexString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("QuoUniString", true, 0),
@@ -600,8 +612,10 @@ func miscellaneousRules() []Rule {
 						Repeat: OneOrNone,
 					},
 				},
-				IsRoot: true,
+				IsRoot:       true,
+				VariableName: "val",
 			},
+			ReturnsComplexString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("QuoString", true, 0),
@@ -627,8 +641,10 @@ func miscellaneousRules() []Rule {
 						Name: `'`,
 					},
 				},
-				IsRoot: true,
+				IsRoot:       true,
+				VariableName: "val",
 			},
+			ReturnsComplexString: true,
 		},
 		Rule{
 			Name: *MakeReferToken("SCONST", true, 0),
@@ -680,9 +696,11 @@ func miscellaneousRules() []Rule {
 						Name: `'`,
 					},
 				},
-				IsRoot: true,
-				Type:   Sequence,
+				IsRoot:       true,
+				Type:         Sequence,
+				VariableName: "val",
 			},
+			ReturnsComplexString: true,
 		},
 	}
 }

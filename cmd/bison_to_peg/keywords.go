@@ -1,12 +1,15 @@
 package main
 
+import "fmt"
+
 func keywordRules() []Rule {
 	result := []Rule{}
 	for _, keyword := range keywords {
 		ruleName := MakeReferToken(keyword, true, 0)
 		result = append(result, Rule{
-			Name:       *ruleName,
-			Expression: MakeStringToken(keyword, true),
+			Name:           *ruleName,
+			Expression:     MakeStringToken(keyword, true),
+			ReturnsLiteral: fmt.Sprintf("\"%s\", nil", keyword),
 		})
 	}
 	return result

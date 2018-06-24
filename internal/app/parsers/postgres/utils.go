@@ -33,6 +33,29 @@ func getValueAndTypeAsStrings(val interface{}) (string, string) {
 	return interfaceToString(value), fmt.Sprintf("%s", reflect.TypeOf(val))
 }
 
+func extractBytesSlice(src []interface{}) []byte {
+	bytes := []byte{}
+	for _, val := range src {
+		if val == nil {
+			continue
+		}
+		switch v := val.(type) {
+		case []byte:
+			bytes = append(bytes, v...)
+		case []interface{}:
+			bytes = append(bytes, extractBytesSlice(v)...)
+		case string:
+			bytes = append(bytes, []byte(v)...)
+		}
+	}
+	return bytes
+}
+
+func complexString(src interface{}) string {
+	valsSlice := toIfaceSlice(src)
+	return string(extractBytesSlice(valsSlice))
+}
+
 func toIfaceSlice(v interface{}) []interface{} {
 	if v == nil {
 		return nil

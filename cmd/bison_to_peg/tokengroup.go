@@ -65,6 +65,10 @@ func (group *TokenGroup) String() string {
 	return buffer.String()
 }
 
+func (token *TokenGroup) GetVariableName() string {
+	return token.VariableName
+}
+
 func (group *TokenGroup) WritePegTo(buffer *bytes.Buffer) {
 	bracket := !group.IsRoot || group.Repeat != 0 || group.VariableName != ""
 	if group.VariableName != "" {
@@ -134,7 +138,8 @@ func (s *TokenGroup) ReplaceToken(search, replace ReferToken) {
 	gen := s.GetSimpleTokens()
 	for ind, val := gen(); val != nil; ind, val = gen() {
 		if val.Name == search.Name {
-			s.Tokens[ind] = &replace
+			tok := replace
+			s.Tokens[ind] = &tok
 		}
 	}
 }

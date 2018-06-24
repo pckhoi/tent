@@ -22,6 +22,7 @@ type TokenPointer interface {
 	SetRepeat(RepeatCharacteristic)
 	String() string
 	GetRepeat() RepeatCharacteristic
+	GetVariableName() string
 }
 
 type ReferToken struct {
@@ -94,6 +95,10 @@ func (token *ReferToken) WritePegTo(buffer *bytes.Buffer) {
 
 func (token *ReferToken) SetRepeat(repeat RepeatCharacteristic) {
 	token.Repeat = repeat
+}
+
+func (token *ReferToken) GetVariableName() string {
+	return token.VariableName
 }
 
 func (token *ReferToken) GetRepeat() RepeatCharacteristic {

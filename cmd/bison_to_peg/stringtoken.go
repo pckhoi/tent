@@ -6,9 +6,10 @@ import (
 )
 
 type StringToken struct {
-	Name        string
-	Repeat      RepeatCharacteristic
-	Insensitive bool
+	Name         string
+	Repeat       RepeatCharacteristic
+	Insensitive  bool
+	VariableName string
 }
 
 func (token *StringToken) WritePegTo(buffer *bytes.Buffer) {
@@ -38,6 +39,10 @@ func (token *StringToken) String() string {
 
 func (token *StringToken) SetRepeat(repeat RepeatCharacteristic) {
 	token.Repeat = repeat
+}
+
+func (token *StringToken) GetVariableName() string {
+	return token.VariableName
 }
 
 func (token *StringToken) GetRepeat() RepeatCharacteristic {

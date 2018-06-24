@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	// "log"
 	"regexp"
 	"strconv"
@@ -10,19 +11,21 @@ import (
 )
 
 type Rule struct {
-	Name               ReferToken
-	Expression         TokenPointer
-	Refers             []*ReferToken
-	ReturnsNil         bool
-	ReturnsString      bool
-	SelfReferencing    bool
-	SelfRefAtBegin     bool
-	SelfRefAtBeginOnly bool
-	SelfRefAtEndOnly   bool
-	ExpressionListVar  string
-	ListFirstElIndex   int
-	ListRestIndex      int
-	ListRestElIndex    int
+	Name                 ReferToken
+	Expression           TokenPointer
+	Refers               []*ReferToken
+	ReturnsNil           bool
+	ReturnsString        bool
+	ReturnsComplexString bool
+	ReturnsLiteral       string
+	SelfReferencing      bool
+	SelfRefAtBegin       bool
+	SelfRefAtBeginOnly   bool
+	SelfRefAtEndOnly     bool
+	ExpressionListVar    string
+	ListFirstElIndex     int
+	ListRestIndex        int
+	ListRestElIndex      int
 }
 
 var rulemap = map[string]Rule{}
@@ -35,6 +38,10 @@ func (r Rule) WritePegTo(buffer *bytes.Buffer) {
 		buffer.WriteString(" {\n        return nil, nil\n    }")
 	} else if r.ReturnsString {
 		buffer.WriteString(" {\n        return string(c.text), nil\n    }")
+	} else if r.ReturnsLiteral != "" {
+		buffer.WriteString(fmt.Sprintf(" {\n        return %s\n    }", r.ReturnsLiteral))
+	} else if r.ReturnsComplexString {
+		buffer.WriteString(fmt.Sprintf(" {\n        return complexString(%s), nil\n    }", r.Expression.GetVariableName()))
 	} else if len(r.Refers) > 0 {
 		buffer.WriteString(" {\n        return Node{\n            Name: \"")
 		buffer.WriteString(r.Name.String())
@@ -124,7 +131,7 @@ func (r *Rule) Dressup() {
 		if !ok {
 			continue
 		}
-		if refer.referToGroupRule() {
+		if refer.Name != "_" && refer.Name != strings.ToUpper(refer.Name) {
 			counter++
 			refer.VariableName = "var" + strconv.Itoa(counter)
 			refers = append(refers, refer)
@@ -230,10 +237,11 @@ func (r Rule) SplitSelfRef(nameToken *ReferToken) []Rule {
 		}
 	}
 
+	referNewRule := *newRuleName
 	heirTokenGroup := TokenGroup{
 		Tokens: append(
 			selfRefGroups,
-			newRuleName,
+			&referNewRule,
 		),
 		IsRoot: true,
 		Repeat: tokenGroup.Repeat,
